@@ -1,0 +1,147 @@
+#store-locator-container
+{
+	float: left;
+	margin-left: 20px;
+	width: 860px;
+	font: normal 12px Arial, Helvetica, sans-serif;
+	color: #333;
+}
+
+#page-header
+{
+	float: left;
+}
+
+#form-container
+{
+	clear: left;
+	float: left;
+	margin-top: 15px;
+	width: 100%;
+}
+
+#map-container
+{
+	clear: left;
+	float: left;
+	margin-top: 27px;
+	height: 530px;
+	width: 860px;
+}
+
+#map-container a
+{
+	color: #e76737;
+	text-decoration: none;
+}
+
+#map-container a:hover, #map-container a:active
+{
+	text-decoration: underline;
+}
+
+#loc-list
+{
+	float: left; 
+	width: 225px;
+	height: 530px;
+	overflow: auto;
+}
+
+#loc-list ul
+{
+	display: block;
+	clear: left;
+	float: left;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+#loc-list .list-label
+{
+	float: left;
+	margin-left: 6px;
+	padding: 2px 3px;
+	width: 17px;
+	text-align: center;
+	background: #451400;
+	color: #fff;
+	font-weight: bold;
+}
+
+#loc-list .list-details
+{
+	float: left;
+	margin-left: 6px;
+	width: 165px;
+}
+
+#loc-list .list-content
+{
+	padding: 10px;
+}
+
+#loc-list li
+{
+	display: block;
+	clear: left;
+	float: left;
+	margin: 10px 0;
+	cursor: pointer;
+	width: 205px;
+}
+
+#map-container .loc-name
+{
+	color: #AD2118;
+	font-weight: bold;
+}
+
+#search-form
+{
+	clear: left;
+	float: left;
+	height: 60px;
+}
+
+#form-input
+{
+	float: left;
+	margin-top: 3px;
+}
+
+#form-input label
+{
+	font-weight: bold;
+}
+
+#address
+{
+	margin: 0 0 0 10px;
+}
+
+#submit-btn
+{
+	float: left;
+	cursor: pointer;
+	margin-left: 10px;
+}
+
+#map
+{
+	float: left; 
+	width: 635px; 
+	height: 530px; 
+}
+
+
+/* The following is for the geocode page and not the store locator */
+
+#geocode-result
+{
+	clear: left;
+	float: left;
+	margin-top: 30px;
+	width: 100%;
+}
