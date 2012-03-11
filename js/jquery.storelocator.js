@@ -3,6 +3,7 @@
 * Version: 1.0
 * (c) Copyright 2012, Bjorn Holine (http://www.bjornblog.com)
 * Released under the MIT license
+* Distance calculation function by Chris Pietschmann: http://pietschsoft.com/post/2008/02/01/Calculate-Distance-Between-Geocodes-in-C-and-JavaScript.aspx
 */
 
 (function($){
