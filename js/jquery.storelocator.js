@@ -1,5 +1,5 @@
 /*
-* storeLocator v1.0 - jQuery store locator plugin
+* storeLocator v1.0.1 - jQuery store locator plugin
 * Version: 1.0
 * (c) Copyright 2012, Bjorn Holine (http://www.bjornblog.com)
 * Released under the MIT license
@@ -71,7 +71,7 @@ $.fn.storeLocator = function(options) {
 
   //Process form input
   $(function() {
-    $("#" + settings.formID).live("submit", function(e){
+    $(document).on('submit', '#' + settings.formID, function(e){
       //Stop the form submission
       e.preventDefault();
       //Get the user input and use it
@@ -203,9 +203,7 @@ $.fn.storeLocator = function(options) {
               //Add markers and infowindows loop
               for (var y = 0; y <= storenum; y++) 
               { 
-                console.log(y);
                 var letter = String.fromCharCode("A".charCodeAt(0) + y);
-                console.log(letter);
                 var point = new google.maps.LatLng(locationset[y][2], locationset[y][3]);             
                 marker = createMarker(point, locationset[y][1], locationset[y][4], letter);
                 markers[y] = marker;
