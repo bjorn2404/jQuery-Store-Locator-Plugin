@@ -21,8 +21,8 @@ $.fn.storeLocator = function(options) {
       'listColor1'    : 'ffffff',
       'listColor2'    : 'eeeeee',
       'bounceMarker'  : true,
-      'slideMap'      : false,
-      'modalWindow'   : true
+      'slideMap'      : true,
+      'modalWindow'   : false
   }, options);
 
   return this.each(function() {
