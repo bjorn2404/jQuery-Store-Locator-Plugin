@@ -8,6 +8,10 @@ A note on the distance calculation: this plugin currently uses a distance functi
 
 ## Changelog
 
+### Version 1.1.1
+
+Added a modal window option. Set slideMap to false and modalWindow to true to use it. Also started using the new [jQuery .on() event api](http://blog.jquery.com/2011/11/03/jquery-1-7-released/) - make sure you're using jQuery v1.7+ or this won't work.
+
 ### Version 1.0.1
 
 Left a couple of console.logs in my code, which was causing IE to hang.

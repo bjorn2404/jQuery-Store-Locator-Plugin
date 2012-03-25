@@ -1,5 +1,5 @@
 /*
-* storeLocator v1.0.1 - jQuery store locator plugin
+* storeLocator v1.1.1 - jQuery store locator plugin
 * (c) Copyright 2012, Bjorn Holine (http://www.bjornblog.com)
 * Released under the MIT license
 * Distance calculation function by Chris Pietschmann: http://pietschsoft.com/post/2008/02/01/Calculate-Distance-Between-Geocodes-in-C-and-JavaScript.aspx
@@ -21,12 +21,21 @@ $.fn.storeLocator = function(options) {
       'listColor1'    : 'ffffff',
       'listColor2'    : 'eeeeee',
       'bounceMarker'  : true,
-      'slideMap'      : true
+      'slideMap'      : false,
+      'modalWindow'   : true
   }, options);
 
   return this.each(function() {
 
   var $this = $(this);
+
+  //Add modal window divs if set
+  if(settings.modalWindow == true)
+  {
+    $this.wrap('<div id="overlay"><div id="modal-window"><div id="modal-content">');
+    $('#modal-window').prepend('<div id="close-icon"><\/div>');
+    $('#overlay').hide();
+  }
 
   if(settings.slideMap == true)
   {
@@ -183,6 +192,29 @@ $.fn.storeLocator = function(options) {
               {
                 //Slide in the map container
                 $this.slideDown();
+              }
+              if(settings.modalWindow == true)
+              {
+                //Pop up the modal window
+                $('#overlay').fadeIn();
+                //Close modal when close icon is clicked
+                $(document).on('click', '#close-icon', function(){
+                    $('#overlay').hide();
+                });
+                //Close modal when background overlay is clicked
+                $(document).on('click', '#overlay', function(){
+                    $('#overlay').hide();
+                });
+                //Prevent clicks within the modal window from closing the entire thing
+                $(document).on('click', '#modal-window', function(e){
+                    e.stopPropagation();
+                });
+                //Close modal when escape key is pressed
+                $(document).keyup(function(e){
+                  if (e.keyCode == 27) { 
+                    $('#overlay').hide();
+                  }
+                });
               }
               var map = new google.maps.Map(document.getElementById(settings.mapDiv),myOptions);      
               var markers = new Array();
