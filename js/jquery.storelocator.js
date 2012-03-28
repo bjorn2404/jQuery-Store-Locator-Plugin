@@ -1,5 +1,5 @@
 /*
-* storeLocator v1.1.1 - jQuery store locator plugin
+* storeLocator v1.1.2 - jQuery store locator plugin
 * (c) Copyright 2012, Bjorn Holine (http://www.bjornblog.com)
 * Released under the MIT license
 * Distance calculation function by Chris Pietschmann: http://pietschsoft.com/post/2008/02/01/Calculate-Distance-Between-Geocodes-in-C-and-JavaScript.aspx
@@ -87,24 +87,27 @@ $.fn.storeLocator = function(options) {
       userinput = userinput.replace("address=","");
       if (userinput == "")
         {
+          //Show alert and stop processing
           alert("The input box was blank.");
         }
-        
-        var g = new GoogleGeocode();
-        var address = userinput;
-        g.geocode(address, function(data) {
-          if(data != null) {
-            olat = data.latitude;
-            olng = data.longitude;
-            mapping(olat, olng);
-          } else {
-            //Unable to geocode
-            alert('ERROR! Unable to geocode address');
-          }
-        });
+        else
+        {
+          var g = new GoogleGeocode();
+          var address = userinput;
+          g.geocode(address, function(data) {
+            if(data != null) {
+              olat = data.latitude;
+              olng = data.longitude;
+              mapping(olat, olng);
+            } else {
+              //Unable to geocode
+              alert('ERROR! Unable to geocode address');
+            }
+          });
 
-        //Replace spaces in user input
-        userinput = userinput.replace(" ","+");
+          //Replace spaces in user input
+          userinput = userinput.replace(" ","+");
+        }
 
     });
   });
