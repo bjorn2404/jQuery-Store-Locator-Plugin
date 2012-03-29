@@ -8,6 +8,10 @@ A note on the distance calculation: this plugin currently uses a distance functi
 
 ## Changelog
 
+### Version 1.1.3
+
+Serlialize was targeting any form on the page instead of the specific formID. Thanks to Scott for pointing it out.
+
 ### Version 1.1.2
 
 Changed it so that the processing stops if the user input is blank.

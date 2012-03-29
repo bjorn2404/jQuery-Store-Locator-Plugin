@@ -1,5 +1,5 @@
 /*
-* storeLocator v1.1.2 - jQuery store locator plugin
+* storeLocator v1.1.3 - jQuery store locator plugin
 * (c) Copyright 2012, Bjorn Holine (http://www.bjornblog.com)
 * Released under the MIT license
 * Distance calculation function by Chris Pietschmann: http://pietschsoft.com/post/2008/02/01/Calculate-Distance-Between-Geocodes-in-C-and-JavaScript.aspx
@@ -83,7 +83,7 @@ $.fn.storeLocator = function(options) {
       //Stop the form submission
       e.preventDefault();
       //Get the user input and use it
-      var userinput = $('form').serialize();
+      var userinput = $('#' + settings.formID).serialize();
       userinput = userinput.replace("address=","");
       if (userinput == "")
         {
