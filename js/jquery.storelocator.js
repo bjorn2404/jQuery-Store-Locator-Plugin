@@ -279,7 +279,7 @@ $.fn.storeLocator = function(options) {
               $("#" + settings.listDiv + " li:even .list-details").css('background', "#" + settings.listColor1);
               $("#" + settings.listDiv + " li:odd .list-details").css('background', "#" + settings.listColor2);
                
-              //Custom marker function - aplhabetical
+              //Custom marker function - alphabetical
               function createMarker(point, name, address, letter) {
                 //Set up pin icon with the Google Charts API for all of our markers
                 var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=" + letter + "|" + settings.pinColor + "|" + settings.pinTextColor,
