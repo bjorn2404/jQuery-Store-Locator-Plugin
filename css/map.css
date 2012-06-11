@@ -82,6 +82,13 @@
 	padding: 10px;
 }
 
+#loc-list .loc-dist
+{
+	font-weight: bold;
+	font-style: italic;
+	color: #8e8e8e;
+}
+
 #loc-list li
 {
 	display: block;

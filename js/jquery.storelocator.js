@@ -1,5 +1,5 @@
 /*
-* storeLocator v1.1.3 - jQuery store locator plugin
+* storeLocator v1.2 - jQuery store locator plugin
 * (c) Copyright 2012, Bjorn Holine (http://www.bjornblog.com)
 * Released under the MIT license
 * Distance calculation function by Chris Pietschmann: http://pietschsoft.com/post/2008/02/01/Calculate-Distance-Between-Geocodes-in-C-and-JavaScript.aspx
@@ -12,17 +12,22 @@ $.fn.storeLocator = function(options) {
       'mapDiv'        : 'map',
       'listDiv'       : 'list',
       'formID'        : 'user-location',
+      'inputID'       : 'address',
       'zoomLevel'     : 12,
       'pinColor'      : 'fe7569',
       'pinTextColor'  : '000000',
       'storeLimit'    : 26,
       'distanceAlert' : 60,
-      'xmlLocation'   : 'locations.xml',
+      'dataLocation'  : 'locations.xml',
       'listColor1'    : 'ffffff',
       'listColor2'    : 'eeeeee',
       'bounceMarker'  : true,
       'slideMap'      : true,
-      'modalWindow'   : false
+      'modalWindow'   : false,
+      'defaultLoc'    : false,
+      'defaultLat'    : '',
+      'defaultLng'    : '',
+      'jsonData'      : false
   }, options);
 
   return this.each(function() {
@@ -41,6 +46,11 @@ $.fn.storeLocator = function(options) {
   {
     //Let's hide the map container to begin
     $this.hide();
+  }
+
+  if(settings.defaultLoc == true)
+  {
+    mapping(settings.defaultLat, settings.defaultLng);
   }
 
   var userinput, olat, olng, marker, letter, geocoder, storenum;
@@ -77,13 +87,20 @@ $.fn.storeLocator = function(options) {
     };
   }
 
+  //Used to round miles to display
+  function roundNumber(num, dec) 
+  {
+    var result = Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
+    return result;
+  }
+
   //Process form input
   $(function() {
     $(document).on('submit', '#' + settings.formID, function(e){
       //Stop the form submission
       e.preventDefault();
       //Get the user input and use it
-      var userinput = $('#' + settings.formID).serialize();
+      var userinput = $('#' + settings.formID + ' #' + settings.inputID).serialize();
       userinput = userinput.replace("address=","");
       if (userinput == "")
         {
@@ -104,9 +121,6 @@ $.fn.storeLocator = function(options) {
               alert('ERROR! Unable to geocode address');
             }
           });
-
-          //Replace spaces in user input
-          userinput = userinput.replace(" ","+");
         }
 
     });
@@ -116,39 +130,79 @@ $.fn.storeLocator = function(options) {
   //Now all the mapping stuff
   function mapping(orig_lat, orig_lng){
   $(function(){
-        //Parse xml with jQuery
+
+        var dataType;
+
+        //JSON or XML?
+        if(settings.jsonData == true){ dataType = "json"; }
+        else{ dataType = "xml"; }
+
         $.ajax({
         type: "GET",
-        url: settings.xmlLocation,
-        dataType: "xml",
-        success: function(xml) {
-        
-          //After the store locations file has been read successfully
-          var i = 0;
+        url: settings.dataLocation,
+        dataType: dataType,
+        success: function(data) {
+          
+            //After the store locations file has been read successfully
+            var i = 0;
 
-          $(xml).find('marker').each(function(){
-            //Take the lat lng from the user, geocoded above
-            var name = $(this).attr('name');
-            var lat = $(this).attr('lat');
-            var lng = $(this).attr('lng');
-            var address = $(this).attr('address');
-            var address2 = $(this).attr('address2');
-            var city = $(this).attr('city');
-            var state = $(this).attr('state');
-            var postal = $(this).attr('postal');
-            var phone = $(this).attr('phone');
-            var web = $(this).attr('web');
-            web = web.replace("http://","");
-            var hours1 = $(this).attr('hours1');
-            var hours2 = $(this).attr('hours2');
-            var hours3 = $(this).attr('hours3');
-            var distance = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,lat,lng, GeoCodeCalc.EarthRadiusInMiles);
-            
-            //Create the array
-            locationset[i] = new Array (distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3);
+            //Depending on your data strucutre and what you want to include in the maps, you may need to change the following variables or comment them out
+            if(settings.jsonData == true)
+            {
+              //Process JSON
+              $.each(data, function() {
 
-            i++;
-          });
+                var name = this.locname;
+                var lat = this.lat;
+                var lng = this.lng;
+                var address = this.address;
+                var address2 = this.address2;
+                var city = this.city;
+                var state = this.state;
+                var postal = this.postal;
+                var phone = this.phone;
+                var web = this.web;
+                web = web.replace("http://","");
+                var hours1 = this.hours1;
+                var hours2 = this.hours2;
+                var hours3 = this.hours3;
+
+                var distance = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,lat,lng, GeoCodeCalc.EarthRadiusInMiles);
+                
+                //Create the array
+                locationset[i] = new Array (distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3);
+
+                i++;
+              });
+            }
+            else
+            {
+              //Process XML
+              $(data).find('marker').each(function(){
+                //Take the lat lng from the user, geocoded above
+                var name = $(this).attr('name');
+                var lat = $(this).attr('lat');
+                var lng = $(this).attr('lng');
+                var address = $(this).attr('address');
+                var address2 = $(this).attr('address2');
+                var city = $(this).attr('city');
+                var state = $(this).attr('state');
+                var postal = $(this).attr('postal');
+                var phone = $(this).attr('phone');
+                var web = $(this).attr('web');
+                web = web.replace("http://","");
+                var hours1 = $(this).attr('hours1');
+                var hours2 = $(this).attr('hours2');
+                var hours3 = $(this).attr('hours3');
+
+                var distance = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,lat,lng, GeoCodeCalc.EarthRadiusInMiles);
+                
+                //Create the array
+                locationset[i] = new Array (distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3);
+
+                i++;
+              });
+            }
           
           //Sort the multi-dimensional array numerically
           locationset.sort(function(a, b) {
@@ -166,11 +220,12 @@ $.fn.storeLocator = function(options) {
           //Create the map with jQuery
           $(function(){ 
 
-              var storeName, storeAddress1, storeAddress2, storeCity, storeState, storeZip, storePhone, storeWeb, storeHours1, storeHours2, storeHours3;
+              var storeDistance, storeName, storeAddress1, storeAddress2, storeCity, storeState, storeZip, storePhone, storeWeb, storeHours1, storeHours2, storeHours3;
 
               //Instead of repeating the same thing twice below
               function create_store_variables(loopcount)
               {
+                storeDistance = locationset[loopcount][0];
                 storeName = locationset[loopcount][1];
                 storeAddress1 = locationset[loopcount][4];
                 storeAddress2 = locationset[loopcount][5];
@@ -182,6 +237,8 @@ $.fn.storeLocator = function(options) {
                 storeHours1 = locationset[loopcount][11];
                 storeHours2 = locationset[loopcount][12];
                 storeHours3 = locationset[loopcount][13];
+
+                storeDistance = roundNumber(storeDistance,2);
               }
 
               //Google maps settings
@@ -253,13 +310,17 @@ $.fn.storeLocator = function(options) {
                 var letter = String.fromCharCode("A".charCodeAt(0) + x);
                 create_store_variables(x);
                 //This needs to happen outside the loop or there will be a closure problem with creating the infowindows attached to the list click
-                listClick(letter, marker, storeName, storeAddress1, storeAddress2, storeCity, storeState, storeZip, storePhone, storeWeb, storeHours1, storeHours2, storeHours3);
+                listClick(storeDistance, letter, marker, storeName, storeAddress1, storeAddress2, storeCity, storeState, storeZip, storePhone, storeWeb, storeHours1, storeHours2, storeHours3);
 
               });
 
-              function listClick(letter, marker, name, address1, address2, city, state, zip, phone, web, hours1, hours2, hours3)
+              function listClick(distance, letter, marker, name, address1, address2, city, state, zip, phone, web, hours1, hours2, hours3)
               {
-                $('<li />').html("<div class=\"list-label\">" + letter + "<\/div><div class=\"list-details\"><div class=\"list-content\"><div class=\"loc-name\">" + storeName + "<\/div> <div class=\"loc-addr\">" + storeAddress1 + "<\/div> <div class=\"loc-addr2\">" + storeAddress2 + "<\/div> <div class=\"loc-addr3\">" + storeCity + ", " + storeState + " " + storeZip + "<\/div> <div class=\"loc-phone\">" + storePhone + "<\/div> <div class=\"loc-web\"><a href=\"http://" + storeWeb + "\" target=\"_blank\">" + storeWeb + "</a><\/div><\/div><\/div>").click(function(){
+                var distLength;
+                if(distance <= 1){ distLength = "mile"; }
+                else{ distLength = "miles"; }
+
+                $('<li />').html("<div class=\"list-label\">" + letter + "<\/div><div class=\"list-details\"><div class=\"list-content\"><div class=\"loc-name\">" + storeName + "<\/div> <div class=\"loc-addr\">" + storeAddress1 + "<\/div> <div class=\"loc-addr2\">" + storeAddress2 + "<\/div> <div class=\"loc-addr3\">" + storeCity + ", " + storeState + " " + storeZip + "<\/div> <div class=\"loc-phone\">" + storePhone + "<\/div> <div class=\"loc-web\"><a href=\"http://" + storeWeb + "\" target=\"_blank\">" + storeWeb + "</a><\/div><div class=\"loc-dist\">" + distance + " " + distLength + "<\/div><\/div><\/div>").click(function(){
                   map.panTo(marker.getPosition());
                   var listLoc = "left";
                   if(settings.bounceMarker == true)

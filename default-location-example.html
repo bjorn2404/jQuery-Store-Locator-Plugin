@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Map Example 2 - Modal Window</title>
+    <title>Map Example 4 - Default Location</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="css/map.css" />
   </head>
@@ -39,7 +39,8 @@
     <script src="js/jquery.storelocator.js"></script>
       <script>
         $(function() {
-          $('#map-container').storeLocator({'slideMap': false, 'modalWindow': true});
+          //$('#map-container').storeLocator({'jsonData': true, 'dataLocation': 'locations.json'});
+          $('#map-container').storeLocator({'slideMap' : false, 'defaultLoc': true, 'defaultLat': '44.942707', 'defaultLng' : '-93.33729900000003' });
         });
       </script>
 
