@@ -1,5 +1,5 @@
 /*
-* storeLocator v1.2 - jQuery store locator plugin
+* storeLocator v1.3 - jQuery store locator plugin
 * (c) Copyright 2012, Bjorn Holine (http://www.bjornblog.com)
 * Released under the MIT license
 * Distance calculation function by Chris Pietschmann: http://pietschsoft.com/post/2008/02/01/Calculate-Distance-Between-Geocodes-in-C-and-JavaScript.aspx
@@ -27,7 +27,8 @@ $.fn.storeLocator = function(options) {
       'defaultLoc'    : false,
       'defaultLat'    : '',
       'defaultLng'    : '',
-      'jsonData'      : false
+      'jsonData'      : false,
+      'autoGeocode'   : false
   }, options);
 
   return this.each(function() {
@@ -48,12 +49,7 @@ $.fn.storeLocator = function(options) {
     $this.hide();
   }
 
-  if(settings.defaultLoc == true)
-  {
-    mapping(settings.defaultLat, settings.defaultLng);
-  }
-
-  var userinput, olat, olng, marker, letter, geocoder, storenum;
+  var userinput, olat, olng, marker, letter, storenum;
   var locationset = new Array();
 
   //Calculate geocode distance functions - you could use Google's distance service instead
@@ -69,8 +65,8 @@ $.fn.storeLocator = function(options) {
   };
 
   //Geocode function for the origin location
-  geocoder = new google.maps.Geocoder();
   function GoogleGeocode() {
+    geocoder = new google.maps.Geocoder();
     this.geocode = function(address, callbackFunction) {
         geocoder.geocode( { 'address': address}, function(results, status) {
           if (status == google.maps.GeocoderStatus.OK) {
@@ -85,6 +81,75 @@ $.fn.storeLocator = function(options) {
         });
         
     };
+  }
+
+  //Reverse geocode to get address for automatic options needed for directions link
+  function ReverseGoogleGeocode() 
+  {
+    geocoder = new google.maps.Geocoder();
+    this.geocode = function(latlng, callbackFunction) {
+        geocoder.geocode( {'latLng': latlng}, function(results, status) {
+          if (status == google.maps.GeocoderStatus.OK) {
+            if (results[0]) {
+                var result = {};
+                result.address = results[0].formatted_address;
+                callbackFunction(result);
+            }
+          } else {
+            alert("Geocode was not successful for the following reason: " + status);
+            callbackFunction(null);
+          }
+        });
+    };
+  }
+
+  //If a default location is set
+  if(settings.defaultLoc == true)
+  {
+      //The address needs to be determined for the directions link
+      var r = new ReverseGoogleGeocode();
+      var latlng = new google.maps.LatLng(settings.defaultLat, settings.defaultLng);
+      r.geocode(latlng, function(data) {
+        if(data != null) {
+          var originAddress = data.address;
+          mapping(settings.defaultLat, settings.defaultLng, originAddress);
+        } else {
+          //Unable to geocode
+          alert('Unable to find address');
+        }
+      });
+  }
+
+  //HTML5 geolocation API option
+  if(settings.autoGeocode == true)
+  {
+      if (navigator.geolocation) 
+      {
+        navigator.geolocation.getCurrentPosition(autoGeocode_query, autoGeocode_error);
+      }
+  }
+
+  //If location is detected automatically
+  function autoGeocode_query(position)
+  {
+     //The address needs to be determined for the directions link
+      var r = new ReverseGoogleGeocode();
+      var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+      r.geocode(latlng, function(data) {
+        if(data != null) {
+          var originAddress = data.address;
+          mapping(position.coords.latitude, position.coords.longitude, originAddress);
+        } else {
+          //Unable to geocode
+          alert('Unable to find address');
+        }
+      });
+  }
+
+  function autoGeocode_error(error)
+  {
+    //If automatic detection doesn't work show an error
+    alert("Automatic location detection failed. Please fill in your address or zip code.");
   }
 
   //Used to round miles to display
@@ -115,7 +180,7 @@ $.fn.storeLocator = function(options) {
             if(data != null) {
               olat = data.latitude;
               olng = data.longitude;
-              mapping(olat, olng);
+              mapping(olat, olng, userinput);
             } else {
               //Unable to geocode
               alert('ERROR! Unable to geocode address');
@@ -128,7 +193,7 @@ $.fn.storeLocator = function(options) {
 
 
   //Now all the mapping stuff
-  function mapping(orig_lat, orig_lng){
+  function mapping(orig_lat, orig_lng, origin){
   $(function(){
 
         var dataType;
@@ -320,7 +385,10 @@ $.fn.storeLocator = function(options) {
                 if(distance <= 1){ distLength = "mile"; }
                 else{ distLength = "miles"; }
 
-                $('<li />').html("<div class=\"list-label\">" + letter + "<\/div><div class=\"list-details\"><div class=\"list-content\"><div class=\"loc-name\">" + storeName + "<\/div> <div class=\"loc-addr\">" + storeAddress1 + "<\/div> <div class=\"loc-addr2\">" + storeAddress2 + "<\/div> <div class=\"loc-addr3\">" + storeCity + ", " + storeState + " " + storeZip + "<\/div> <div class=\"loc-phone\">" + storePhone + "<\/div> <div class=\"loc-web\"><a href=\"http://" + storeWeb + "\" target=\"_blank\">" + storeWeb + "</a><\/div><div class=\"loc-dist\">" + distance + " " + distLength + "<\/div><\/div><\/div>").click(function(){
+                var fullAddress = address1 + " " + address2 + ", " + city + ", " + state + " " + zip;
+                var distLink = "<a href=\"http://maps.google.com/maps?saddr=" + origin + "&daddr=" + fullAddress + "\" target=\"_blank\">Directions<\/a>";
+
+                $('<li />').html("<div class=\"list-label\">" + letter + "<\/div><div class=\"list-details\"><div class=\"list-content\"><div class=\"loc-name\">" + storeName + "<\/div> <div class=\"loc-addr\">" + storeAddress1 + "<\/div> <div class=\"loc-addr2\">" + storeAddress2 + "<\/div> <div class=\"loc-addr3\">" + storeCity + ", " + storeState + " " + storeZip + "<\/div> <div class=\"loc-phone\">" + storePhone + "<\/div> <div class=\"loc-web\"><a href=\"http://" + storeWeb + "\" target=\"_blank\">" + storeWeb + "</a><\/div><div class=\"loc-dist\">" + distance + " " + distLength + "<\/div><div class=\"loc-directions\">" + distLink + "<\/div><\/div><\/div>").click(function(){
                   map.panTo(marker.getPosition());
                   var listLoc = "left";
                   if(settings.bounceMarker == true)

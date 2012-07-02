@@ -8,6 +8,10 @@ A note on the distance calculation: this plugin currently uses a distance functi
 
 ## Changelog
 
+### Version 1.3
+
+Added directions links to left column location list and HTML5 geolocation API option. Also did a little cleanup.
+
 ### Version 1.2
 
 Added JSON compatibility, distance to location list, and an option for a default location. Also updated jQuery calls to the latest version (1.7.2) and removed an unnecessary line in the process form input function.
