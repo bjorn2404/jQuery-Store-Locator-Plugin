@@ -8,6 +8,10 @@ A note on the distance calculation: this plugin currently uses a distance functi
 
 ## Changelog
 
+### Version 1.3.2
+
+Only a few special characters were working with the previous fix. Removed special encoding and all seem to be working now.
+
 ### Version 1.3.1
 
 Replaced .serialize with .val on line 169 and added the line directly below, which encodes the string in UTF-8. This should solve special character issues with international addresses. 
