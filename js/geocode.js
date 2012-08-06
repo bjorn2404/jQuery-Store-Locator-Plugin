@@ -1,4 +1,4 @@
-//Geocode function for the origin location
+﻿//Geocode function for the origin location
 geocoder = new google.maps.Geocoder();
 function GoogleGeocode() {
   this.geocode = function(address, callbackFunction) {
@@ -24,8 +24,7 @@ $(function() {
     e.preventDefault();
     //Get the user input and use it
     var userinput = $('form #address').val();
-    //Convert to utf-8
-    userinput = unescape(encodeURIComponent(userinput));
+
     if (userinput == "")
       {
         alert("The input box was blank.");
