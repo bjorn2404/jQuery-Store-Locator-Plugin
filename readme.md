@@ -8,6 +8,10 @@ A note on the distance calculation: this plugin currently uses a distance functi
 
 ## Changelog
 
+### Version 1.3.1
+
+Replaced .serialize with .val on line 169 and added the line directly below, which encodes the string in UTF-8. This should solve special character issues with international addresses. 
+
 ### Version 1.3
 
 Added directions links to left column location list and HTML5 geolocation API option. Also did a little cleanup.

@@ -23,8 +23,9 @@ $(function() {
     //Stop the form submission
     e.preventDefault();
     //Get the user input and use it
-    var userinput = $('form').serialize();
-    userinput = userinput.replace("address=","");
+    var userinput = $('form #address').val();
+    //Convert to utf-8
+    userinput = unescape(encodeURIComponent(userinput));
     if (userinput == "")
       {
         alert("The input box was blank.");
@@ -32,6 +33,7 @@ $(function() {
       
       var g = new GoogleGeocode();
       var address = userinput;
+
       g.geocode(address, function(data) {
         if(data != null) {
           olat = data.latitude;
@@ -44,9 +46,6 @@ $(function() {
           alert('ERROR! Unable to geocode address');
         }
       });
-
-      //Replace spaces in user input
-      userinput = userinput.replace(" ","+");
 
   });
 });
