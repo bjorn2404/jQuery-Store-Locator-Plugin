@@ -1,5 +1,5 @@
 /*
-* storeLocator v1.3.2 - jQuery store locator plugin
+* storeLocator v1.3.3 - jQuery store locator plugin
 * (c) Copyright 2012, Bjorn Holine (http://www.bjornblog.com)
 * Released under the MIT license
 * Distance calculation function by Chris Pietschmann: http://pietschsoft.com/post/2008/02/01/Calculate-Distance-Between-Geocodes-in-C-and-JavaScript.aspx
@@ -66,23 +66,21 @@ $.fn.storeLocator = function(options) {
 
   //Geocode function for the origin location
   function GoogleGeocode() {
-    geocoder = new google.maps.Geocoder();
-    this.geocode = function(address, callbackFunction) {
-        address = unescape(encodeURIComponent(address));
-        geocoder.geocode( { 'address': address}, function(results, status) {
-          if (status == google.maps.GeocoderStatus.OK) {
-            var result = {};
-            result.latitude = results[0].geometry.location.lat();
-            result.longitude = results[0].geometry.location.lng();
-            callbackFunction(result);
-          } else {
-            alert("Geocode was not successful for the following reason: " + status);
-            callbackFunction(null);
-          }
-        });
-        
-    };
-  }
+  geocoder = new google.maps.Geocoder();
+  this.geocode = function(address, callbackFunction) {
+      geocoder.geocode( { 'address': address}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          var result = {};
+          result.latitude = results[0].geometry.location.lat();
+          result.longitude = results[0].geometry.location.lng();
+          callbackFunction(result);
+        } else {
+          alert("Geocode was not successful for the following reason: " + status);
+          callbackFunction(null);
+        }
+      });
+  };
+}
 
   //Reverse geocode to get address for automatic options needed for directions link
   function ReverseGoogleGeocode() 

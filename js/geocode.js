@@ -1,6 +1,6 @@
 ﻿//Geocode function for the origin location
-geocoder = new google.maps.Geocoder();
 function GoogleGeocode() {
+  geocoder = new google.maps.Geocoder();
   this.geocode = function(address, callbackFunction) {
       geocoder.geocode( { 'address': address}, function(results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
@@ -13,7 +13,6 @@ function GoogleGeocode() {
           callbackFunction(null);
         }
       });
-      
   };
 }
 

@@ -8,6 +8,10 @@ A note on the distance calculation: this plugin currently uses a distance functi
 
 ## Changelog
 
+### Version 1.3.3
+
+Forgot to remove one of the UTF-8 encoding lines in the Geocoder function. 
+
 ### Version 1.3.2
 
 Only a few special characters were working with the previous fix. Removed special encoding and all seem to be working now.
