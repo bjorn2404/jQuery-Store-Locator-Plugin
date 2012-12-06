@@ -1,0 +1,89 @@
+#store-locator-container
+{
+	float: left;
+	width: 960px;
+}
+#map-container
+{
+	clear: left;
+	float: left;
+	margin-top: 38px;
+	height: 530px;
+	width: 960px;
+}
+#map-container a
+{
+	color: #e76737;
+	text-decoration: none;
+}
+#map-container a:hover, #map-container a:active
+{
+	text-decoration: underline;
+}
+#loc-list
+{
+	float: left; 
+	width: 225px;
+	height: 530px;
+	overflow: auto;
+}
+#loc-list ul
+{
+	display: block;
+	clear: left;
+	float: left;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+#loc-list .list-label
+{
+	float: left;
+	margin-left: 6px;
+	padding: 2px 3px;
+	width: 17px;
+	text-align: center;
+	background: #451400;
+	color: #fff;
+	font-weight: bold;
+}
+#loc-list .list-details
+{
+	float: left;
+	margin-left: 6px;
+	width: 165px;
+}
+#loc-list .list-content
+{
+	padding: 10px;
+}
+#loc-list .loc-dist
+{
+	font-weight: bold;
+	font-style: italic;
+	color: #8e8e8e;
+}
+#loc-list li
+{
+	display: block;
+	clear: left;
+	float: left;
+	margin: 10px 0;
+	cursor: pointer;
+	width: 205px;
+}
+#map-container .loc-name
+{
+	color: #AD2118;
+	font-weight: bold;
+}
+#address
+{
+	margin: 0 0 0 10px;
+}
+#map
+{
+	float: left; 
+	width: 735px; 
+	height: 530px; 
+}
