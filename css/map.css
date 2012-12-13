@@ -2,7 +2,7 @@
 {
 	float: left;
 	margin-left: 20px;
-	width: 860px;
+	width: 875px;
 	font: normal 12px Arial, Helvetica, sans-serif;
 	color: #333;
 }
@@ -26,7 +26,7 @@
 	float: left;
 	margin-top: 27px;
 	height: 530px;
-	width: 860px;
+	width: 875px;
 }
 
 #map-container a
@@ -40,10 +40,20 @@
 	text-decoration: underline;
 }
 
+#map-container .custom-marker
+{
+	width: 32px;
+	height: 37px;
+	color: #fff;
+	background: url(../images/custom-marker.png) no-repeat;
+    padding: 3px;
+    cursor: pointer;
+}
+
 #loc-list
 {
 	float: left; 
-	width: 225px;
+	width: 240px;
 	height: 530px;
 	overflow: auto;
 }
@@ -61,7 +71,7 @@
 #loc-list .list-label
 {
 	float: left;
-	margin-left: 6px;
+	margin: 10px 0 0 6px;
 	padding: 2px 3px;
 	width: 17px;
 	text-align: center;
@@ -94,9 +104,19 @@
 	display: block;
 	clear: left;
 	float: left;
-	margin: 10px 0;
+	margin: 6px 10px;
 	cursor: pointer;
-	width: 205px;
+	width: 200px;
+	border: 1px solid #fff; /* Adding this to prevent moving li elements when adding the list-focus class*/
+}
+
+#loc-list .list-focus
+{
+	border: 1px solid rgba(82,168,236,0.9);
+	-moz-box-shadow: 0 0 8px rgba(82,168,236,0.7);
+	-webkit-box-shadow: 0 0 8px rgba(82,168,236,0.7);
+	box-shadow: 0 0 8px rgba(82,168,236,0.7);
+	transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
 }
 
 #map-container .loc-name
@@ -172,7 +192,7 @@
 #modal-content
 {
 	float: left;
-	padding: 0 30px; /* there's already a margin on the top of the map-container div */
+	padding: 0 22px; /* there's already a margin on the top of the map-container div */
 }
 
 #close-icon

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Map Example</title>
+    <title>Map Example - KML Data</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="css/map.css" />
   </head>
@@ -40,7 +40,7 @@
     <script src="js/jquery.storelocator.js"></script>
       <script>
         $(function() {
-          $('#map-container').storeLocator();
+          $('#map-container').storeLocator({'dataType': 'kml', 'dataLocation': 'locations.kml'});
         });
       </script>
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Map Example</title>
+    <title>Map Example - No Form for ASP.net</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="css/map.css" />
   </head>
@@ -16,14 +16,11 @@
       </div>
       
       <div id="form-container">
-        <form id="user-location" method="post" action="#">
-            <div id="form-input">
-              <label for="address">Enter Address or Zip Code:</label>
-              <input type="text" id="address" name="address" />
-             </div>
-            
-            <div id="submit-btn"><input type="image" id="submit" name="submit" src="images/submit.jpg" alt="Submit" /></div>
-        </form>
+        <div id="form-input">
+          <label for="address">Enter Address or Zip Code:</label>
+          <input type="text" id="address" name="address" />
+         </div>
+        <div id="submit-btn"><input type="image" id="submit" name="submit" src="images/submit.jpg" alt="Submit" /></div>
       </div>
 
       <div id="map-container">
@@ -40,7 +37,7 @@
     <script src="js/jquery.storelocator.js"></script>
       <script>
         $(function() {
-          $('#map-container').storeLocator();
+          $('#map-container').storeLocator({'noForm':true});
         });
       </script>
 
