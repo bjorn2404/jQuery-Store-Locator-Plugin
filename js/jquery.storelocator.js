@@ -1,5 +1,5 @@
 /*
-* storeLocator v1.4 - jQuery Google Maps store locator plugin
+* storeLocator v1.4.1 - jQuery Google Maps store locator plugin
 * (c) Copyright 2012, Bjorn Holine (http://www.bjornblog.com)
 * Released under the MIT license
 * Distance calculation function by Chris Pietschmann: http://pietschsoft.com/post/2008/02/01/Calculate-Distance-Between-Geocodes-in-C-and-JavaScript.aspx
@@ -95,7 +95,7 @@ $.fn.storeLocator = function(options) {
   }
 
   var userinput, olat, olng, marker, letter, storenum;
-  var locationset = new Array();
+  var locationset = [];
 
   //Calculate geocode distance functions - you could use Google's distance service instead
   var GeoCodeCalc = {};
@@ -325,7 +325,6 @@ $.fn.storeLocator = function(options) {
           
             //After the store locations file has been read successfully
             var i = 0;
-            var locationset = new Array();
             $('#' + settings.mapDiv).addClass('mapOpen');
 
             //Depending on your data structure and what you want to include in the maps, you may need to change the following variables or comment them out
@@ -353,14 +352,14 @@ $.fn.storeLocator = function(options) {
                 //Create the array
                 if(settings.maxDistance === true){
                   if(distance < maxDistance){
-                    locationset[i] = new Array(distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3);
+                    locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3];
                   }
                   else{
                     return;
                   }
                 }
                 else{
-                  locationset[i] = new Array(distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3);
+                  locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3];
                 }
 
                 i++;
@@ -380,14 +379,14 @@ $.fn.storeLocator = function(options) {
                 //Create the array
                 if(settings.maxDistance === true){
                   if(distance < maxDistance){
-                    locationset[i] = new Array(distance, name, lat, lng, description);
+                    locationset[i] = [distance, name, lat, lng, description];
                   }
                   else{
                     return;
                   }
                 }
                 else{
-                  locationset[i] = new Array(distance, name, lat, lng, description);
+                  locationset[i] = [distance, name, lat, lng, description];
                 }
 
                 i++;
@@ -417,14 +416,14 @@ $.fn.storeLocator = function(options) {
                 //Create the array
                 if(settings.maxDistance === true){
                   if(distance < maxDistance){
-                    locationset[i] = new Array(distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3);
+                    locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3];
                   }
                   else{
                     return;
                   }
                 }
                 else{
-                  locationset[i] = new Array(distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3);
+                  locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3];
                 }
 
                 i++;
@@ -611,7 +610,7 @@ $.fn.storeLocator = function(options) {
               }
               
               var map = new google.maps.Map(document.getElementById(settings.mapDiv),myOptions);      
-              var markers = new Array();
+              var markers = [];
               //Create one infowindow to fill later
               var infowindow = new google.maps.InfoWindow();
 
@@ -679,7 +678,7 @@ $.fn.storeLocator = function(options) {
               }
 
               //Handle clicks from the list
-              $(document).on('click', '#loc-list li', function(){
+              $(document).on('click', '#' + settings.listDiv + ' li', function(){
                 var markerId = $(this).data('markerid');
 
                 var selectedMarker = markers[markerId];
