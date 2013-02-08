@@ -1,6 +1,6 @@
 /*
-* storeLocator v1.4.1 - jQuery Google Maps store locator plugin
-* (c) Copyright 2012, Bjorn Holine (http://www.bjornblog.com)
+* storeLocator v1.4.2 - jQuery Google Maps Store Locator Plugin
+* (c) Copyright 2013, Bjorn Holine (http://www.bjornblog.com)
 * Released under the MIT license
 * Distance calculation function by Chris Pietschmann: http://pietschsoft.com/post/2008/02/01/Calculate-Distance-Between-Geocodes-in-C-and-JavaScript.aspx
 */
@@ -29,6 +29,10 @@ $.fn.storeLocator = function(options) {
       'bounceMarker': true,
       'slideMap': true,
       'modalWindow': false,
+      'overlayDiv': 'overlay',
+      'modalWindowDiv': 'modal-window',
+      'modalContentDiv': 'modal-content',
+      'modalCloseIconDiv': 'close-icon',
       'defaultLoc': false,
       'defaultLat': '',
       'defaultLng': '',
@@ -37,6 +41,8 @@ $.fn.storeLocator = function(options) {
       'maxDistanceID': 'maxdistance',
       'fullMapStart': false,
       'noForm': false,
+      'loading': false,
+      'loadingDiv': 'loading-map',
       'infowindowTemplatePath': 'templates/infowindow-description.html',
       'listTemplatePath': 'templates/location-list-description.html',
       'KMLinfowindowTemplatePath': 'templates/kml-infowindow-description.html',
@@ -51,41 +57,57 @@ $.fn.storeLocator = function(options) {
   return this.each(function() {
 
   var $this = $(this);
-
-  //First load external templates and compile with Handlebars
   var listTemplate, infowindowTemplate;
 
-  if(settings.dataType === 'kml'){
-    //KML locations list
-    $.get(settings.KMLlistTemplatePath, function(template) {
-        var source = template;
-        listTemplate = Handlebars.compile(source);
-    });
-    //KML infowindows
-    $.get(settings.KMLinfowindowTemplatePath, function(template) {
-        var source = template;
-        infowindowTemplate = Handlebars.compile(source);
-    });
+  load_templates();
+
+  //First load external templates and compile with Handlebars - make sure the templates are compiled before moving on
+  function load_templates(){
+
+    if(settings.dataType === 'kml'){
+      //KML infowindows
+      $.get(settings.KMLinfowindowTemplatePath, function(template) {
+          var source = template;
+          infowindowTemplate = Handlebars.compile(source);
+      });
+      //KML locations list
+      $.get(settings.KMLlistTemplatePath, function(template) {
+          var source = template;
+          listTemplate = Handlebars.compile(source);
+
+          //After loading move on to the main script
+          locator();
+      });
+    }
+    else{
+      //Infowindows
+      $.get(settings.infowindowTemplatePath, function(template) {
+          var source = template;
+          infowindowTemplate = Handlebars.compile(source);
+      });
+      //Locations list
+      $.get(settings.listTemplatePath, function(template) {
+          var source = template;
+          listTemplate = Handlebars.compile(source);
+
+          //After loading move on to the main script
+          locator();
+      });
+    }
   }
-  else{
-    //Locations list
-    $.get(settings.listTemplatePath, function(template) {
-        var source = template;
-        listTemplate = Handlebars.compile(source);
-    });
-    //Infowindows
-    $.get(settings.infowindowTemplatePath, function(template) {
-        var source = template;
-        infowindowTemplate = Handlebars.compile(source);
-    });
-  }
+
+  //The main script
+  function locator(){
+
+  var userinput, olat, olng, marker, letter, storenum;
+  var locationset = [];
   
   //Add modal window divs if set
   if(settings.modalWindow === true)
   {
-    $this.wrap('<div id="overlay"><div id="modal-window"><div id="modal-content">');
-    $('#modal-window').prepend('<div id="close-icon"><\/div>');
-    $('#overlay').hide();
+    $this.wrap('<div id="' + settings.overlayDiv + '"><div id="' + settings.modalWindowDiv + '"><div id="' + settings.modalContentDiv + '">');
+    $('#' + settings.modalWindowDiv).prepend('<div id="' + settings.modalCloseIconDiv + '"><\/div>');
+    $('#' + settings.overlayDiv).hide();
   }
 
   if(settings.slideMap === true)
@@ -93,9 +115,6 @@ $.fn.storeLocator = function(options) {
     //Let's hide the map container to begin
     $this.hide();
   }
-
-  var userinput, olat, olng, marker, letter, storenum;
-  var locationset = [];
 
   //Calculate geocode distance functions - you could use Google's distance service instead
   var GeoCodeCalc = {};
@@ -188,8 +207,7 @@ $.fn.storeLocator = function(options) {
   //HTML5 geolocation API option
   if(settings.autoGeocode === true)
   {
-      if (navigator.geolocation) 
-      {
+      if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(autoGeocode_query, autoGeocode_error);
       }
   }
@@ -221,7 +239,7 @@ $.fn.storeLocator = function(options) {
   function begin_mapping(distance)
   {
     //Get the user input and use it
-    var userinput = $('#' + settings.formContainerDiv + ' #' + settings.inputID).val();
+    var userinput = $('#' + settings.inputID).val();
 
     if (userinput === "")
       {
@@ -253,7 +271,7 @@ $.fn.storeLocator = function(options) {
         e.preventDefault();
 
         if(settings.maxDistance === true){
-          var maxDistance = $('#' + settings.formContainerDiv + ' #' + settings.maxDistanceID).val();
+          var maxDistance = $('#' + settings.maxDistanceID).val();
           //Start the mapping
           begin_mapping(maxDistance);
         }
@@ -286,6 +304,7 @@ $.fn.storeLocator = function(options) {
   $(function(){
 
         var dataTypeRead;
+        locationset = [];
 
         //KML is read as XML
         if(settings.dataType === 'kml'){
@@ -303,28 +322,43 @@ $.fn.storeLocator = function(options) {
         beforeSend: function ()
         {
           // Callback
-          if (settings.callbackBeforeSend)
-          {
+          if(settings.callbackBeforeSend){
             settings.callbackBeforeSend.call(this);
           }
+
+          //Loading
+          if(settings.loading === true){
+            $('#' + settings.formContainerDiv).append('<div id="' + settings.loadingDiv +'"><\/div>');
+          }
+
         },
         complete: function (event, request, options)
         {
             // Callback
-            if (settings.callbackComplete)
-            {
+            if(settings.callbackComplete){
               settings.callbackComplete.call(this, event, request, options);
+            }
+
+            //Loading remove
+            if(settings.loading === true){
+              $('#' + settings.loadingDiv).remove();
             }
         },
         success: function (data, xhr, options)
         {
             // Callback
-            if (settings.callbackSuccess){
+            if(settings.callbackSuccess){
               settings.callbackSuccess.call(this, data, xhr, options);
             }
-          
+
             //After the store locations file has been read successfully
             var i = 0;
+            var firstRun;
+
+            //Set a variable for fullMapStart so we can detect the first run
+            if(settings.fullMapStart === true && $('#' + settings.mapDiv).hasClass('mapOpen') === false){
+                firstRun = true;
+            }
             $('#' + settings.mapDiv).addClass('mapOpen');
 
             //Depending on your data structure and what you want to include in the maps, you may need to change the following variables or comment them out
@@ -350,7 +384,7 @@ $.fn.storeLocator = function(options) {
                 var distance = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,lat,lng, GeoCodeCalc.EarthRadius);
                 
                 //Create the array
-                if(settings.maxDistance === true){
+                if(settings.maxDistance === true && firstRun !== true){
                   if(distance < maxDistance){
                     locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3];
                   }
@@ -377,7 +411,7 @@ $.fn.storeLocator = function(options) {
                 var distance = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,lat,lng, GeoCodeCalc.EarthRadius);
 
                 //Create the array
-                if(settings.maxDistance === true){
+                if(settings.maxDistance === true && firstRun !== true){
                   if(distance < maxDistance){
                     locationset[i] = [distance, name, lat, lng, description];
                   }
@@ -414,7 +448,7 @@ $.fn.storeLocator = function(options) {
                 var distance = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,lat,lng, GeoCodeCalc.EarthRadius);
                 
                 //Create the array
-                if(settings.maxDistance === true){
+                if(settings.maxDistance === true && firstRun !== true){ 
                   if(distance < maxDistance){
                     locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3];
                   }
@@ -438,7 +472,7 @@ $.fn.storeLocator = function(options) {
           });
 
           //Check the closest marker
-          if(settings.maxDistance === true){
+          if(settings.maxDistance === true && firstRun !== true){
             if(locationset[0] === undefined  || locationset[0][0] > maxDistance){
               alert("Unfortunately, our closest location is more than " + maxDistance + " miles away.");
               return;
@@ -572,30 +606,40 @@ $.fn.storeLocator = function(options) {
               //Set up the modal window
               if(settings.modalWindow === true)
               {
+                // Callback
+                if (settings.callbackModalOpen){
+                  settings.callbackModalOpen.call(this);
+                }
+
+                function modalClose(){
+                  // Callback
+                  if (settings.callbackModalOpen){
+                    settings.callbackModalOpen.call(this);
+                  }
+
+                  $('#' + settings.overlayDiv).hide();
+                }
+
                 //Pop up the modal window
-                $('#overlay').fadeIn();
-                //Close modal when close icon is clicked
-                $(document).on('click', '#close-icon', function(){
-                    $('#overlay').hide();
-                });
-                //Close modal when background overlay is clicked
-                $(document).on('click', '#overlay', function(){
-                    $('#overlay').hide();
+                $('#' + settings.overlayDiv).fadeIn();
+                //Close modal when close icon is clicked and when background overlay is clicked
+                $(document).on('click', '#' + settings.modalCloseIconDiv + ', #' + settings.overlayDiv, function(){
+                    modalClose();
                 });
                 //Prevent clicks within the modal window from closing the entire thing
-                $(document).on('click', '#modal-window', function(e){
+                $(document).on('click', '#' + settings.modalWindowDiv, function(e){
                     e.stopPropagation();
                 });
                 //Close modal when escape key is pressed
                 $(document).keyup(function(e){
                   if (e.keyCode === 27) { 
-                    $('#overlay').hide();
+                    modalClose();
                   }
                 });
               }
 
               //Google maps settings
-              if(settings.fullMapStart === true || settings.zoomLevel === 0){
+              if((settings.fullMapStart === true && firstRun === true) || settings.zoomLevel === 0){
                 var myOptions = {
                   mapTypeId: google.maps.MapTypeId.ROADMAP
                 };
@@ -646,7 +690,7 @@ $.fn.storeLocator = function(options) {
                 marker = createMarker(point, locationset[y][1], locationset[y][4], letter);
                 marker.set("id", y);
                 markers[y] = marker;
-                if(settings.fullMapStart === true || settings.zoomLevel === 0){
+                if((settings.fullMapStart === true && firstRun === true) || settings.zoomLevel === 0){
                   bounds.extend(point);
                 }
                 //Pass variables to the pop-up infowindows
@@ -654,7 +698,7 @@ $.fn.storeLocator = function(options) {
               }
 
               //Center and zoom if no origin or zoom was provided
-              if(settings.fullMapStart === true || settings.zoomLevel === 0){
+              if((settings.fullMapStart === true && firstRun === true) || settings.zoomLevel === 0){
                 map.fitBounds(bounds);
               }
                
@@ -777,6 +821,8 @@ $.fn.storeLocator = function(options) {
         }   
       });
     });
+  }
+
   }
 
   });

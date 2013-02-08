@@ -8,6 +8,26 @@ A note on the distance calculation: this plugin currently uses a distance functi
 
 ## Changelog
 
+### Version 1.4.2
+
+This is another minor patch with a few important fixes and one addition. The plugin has also been submitted to the official [jQuery plugin registry](http://plugins.jquery.com/), which is finally back online.
+
+**Additions:**
+
+* Added a "loading" option, which displays a loading gif next to the search button if set to true
+* Added missing modal window callback functions
+
+**Fixes:**
+
+* The locationset array wasn't being reset on re-submission, which was a more obvious problem when trying to use the maxDistance option. Accidentally removed in 1.4.1.
+* When using the fullMapStart option the map wouldn't center and zoom on closest points after form submission
+* Using the fullMapStart and maxDistance options together would cause errors
+* Wrapped template loading and the rest of the script in separate functions to ensure that the template files are loaded before the rest of the script runs
+* Changed all modal window DIVs to use options for full customization. I thought about having a third template for the modal but it seems like overkill.
+* Updated the jQuery version in all the example files to 1.9.1 and switched the source to use the Media Temple CDN version because Google is taking too long to update their version. 
+
+Note that if you try to use the minified version of jQuery 1.9.0 the plugin will error out in Internet Explorer due to the bug described in [ticket 13315](http://bugs.jquery.com/ticket/13315).
+
 ### Version 1.4.1
 
 This is a minor patch to switch array declarations to a [faster method](http://jsperf.com/new-array-vs-vs-array), fix line 682 to target with the loc-list setting instead of the div ID, and remove

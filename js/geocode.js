@@ -18,7 +18,7 @@ function GoogleGeocode() {
 
 //Process form input
 $(function() {
-  $('#user-location').live('submit', function(e){
+  $('#user-location').on('submit', function(e){
     //Stop the form submission
     e.preventDefault();
     //Get the user input and use it
