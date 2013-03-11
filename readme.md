@@ -8,6 +8,20 @@ A note on the distance calculation: this plugin currently uses a distance functi
 
 ## Changelog
 
+### Version 1.4.3
+
+A minor update with some clean up and additional language options.
+
+**Additions:**
+
+* Added several options for messaging so they can be easily translated into other languages
+* Added event namespacing
+* Added category to location variables
+
+**Fixes:**
+
+* The distance error would only display "miles" in the alert. It will now show miles or kilometers depending on what the lengthUnit option is set to. 
+
 ### Version 1.4.2
 
 This is another minor patch with a few important fixes and one addition. The plugin has also been submitted to the official [jQuery plugin registry](http://plugins.jquery.com/), which is finally back online.

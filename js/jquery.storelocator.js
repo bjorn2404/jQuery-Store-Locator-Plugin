@@ -1,5 +1,5 @@
 /*
-* storeLocator v1.4.2 - jQuery Google Maps Store Locator Plugin
+* storeLocator v1.4.3 - jQuery Google Maps Store Locator Plugin
 * (c) Copyright 2013, Bjorn Holine (http://www.bjornblog.com)
 * Released under the MIT license
 * Distance calculation function by Chris Pietschmann: http://pietschsoft.com/post/2008/02/01/Calculate-Distance-Between-Geocodes-in-C-and-JavaScript.aspx
@@ -51,7 +51,17 @@ $.fn.storeLocator = function(options) {
       'callbackComplete': null,
       'callbackSuccess': null,
       'callbackModalOpen': null,
-      'callbackModalClose': null
+      'callbackModalClose': null,
+      //Language options
+      'geocodeErrorAlert': 'Geocode was not successful for the following reason: ',
+      'blankInputAlert': 'The input box was blank.',
+      'addressErrorAlert' : 'Unable to find address',
+      'autoGeocodeErrorAlert': 'Automatic location detection failed. Please fill in your address or zip code.',
+      'distanceErrorAlert': 'Unfortunately, our closest location is more than ',
+      'mileLang': 'mile',
+      'milesLang': 'miles',
+      'kilometerLang': 'kilometer',
+      'kilometersLang': 'kilometers'
   }, options);
 
   return this.each(function() {
@@ -101,6 +111,7 @@ $.fn.storeLocator = function(options) {
 
   var userinput, olat, olng, marker, letter, storenum;
   var locationset = [];
+  var prefix = 'storeLocator';
   
   //Add modal window divs if set
   if(settings.modalWindow === true)
@@ -146,7 +157,7 @@ $.fn.storeLocator = function(options) {
             result.longitude = results[0].geometry.location.lng();
             callbackFunction(result);
           } else {
-            alert("Geocode was not successful for the following reason: " + status);
+            alert(settings.geocodeErrorAlert + status);
             callbackFunction(null);
           }
         });
@@ -166,7 +177,7 @@ $.fn.storeLocator = function(options) {
                 callbackFunction(result);
             }
           } else {
-            alert("Geocode was not successful for the following reason: " + status);
+            alert(settings.geocodeErrorAlert + status);
             callbackFunction(null);
           }
         });
@@ -176,8 +187,7 @@ $.fn.storeLocator = function(options) {
   //Used to round miles to display
   function roundNumber(num, dec) 
   {
-    var result = Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
-    return result;
+    return Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
   }
 
   //If a default location is set
@@ -192,7 +202,7 @@ $.fn.storeLocator = function(options) {
           mapping(settings.defaultLat, settings.defaultLng, originAddress);
         } else {
           //Unable to geocode
-          alert('Unable to find address');
+          alert(settings.addressErrorAlert);
         }
       });
   }
@@ -224,7 +234,7 @@ $.fn.storeLocator = function(options) {
           mapping(position.coords.latitude, position.coords.longitude, originAddress);
         } else {
           //Unable to geocode
-          alert('Unable to find address');
+          alert(settings.addressErrorAlert);
         }
       });
   }
@@ -232,7 +242,7 @@ $.fn.storeLocator = function(options) {
   function autoGeocode_error(error)
   {
     //If automatic detection doesn't work show an error
-    alert("Automatic location detection failed. Please fill in your address or zip code.");
+    alert(settings.autoGeocodeErrorAlert);
   }
 
   //Set up the normal mapping
@@ -244,7 +254,7 @@ $.fn.storeLocator = function(options) {
     if (userinput === "")
       {
         //Show alert and stop processing
-        alert("The input box was blank.");
+        alert(settings.blankInputAlert);
       }
       else
       {
@@ -257,7 +267,7 @@ $.fn.storeLocator = function(options) {
             mapping(olat, olng, userinput, distance);
           } else {
             //Unable to geocode
-            alert('ERROR! Unable to geocode address');
+            alert(settings.addressErrorAlert);
           }
         });
       }
@@ -283,17 +293,17 @@ $.fn.storeLocator = function(options) {
 
     //ASP.net or regular submission?
     if(settings.noForm === true){
-      $(document).on('click', '#' + settings.formContainerDiv + ' #submit', function(e){
+      $(document).on('click.'+prefix, '#' + settings.formContainerDiv + ' #submit', function(e){
         get_form_values(e);
       });
-      $(document).keyup(function(e){
+      $(document).on('keyup.'+prefix, function(e){
         if (e.keyCode === 13) { 
           get_form_values(e);
         }
       });
     }
     else{
-      $(document).on('submit', '#' + settings.formID, function(e){
+      $(document).on('submit.'+prefix, '#' + settings.formID, function(e){
         get_form_values(e);
       });
     }
@@ -380,20 +390,21 @@ $.fn.storeLocator = function(options) {
                 var hours1 = this.hours1;
                 var hours2 = this.hours2;
                 var hours3 = this.hours3;
+                var category = this.category;
 
                 var distance = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,lat,lng, GeoCodeCalc.EarthRadius);
                 
                 //Create the array
                 if(settings.maxDistance === true && firstRun !== true){
                   if(distance < maxDistance){
-                    locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3];
+                    locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3, category];
                   }
                   else{
                     return;
                   }
                 }
                 else{
-                  locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3];
+                  locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3, category];
                 }
 
                 i++;
@@ -444,20 +455,21 @@ $.fn.storeLocator = function(options) {
                 var hours1 = $(this).attr('hours1');
                 var hours2 = $(this).attr('hours2');
                 var hours3 = $(this).attr('hours3');
+                var category = $(this).attr('category');
 
                 var distance = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,lat,lng, GeoCodeCalc.EarthRadius);
                 
                 //Create the array
                 if(settings.maxDistance === true && firstRun !== true){ 
                   if(distance < maxDistance){
-                    locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3];
+                    locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3, category];
                   }
                   else{
                     return;
                   }
                 }
                 else{
-                  locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3];
+                  locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3, category];
                 }
 
                 i++;
@@ -471,23 +483,26 @@ $.fn.storeLocator = function(options) {
             return ((x < y) ? -1 : ((x > y) ? 1 : 0));
           });
 
+          //Get the length unit
+          var distUnit = (settings.lengthUnit === "km") ? settings.kilometersLang : settings.milesLang ;
+
           //Check the closest marker
           if(settings.maxDistance === true && firstRun !== true){
             if(locationset[0] === undefined  || locationset[0][0] > maxDistance){
-              alert("Unfortunately, our closest location is more than " + maxDistance + " miles away.");
+              alert(settings.distanceErrorAlert + maxDistance + " " + distUnit);
               return;
             }
           }
           else{
             if(locationset[0][0] > settings.distanceAlert){
-              alert("Unfortunately, our closest location is more than " + settings.distanceAlert + " miles away.");
+              alert(settings.distanceErrorAlert + settings.distanceAlert + " " + distUnit);
             }
           }
           
           //Create the map with jQuery
           $(function(){ 
 
-              var storeDistance, storeName, storeAddress1, storeAddress2, storeCity, storeState, storeZip, storePhone, storeWeb, storeHours1, storeHours2, storeHours3, storeDescription;
+              var storeDistance, storeName, storeAddress1, storeAddress2, storeCity, storeState, storeZip, storePhone, storeWeb, storeHours1, storeHours2, storeHours3, storeDescription, storeCat;
 
               //Instead of repeating the same thing twice below
               function create_location_variables(loopcount)
@@ -505,6 +520,7 @@ $.fn.storeLocator = function(options) {
                 storeHours1 = locationset[loopcount][11];
                 storeHours2 = locationset[loopcount][12];
                 storeHours3 = locationset[loopcount][13];
+                storeCat = locationset[loopcount][14];
               }
 
               //There are less variables for KML files
@@ -529,18 +545,18 @@ $.fn.storeLocator = function(options) {
                 var distLength;
                 if(storeDistance <= 1){ 
                   if(settings.lengthUnit === "km"){
-                    distLength = "kilometer";
+                    distLength = settings.kilometerLang;
                   }
                   else{
-                    distLength = "mile"; 
+                    distLength = settings.mileLang; 
                   }
                 }
                 else{ 
                   if(settings.lengthUnit === "km"){
-                    distLength = "kilometers";
+                    distLength = settings.kilometersLang;
                   }
                   else{
-                    distLength = "miles"; 
+                    distLength = settings.milesLang; 
                   }
                 }
 
@@ -589,7 +605,8 @@ $.fn.storeLocator = function(options) {
                         "hours2": storeHours2, 
                         "hours3": storeHours3, 
                         "length": distLength,
-                        "origin": origin
+                        "origin": origin,
+                        "category": storeCat
                       } 
                     ]
                   };
@@ -623,15 +640,15 @@ $.fn.storeLocator = function(options) {
                 //Pop up the modal window
                 $('#' + settings.overlayDiv).fadeIn();
                 //Close modal when close icon is clicked and when background overlay is clicked
-                $(document).on('click', '#' + settings.modalCloseIconDiv + ', #' + settings.overlayDiv, function(){
+                $(document).on('click.'+prefix, '#' + settings.modalCloseIconDiv + ', #' + settings.overlayDiv, function(){
                     modalClose();
                 });
                 //Prevent clicks within the modal window from closing the entire thing
-                $(document).on('click', '#' + settings.modalWindowDiv, function(e){
+                $(document).on('click.'+prefix, '#' + settings.modalWindowDiv, function(e){
                     e.stopPropagation();
                 });
                 //Close modal when escape key is pressed
-                $(document).keyup(function(e){
+                $(document).on('keyup.'+prefix, function(e){
                   if (e.keyCode === 27) { 
                     modalClose();
                   }
@@ -687,7 +704,7 @@ $.fn.storeLocator = function(options) {
               { 
                 var letter = String.fromCharCode("A".charCodeAt(0) + y);
                 var point = new google.maps.LatLng(locationset[y][2], locationset[y][3]);             
-                marker = createMarker(point, locationset[y][1], locationset[y][4], letter);
+                marker = createMarker(point, locationset[y][1], locationset[y][4], letter, locationset[y][14]);
                 marker.set("id", y);
                 markers[y] = marker;
                 if((settings.fullMapStart === true && firstRun === true) || settings.zoomLevel === 0){
@@ -722,7 +739,7 @@ $.fn.storeLocator = function(options) {
               }
 
               //Handle clicks from the list
-              $(document).on('click', '#' + settings.listDiv + ' li', function(){
+              $(document).on('click.'+prefix, '#' + settings.listDiv + ' li', function(){
                 var markerId = $(this).data('markerid');
 
                 var selectedMarker = markers[markerId];
@@ -749,7 +766,7 @@ $.fn.storeLocator = function(options) {
               $("#" + settings.listDiv + " ul li:odd").css('background', "#" + settings.listColor2);
                
               //Custom marker function - alphabetical
-              function createMarker(point, name, address, letter) {
+              function createMarker(point, name, address, letter, type) {
                 //Set up pin icon with the Google Charts API for all of our markers
                 var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=" + letter + "|" + settings.pinColor + "|" + settings.pinTextColor,
                   new google.maps.Size(21, 34),
