@@ -61,7 +61,8 @@ $.fn.storeLocator = function(options) {
       'mileLang': 'mile',
       'milesLang': 'miles',
       'kilometerLang': 'kilometer',
-      'kilometersLang': 'kilometers'
+      'kilometersLang': 'kilometers',
+      'jsonpCallback': null
   }, options);
 
   return this.each(function() {
@@ -329,6 +330,7 @@ $.fn.storeLocator = function(options) {
         type: "GET",
         url: settings.dataLocation + (settings.dataType === 'jsonp' ? (settings.dataLocation.match(/\?/) ? '&' : '?') + 'callback=?' : ''),
         dataType: dataTypeRead,
+        jsonpCallback: settings.jsonpCallback,
         beforeSend: function ()
         {
           // Callback
