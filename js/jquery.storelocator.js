@@ -325,8 +325,6 @@ $.fn.storeLocator = function(options) {
           dataTypeRead = settings.dataType;
         }
 
-		console.log((settings.dataType === 'jsonp' ? settings.jsonpCallback : null));
-
         //Process the data
         $.ajax({
         type: "GET",
