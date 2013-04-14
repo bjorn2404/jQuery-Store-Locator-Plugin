@@ -1,5 +1,5 @@
 /*
-* storeLocator v1.4.3 - jQuery Google Maps Store Locator Plugin
+* storeLocator v1.4.4 - jQuery Google Maps Store Locator Plugin
 * (c) Copyright 2013, Bjorn Holine (http://www.bjornblog.com)
 * Released under the MIT license
 * Distance calculation function by Chris Pietschmann: http://pietschsoft.com/post/2008/02/01/Calculate-Distance-Between-Geocodes-in-C-and-JavaScript.aspx
@@ -52,6 +52,7 @@ $.fn.storeLocator = function(options) {
       'callbackSuccess': null,
       'callbackModalOpen': null,
       'callbackModalClose': null,
+      'jsonpCallback': null,
       //Language options
       'geocodeErrorAlert': 'Geocode was not successful for the following reason: ',
       'blankInputAlert': 'The input box was blank.',
@@ -61,8 +62,7 @@ $.fn.storeLocator = function(options) {
       'mileLang': 'mile',
       'milesLang': 'miles',
       'kilometerLang': 'kilometer',
-      'kilometersLang': 'kilometers',
-      'jsonpCallback': null
+      'kilometersLang': 'kilometers'
   }, options);
 
   return this.each(function() {
@@ -112,7 +112,15 @@ $.fn.storeLocator = function(options) {
 
   var userinput, olat, olng, marker, letter, storenum;
   var locationset = [];
+  var markers = [];
   var prefix = 'storeLocator';
+
+  //Resets for multiple re-submissions
+  function reset(){
+    locationset = [];
+    markers = [];
+    $(document).off('click.'+prefix, '#' + settings.listDiv + ' li');
+  }
   
   //Add modal window divs if set
   if(settings.modalWindow === true)
@@ -315,7 +323,6 @@ $.fn.storeLocator = function(options) {
   $(function(){
 
         var dataTypeRead;
-        locationset = [];
 
         //KML is read as XML
         if(settings.dataType === 'kml'){
@@ -371,6 +378,10 @@ $.fn.storeLocator = function(options) {
             if(settings.fullMapStart === true && $('#' + settings.mapDiv).hasClass('mapOpen') === false){
                 firstRun = true;
             }
+            else{
+              reset();
+            }
+
             $('#' + settings.mapDiv).addClass('mapOpen');
 
             //Depending on your data structure and what you want to include in the maps, you may need to change the following variables or comment them out
@@ -672,8 +683,7 @@ $.fn.storeLocator = function(options) {
                 };
               }
               
-              var map = new google.maps.Map(document.getElementById(settings.mapDiv),myOptions);      
-              var markers = [];
+              var map = new google.maps.Map(document.getElementById(settings.mapDiv),myOptions);
               //Create one infowindow to fill later
               var infowindow = new google.maps.InfoWindow();
 

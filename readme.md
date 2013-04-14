@@ -8,6 +8,14 @@ A note on the distance calculation: this plugin currently uses a distance functi
 
 ## Changelog
 
+### Version 1.4.4
+
+This update includes a bug fix for form re-submissions that was most apparent with the maximum distance example. It also includes a new jsonpCallback setting that was submitted by quayzar.
+
+* Moved markers array declaration up to line 115
+* Added a reset function that resets both the locationset and markers array and resets the list click event handler
+* Includes quayzar's jsonpCallback callback
+
 ### Version 1.4.3
 
 A minor update with some clean up and additional language options.
