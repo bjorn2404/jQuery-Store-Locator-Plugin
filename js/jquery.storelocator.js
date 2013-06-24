@@ -1,5 +1,5 @@
 /*
-* storeLocator v1.4.4 - jQuery Google Maps Store Locator Plugin
+* storeLocator v1.4.5 - jQuery Google Maps Store Locator Plugin
 * (c) Copyright 2013, Bjorn Holine (http://www.bjornblog.com)
 * Released under the MIT license
 * Distance calculation function by Chris Pietschmann: http://pietschsoft.com/post/2008/02/01/Calculate-Distance-Between-Geocodes-in-C-and-JavaScript.aspx
@@ -123,15 +123,13 @@ $.fn.storeLocator = function(options) {
   }
   
   //Add modal window divs if set
-  if(settings.modalWindow === true)
-  {
+  if(settings.modalWindow === true){
     $this.wrap('<div id="' + settings.overlayDiv + '"><div id="' + settings.modalWindowDiv + '"><div id="' + settings.modalContentDiv + '">');
     $('#' + settings.modalWindowDiv).prepend('<div id="' + settings.modalCloseIconDiv + '"><\/div>');
     $('#' + settings.overlayDiv).hide();
   }
 
-  if(settings.slideMap === true)
-  {
+  if(settings.slideMap === true){
     //Let's hide the map container to begin
     $this.hide();
   }
@@ -155,8 +153,7 @@ $.fn.storeLocator = function(options) {
   };
 
   //Geocode function for the origin location
-  function GoogleGeocode() 
-  {
+  function GoogleGeocode(){
     geocoder = new google.maps.Geocoder();
     this.geocode = function(address, callbackFunction) {
         geocoder.geocode( { 'address': address}, function(results, status) {
@@ -174,8 +171,7 @@ $.fn.storeLocator = function(options) {
   }
 
   //Reverse geocode to get address for automatic options needed for directions link
-  function ReverseGoogleGeocode() 
-  {
+  function ReverseGoogleGeocode(){
     geocoder = new google.maps.Geocoder();
     this.geocode = function(latlng, callbackFunction) {
         geocoder.geocode( {'latLng': latlng}, function(results, status) {
@@ -194,14 +190,12 @@ $.fn.storeLocator = function(options) {
   }
 
   //Used to round miles to display
-  function roundNumber(num, dec) 
-  {
+  function roundNumber(num, dec){
     return Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
   }
 
   //If a default location is set
-  if(settings.defaultLoc === true)
-  {
+  if(settings.defaultLoc === true){
       //The address needs to be determined for the directions link
       var r = new ReverseGoogleGeocode();
       var latlng = new google.maps.LatLng(settings.defaultLat, settings.defaultLng);
@@ -217,23 +211,20 @@ $.fn.storeLocator = function(options) {
   }
 
   //If show full map option is true
-  if(settings.fullMapStart === true)
-  {
+  if(settings.fullMapStart === true){
       //Just do the mapping without an origin
       mapping();
   }
 
   //HTML5 geolocation API option
-  if(settings.autoGeocode === true)
-  {
+  if(settings.autoGeocode === true){
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(autoGeocode_query, autoGeocode_error);
       }
   }
 
   //If location is detected automatically
-  function autoGeocode_query(position)
-  {
+  function autoGeocode_query(position){
      //The address needs to be determined for the directions link
       var r = new ReverseGoogleGeocode();
       var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
@@ -248,25 +239,21 @@ $.fn.storeLocator = function(options) {
       });
   }
 
-  function autoGeocode_error(error)
-  {
+  function autoGeocode_error(error){
     //If automatic detection doesn't work show an error
     alert(settings.autoGeocodeErrorAlert);
   }
 
   //Set up the normal mapping
-  function begin_mapping(distance)
-  {
+  function begin_mapping(distance){
     //Get the user input and use it
     var userinput = $('#' + settings.inputID).val();
 
-    if (userinput === "")
-      {
+    if (userinput === ""){
         //Show alert and stop processing
         alert(settings.blankInputAlert);
       }
-      else
-      {
+      else{
         var g = new GoogleGeocode();
         var address = userinput;
         g.geocode(address, function(data) {
@@ -283,7 +270,7 @@ $.fn.storeLocator = function(options) {
   }
 
   //Process form input
-  $(function() {
+  $(function(){
     //Handle form submission
     function get_form_values(e){
       //Stop the form submission
@@ -338,8 +325,7 @@ $.fn.storeLocator = function(options) {
         url: settings.dataLocation + (settings.dataType === 'jsonp' ? (settings.dataLocation.match(/\?/) ? '&' : '?') + 'callback=?' : ''),
         dataType: dataTypeRead,
         jsonpCallback: (settings.dataType === 'jsonp' ? settings.jsonpCallback : null),
-        beforeSend: function ()
-        {
+        beforeSend: function (){
           // Callback
           if(settings.callbackBeforeSend){
             settings.callbackBeforeSend.call(this);
@@ -351,8 +337,7 @@ $.fn.storeLocator = function(options) {
           }
 
         },
-        complete: function (event, request, options)
-        {
+        complete: function (event, request, options){
             // Callback
             if(settings.callbackComplete){
               settings.callbackComplete.call(this, event, request, options);
@@ -363,8 +348,7 @@ $.fn.storeLocator = function(options) {
               $('#' + settings.loadingDiv).remove();
             }
         },
-        success: function (data, xhr, options)
-        {
+        success: function (data, xhr, options){
             // Callback
             if(settings.callbackSuccess){
               settings.callbackSuccess.call(this, data, xhr, options);
@@ -385,10 +369,9 @@ $.fn.storeLocator = function(options) {
             $('#' + settings.mapDiv).addClass('mapOpen');
 
             //Depending on your data structure and what you want to include in the maps, you may need to change the following variables or comment them out
-            if(settings.dataType === 'json' || settings.dataType === 'jsonp')
-            {
+            if(settings.dataType === 'json' || settings.dataType === 'jsonp'){
               //Process JSON
-              $.each(data, function() {
+              $.each(data, function(){
                 var name = this.locname;
                 var lat = this.lat;
                 var lng = this.lng;
@@ -397,7 +380,9 @@ $.fn.storeLocator = function(options) {
                 var city = this.city;
                 var state = this.state;
                 var postal = this.postal;
+                var country = this.country;
                 var phone = this.phone;
+                var email = this.email;
                 var web = this.web;
                 web = web.replace("http://","");
                 var hours1 = this.hours1;
@@ -410,21 +395,20 @@ $.fn.storeLocator = function(options) {
                 //Create the array
                 if(settings.maxDistance === true && firstRun !== true){
                   if(distance < maxDistance){
-                    locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3, category];
+                    locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, country, phone, email, web, hours1, hours2, hours3, category];
                   }
                   else{
                     return;
                   }
                 }
                 else{
-                  locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3, category];
+                  locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, country, phone, email, web, hours1, hours2, hours3, category];
                 }
 
                 i++;
               });
             }
-            else if(settings.dataType === 'kml')
-            {
+            else if(settings.dataType === 'kml'){
               //Process KML
               $(data).find('Placemark').each(function(){
                 var name = $(this).find('name').text();
@@ -450,8 +434,7 @@ $.fn.storeLocator = function(options) {
                 i++;
               });
             }
-            else
-            {
+            else{
               //Process XML
               $(data).find('marker').each(function(){
                 var name = $(this).attr('name');
@@ -462,7 +445,9 @@ $.fn.storeLocator = function(options) {
                 var city = $(this).attr('city');
                 var state = $(this).attr('state');
                 var postal = $(this).attr('postal');
+                var country = $(this).attr('country');
                 var phone = $(this).attr('phone');
+                var email = $(this).attr('email');
                 var web = $(this).attr('web');
                 web = web.replace("http://","");
                 var hours1 = $(this).attr('hours1');
@@ -475,14 +460,14 @@ $.fn.storeLocator = function(options) {
                 //Create the array
                 if(settings.maxDistance === true && firstRun !== true){ 
                   if(distance < maxDistance){
-                    locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3, category];
+                    locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, country, phone, email, web, hours1, hours2, hours3, category];
                   }
                   else{
                     return;
                   }
                 }
                 else{
-                  locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, phone, web, hours1, hours2, hours3, category];
+                  locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, country, phone, email, web, hours1, hours2, hours3, category];
                 }
 
                 i++;
@@ -490,7 +475,7 @@ $.fn.storeLocator = function(options) {
             }
 
           //Sort the multi-dimensional array numerically by distance
-          locationset.sort(function(a, b) {
+          locationset.sort(function(a, b){
             var x = a[0];
             var y = b[0];
             return ((x < y) ? -1 : ((x > y) ? 1 : 0));
@@ -515,11 +500,10 @@ $.fn.storeLocator = function(options) {
           //Create the map with jQuery
           $(function(){ 
 
-              var storeDistance, storeName, storeAddress1, storeAddress2, storeCity, storeState, storeZip, storePhone, storeWeb, storeHours1, storeHours2, storeHours3, storeDescription, storeCat;
+              var storeDistance, storeName, storeAddress1, storeAddress2, storeCity, storeState, storeCountry, storeZip, storePhone, storeEmail, storeWeb, storeHours1, storeHours2, storeHours3, storeDescription, storeCat;
 
               //Instead of repeating the same thing twice below
-              function create_location_variables(loopcount)
-              {
+              function create_location_variables(loopcount){
                 storeDistance = locationset[loopcount][0];
                 storeDistance = roundNumber(storeDistance,2);
                 storeName = locationset[loopcount][1];
@@ -528,17 +512,18 @@ $.fn.storeLocator = function(options) {
                 storeCity = locationset[loopcount][6];
                 storeState = locationset[loopcount][7];
                 storeZip = locationset[loopcount][8];
-                storePhone = locationset[loopcount][9];
-                storeWeb = locationset[loopcount][10];
-                storeHours1 = locationset[loopcount][11];
-                storeHours2 = locationset[loopcount][12];
-                storeHours3 = locationset[loopcount][13];
-                storeCat = locationset[loopcount][14];
+                storeCountry = locationset[loopcount][9];
+                storePhone = locationset[loopcount][10];
+                storeEmail = locationset[loopcount][11]
+                storeWeb = locationset[loopcount][12];
+                storeHours1 = locationset[loopcount][13];
+                storeHours2 = locationset[loopcount][14];
+                storeHours3 = locationset[loopcount][15];
+                storeCat = locationset[loopcount][16];
               }
 
               //There are less variables for KML files
-              function create_kml_location_variables(loopcount)
-              {
+              function create_kml_location_variables(loopcount){
                 storeDistance = locationset[loopcount][0];
                 storeDistance = roundNumber(storeDistance,2);
                 storeName = locationset[loopcount][1];
@@ -546,8 +531,7 @@ $.fn.storeLocator = function(options) {
               }
 
               //Define the location data for the templates
-              function define_location_data(currentMarker)
-              {
+              function define_location_data(currentMarker){
                 if(settings.dataType === 'kml'){
                   create_kml_location_variables(currentMarker.get("id"));
                 }
@@ -611,8 +595,10 @@ $.fn.storeLocator = function(options) {
                         "address2": storeAddress2, 
                         "city": storeCity, 
                         "state": storeState, 
-                        "postal": storeZip, 
-                        "phone": storePhone, 
+                        "postal": storeZip,
+                        "country": storeCountry, 
+                        "phone": storePhone,
+                        "email": storeEmail, 
                         "web": storeWeb, 
                         "hours1": storeHours1, 
                         "hours2": storeHours2, 
@@ -629,13 +615,11 @@ $.fn.storeLocator = function(options) {
               }
 
               //Slide in the map container
-              if(settings.slideMap === true)
-              {
+              if(settings.slideMap === true){
                 $this.slideDown();
               }
               //Set up the modal window
-              if(settings.modalWindow === true)
-              {
+              if(settings.modalWindow === true){
                 // Callback
                 if (settings.callbackModalOpen){
                   settings.callbackModalOpen.call(this);
@@ -712,8 +696,7 @@ $.fn.storeLocator = function(options) {
               }
               
               //Add markers and infowindows loop
-              for(var y = 0; y <= storenum; y++) 
-              { 
+              for(var y = 0; y <= storenum; y++) { 
                 var letter = String.fromCharCode("A".charCodeAt(0) + y);
                 var point = new google.maps.LatLng(locationset[y][2], locationset[y][3]);             
                 marker = createMarker(point, locationset[y][1], locationset[y][4], letter, locationset[y][14]);
@@ -740,8 +723,7 @@ $.fn.storeLocator = function(options) {
                 listClick(currentMarker);
               });
 
-              function listClick(marker)
-              {
+              function listClick(marker){
                 //Define the location data
                 var locations = define_location_data(marker);
 
@@ -762,13 +744,11 @@ $.fn.storeLocator = function(options) {
 
                 map.panTo(selectedMarker.getPosition());
                 var listLoc = "left";
-                if(settings.bounceMarker === true)
-                {
+                if(settings.bounceMarker === true){
                   selectedMarker.setAnimation(google.maps.Animation.BOUNCE);
                   setTimeout(function() { selectedMarker.setAnimation(null); create_infowindow(selectedMarker, listLoc); }, 700);
                 }
-                else
-                {
+                else{
                   create_infowindow(selectedMarker, listLoc);
                 }
               });
@@ -778,7 +758,7 @@ $.fn.storeLocator = function(options) {
               $("#" + settings.listDiv + " ul li:odd").css('background', "#" + settings.listColor2);
                
               //Custom marker function - alphabetical
-              function createMarker(point, name, address, letter, type) {
+              function createMarker(point, name, address, letter, type){
                 //Set up pin icon with the Google Charts API for all of our markers
                 var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=" + letter + "|" + settings.pinColor + "|" + settings.pinTextColor,
                   new google.maps.Size(21, 34),
@@ -820,14 +800,12 @@ $.fn.storeLocator = function(options) {
                 var formattedAddress = infowindowTemplate(locations);
 
                 //Opens the infowindow when list item is clicked
-                if(location === "left")
-                {
+                if(location === "left"){
                     infowindow.setContent(formattedAddress);
                     infowindow.open(marker.get(settings.mapDiv), marker);
                 }
                 //Opens the infowindow when the marker is clicked
-                else
-                {
+                else{
                   google.maps.event.addListener(marker, 'click', function() {
                       infowindow.setContent(formattedAddress);
                       infowindow.open(marker.get(settings.mapDiv), marker);

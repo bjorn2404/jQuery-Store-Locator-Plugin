@@ -6,7 +6,18 @@ This jQuery plugin takes advantage of Google Maps API version 3 to create an eas
 
 A note on the distance calculation: this plugin currently uses a distance function that was originally programmed by [Chris Pietschmann](http://pietschsoft.com/post/2008/02/01/Calculate-Distance-Between-Geocodes-in-C-and-JavaScript.aspx). Google Maps API version 3 does include a distance calculation service ([Google Distance Matrix API](http://code.google.com/apis/maps/documentation/distancematrix/)) but I decided not to use it because of the current request limits, which seem somewhat low. In addition, because the plugin currently calculates each location’s distance one by one, it appeared that I would have to re-structure some things to make all the distance calculations at once (or risk making many request for one location lookup). So, the distance calculation is “as the crow flies” instead of a road distance.
 
+Handlebars is now required: It’s very important to note that the plugin now requires the Handlebars template engine. I made this change so that the data that’s displayed in the location list and the infowindows can be easily customized. I also wanted to separate the bulk of the layout additions from the main plugin file. Handlebars pretty slick, will read Mustache templates, and the built-in helpers can really come in handy. Depending on what your data source is, 2 of the 4 total templates will be used (KML vs XML or JSON) and there are options to set the paths of each template if you don’t want them in the default location. If you’re developing something for mobile devices the templates can be pre-compiled for even faster loading.
+
 ## Changelog
+
+### Version 1.4.5
+
+A minor update that includes the latest versions of jQuery and Handlebars, two new location variables and some clean-up. 
+
+* Added email and country variables for locations
+* Updated included Handlebars version to v1.0.0
+* Updated jQuery call to v1.10.1
+* Some bracket clean-up
 
 ### Version 1.4.4
 
