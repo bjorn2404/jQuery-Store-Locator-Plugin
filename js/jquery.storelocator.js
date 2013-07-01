@@ -1,5 +1,5 @@
 /*
-* storeLocator v1.4.5 - jQuery Google Maps Store Locator Plugin
+* storeLocator v1.4.6 - jQuery Google Maps Store Locator Plugin
 * (c) Copyright 2013, Bjorn Holine (http://www.bjornblog.com)
 * Released under the MIT license
 * Distance calculation function by Chris Pietschmann: http://pietschsoft.com/post/2008/02/01/Calculate-Distance-Between-Geocodes-in-C-and-JavaScript.aspx
@@ -802,13 +802,13 @@ $.fn.storeLocator = function(options) {
                 //Opens the infowindow when list item is clicked
                 if(location === "left"){
                     infowindow.setContent(formattedAddress);
-                    infowindow.open(marker.get(settings.mapDiv), marker);
+                    infowindow.open(marker.get('map'), marker);
                 }
                 //Opens the infowindow when the marker is clicked
                 else{
                   google.maps.event.addListener(marker, 'click', function() {
                       infowindow.setContent(formattedAddress);
-                      infowindow.open(marker.get(settings.mapDiv), marker);
+                      infowindow.open(marker.get('map'), marker);
                       //Focus on the list
                       $('#' + settings.listDiv + ' li').removeClass('list-focus');
                       markerId = marker.get("id");

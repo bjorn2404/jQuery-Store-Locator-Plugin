@@ -10,6 +10,10 @@ Handlebars is now required: It’s very important to note that the plugin now re
 
 ## Changelog
 
+### Version 1.4.6
+
+Fixed a bug where infowindows wouldn't open if the map div was changed.
+
 ### Version 1.4.5
 
 A minor update that includes the latest versions of jQuery and Handlebars, two new location variables and some clean-up. 
