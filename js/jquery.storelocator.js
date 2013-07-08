@@ -1,5 +1,5 @@
 /*
-* storeLocator v1.4.6 - jQuery Google Maps Store Locator Plugin
+* storeLocator v1.4.7 - jQuery Google Maps Store Locator Plugin
 * (c) Copyright 2013, Bjorn Holine (http://www.bjornblog.com)
 * Released under the MIT license
 * Distance calculation function by Chris Pietschmann: http://pietschsoft.com/post/2008/02/01/Calculate-Distance-Between-Geocodes-in-C-and-JavaScript.aspx
@@ -43,6 +43,7 @@ $.fn.storeLocator = function(options) {
       'noForm': false,
       'loading': false,
       'loadingDiv': 'loading-map',
+      'featuredLocations': false,
       'infowindowTemplatePath': 'templates/infowindow-description.html',
       'listTemplatePath': 'templates/location-list-description.html',
       'KMLinfowindowTemplatePath': 'templates/kml-infowindow-description.html',
@@ -112,12 +113,16 @@ $.fn.storeLocator = function(options) {
 
   var userinput, olat, olng, marker, letter, storenum;
   var locationset = [];
+  var featuredset = [];
+  var normalset = [];
   var markers = [];
   var prefix = 'storeLocator';
 
   //Resets for multiple re-submissions
   function reset(){
     locationset = [];
+    featuredset = [];
+    normalset = [];
     markers = [];
     $(document).off('click.'+prefix, '#' + settings.listDiv + ' li');
   }
@@ -389,20 +394,21 @@ $.fn.storeLocator = function(options) {
                 var hours2 = this.hours2;
                 var hours3 = this.hours3;
                 var category = this.category;
+                var featured = this.featured;
 
                 var distance = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,lat,lng, GeoCodeCalc.EarthRadius);
                 
                 //Create the array
                 if(settings.maxDistance === true && firstRun !== true){
                   if(distance < maxDistance){
-                    locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, country, phone, email, web, hours1, hours2, hours3, category];
+                    locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, country, phone, email, web, hours1, hours2, hours3, category, featured];
                   }
                   else{
                     return;
                   }
                 }
                 else{
-                  locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, country, phone, email, web, hours1, hours2, hours3, category];
+                  locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, country, phone, email, web, hours1, hours2, hours3, category, featured];
                 }
 
                 i++;
@@ -454,32 +460,55 @@ $.fn.storeLocator = function(options) {
                 var hours2 = $(this).attr('hours2');
                 var hours3 = $(this).attr('hours3');
                 var category = $(this).attr('category');
+                var featured = $(this).attr('featured');
 
                 var distance = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,lat,lng, GeoCodeCalc.EarthRadius);
                 
                 //Create the array
                 if(settings.maxDistance === true && firstRun !== true){ 
                   if(distance < maxDistance){
-                    locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, country, phone, email, web, hours1, hours2, hours3, category];
+                    locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, country, phone, email, web, hours1, hours2, hours3, category, featured];
                   }
                   else{
                     return;
                   }
                 }
                 else{
-                  locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, country, phone, email, web, hours1, hours2, hours3, category];
+                  locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, country, phone, email, web, hours1, hours2, hours3, category, featured];
                 }
 
                 i++;
               });
             }
 
-          //Sort the multi-dimensional array numerically by distance
-          locationset.sort(function(a, b){
-            var x = a[0];
-            var y = b[0];
-            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-          });
+          //Distance sorting function
+          function sort_numerically(locationsarray){
+            locationsarray.sort(function(a, b){
+              var x = a[0];
+              var y = b[0];
+              return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+            });
+          }
+
+          //Sort the multi-dimensional array by distance
+          sort_numerically(locationset);
+
+          //Featured locations filtering
+          if(settings.featuredLocations === true){
+            //Create array for featured locations
+            featuredset = $.grep(locationset, function(val, i){
+              return val[17] === "true";
+            });
+
+            //Create array for normal locations
+            normalset = $.grep(locationset, function(val, i){
+              return val[17] !== "true";
+            });
+
+            //Combine the arrays
+            locationset = [];
+            locationset = featuredset.concat(normalset);
+          }
 
           //Get the length unit
           var distUnit = (settings.lengthUnit === "km") ? settings.kilometersLang : settings.milesLang ;
@@ -500,7 +529,7 @@ $.fn.storeLocator = function(options) {
           //Create the map with jQuery
           $(function(){ 
 
-              var storeDistance, storeName, storeAddress1, storeAddress2, storeCity, storeState, storeCountry, storeZip, storePhone, storeEmail, storeWeb, storeHours1, storeHours2, storeHours3, storeDescription, storeCat;
+              var storeDistance, storeName, storeAddress1, storeAddress2, storeCity, storeState, storeCountry, storeZip, storePhone, storeEmail, storeWeb, storeHours1, storeHours2, storeHours3, storeDescription, storeCat, storeFeatured;
 
               //Instead of repeating the same thing twice below
               function create_location_variables(loopcount){
@@ -520,6 +549,7 @@ $.fn.storeLocator = function(options) {
                 storeHours2 = locationset[loopcount][14];
                 storeHours3 = locationset[loopcount][15];
                 storeCat = locationset[loopcount][16];
+                storeFeatured = locationset[loopcount][17];
               }
 
               //There are less variables for KML files
@@ -605,7 +635,8 @@ $.fn.storeLocator = function(options) {
                         "hours3": storeHours3, 
                         "length": distLength,
                         "origin": origin,
-                        "category": storeCat
+                        "category": storeCat,
+                        "featured": storeFeatured
                       } 
                     ]
                   };
