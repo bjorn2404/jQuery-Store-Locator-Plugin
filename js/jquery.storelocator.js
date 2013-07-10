@@ -389,7 +389,7 @@ $.fn.storeLocator = function(options) {
                 var phone = this.phone;
                 var email = this.email;
                 var web = this.web;
-                web = web.replace("http://","");
+                if ( web ) web = web.replace("http://","");
                 var hours1 = this.hours1;
                 var hours2 = this.hours2;
                 var hours3 = this.hours3;
@@ -455,7 +455,7 @@ $.fn.storeLocator = function(options) {
                 var phone = $(this).attr('phone');
                 var email = $(this).attr('email');
                 var web = $(this).attr('web');
-                web = web.replace("http://","");
+                if ( web ) web = web.replace("http://","");
                 var hours1 = $(this).attr('hours1');
                 var hours2 = $(this).attr('hours2');
                 var hours3 = $(this).attr('hours3');
@@ -521,7 +521,7 @@ $.fn.storeLocator = function(options) {
             }
           }
           else{
-            if(locationset[0][0] > settings.distanceAlert){
+            if(settings.distanceAlert != -1 && locationset[0][0] > settings.distanceAlert){
               alert(settings.distanceErrorAlert + settings.distanceAlert + " " + distUnit);
             }
           }
@@ -590,7 +590,7 @@ $.fn.storeLocator = function(options) {
                 //Set up alpha character
                 var markerId = currentMarker.get("id");
                 //Use dot markers instead of alpha if there are more than 26 locations
-                if(settings.storeLimit > 26){
+                if(settings.storeLimit == -1 || settings.storeLimit > 26){
                   var indicator = markerId + 1;
                 }
                 else{
@@ -703,7 +703,7 @@ $.fn.storeLocator = function(options) {
               var infowindow = new google.maps.InfoWindow();
 
               //Avoid error if number of locations is less than the default of 26
-              if((locationset.length-1) < settings.storeLimit-1){
+              if(settings.storeLimit == -1 || (locationset.length-1) < settings.storeLimit-1){
                 storenum = locationset.length-1;
               }
               else{
@@ -801,7 +801,7 @@ $.fn.storeLocator = function(options) {
                   new google.maps.Point(12, 35));
                 
                 //Create the markers
-                if(settings.storeLimit > 26){
+                if(settings.storeLimit == -1 || settings.storeLimit > 26){
                   var marker = new google.maps.Marker({
                     position: point, 
                     map: map,
