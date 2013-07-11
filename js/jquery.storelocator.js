@@ -298,7 +298,7 @@ $.fn.storeLocator = function(options) {
         get_form_values(e);
       });
       $(document).on('keyup.'+prefix, function(e){
-        if (e.keyCode === 13) { 
+        if (e.keyCode === 13 && $('#' + settings.inputID).is(':focus')) { 
           get_form_values(e);
         }
       });
