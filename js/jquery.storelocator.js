@@ -377,38 +377,37 @@ $.fn.storeLocator = function(options) {
             if(settings.dataType === 'json' || settings.dataType === 'jsonp'){
               //Process JSON
               $.each(data, function(){
-                var name = this.locname;
-                var lat = this.lat;
-                var lng = this.lng;
-                var address = this.address;
-                var address2 = this.address2;
-                var city = this.city;
-                var state = this.state;
-                var postal = this.postal;
-                var country = this.country;
-                var phone = this.phone;
-                var email = this.email;
-                var web = this.web;
-                if ( web ) web = web.replace("http://","");
-                var hours1 = this.hours1;
-                var hours2 = this.hours2;
-                var hours3 = this.hours3;
-                var category = this.category;
-                var featured = this.featured;
+  	var key, value, locationData = {};
 
-                var distance = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,lat,lng, GeoCodeCalc.EarthRadius);
-                
+		// Parse each data variables
+		for ( key in this ) {
+			value = this[key];
+
+			if ( key == 'locname' ) {
+				key = 'name'; // Translate locname to name (todo: should NOT be done)
+			}
+			else if ( key == 'web' ) {
+				if ( value ) value = value.replace("http://",""); // Remove scheme (todo: should NOT be done)
+			}
+
+			locationData[key] = value;
+		}
+
+		if ( !locationData['distance'] ) {
+			locationData['distance'] = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,locationData['lat'],locationData['lng'], GeoCodeCalc.EarthRadius);
+		}
+
                 //Create the array
                 if(settings.maxDistance === true && firstRun !== true){
-                  if(distance < maxDistance){
-                    locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, country, phone, email, web, hours1, hours2, hours3, category, featured];
+                  if(locationData['distance'] < maxDistance){
+                    locationset[i] = locationData;
                   }
                   else{
                     return;
                   }
                 }
                 else{
-                  locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, country, phone, email, web, hours1, hours2, hours3, category, featured];
+                  locationset[i] = locationData;
                 }
 
                 i++;
@@ -417,24 +416,26 @@ $.fn.storeLocator = function(options) {
             else if(settings.dataType === 'kml'){
               //Process KML
               $(data).find('Placemark').each(function(){
-                var name = $(this).find('name').text();
-                var lat = $(this).find('coordinates').text().split(",")[1];
-                var lng = $(this).find('coordinates').text().split(",")[0];
-                var description = $(this).find('description').text();
+		var locationData = {
+			'name': $(this).find('name').text(),
+			'lat': $(this).find('coordinates').text().split(",")[1],
+			'lng': $(this).find('coordinates').text().split(",")[0],
+			'description': $(this).find('description').text()
+		};
 
-                var distance = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,lat,lng, GeoCodeCalc.EarthRadius);
+		locationData['distance'] = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,locationData['lat'],locationData['lng'], GeoCodeCalc.EarthRadius);
 
                 //Create the array
                 if(settings.maxDistance === true && firstRun !== true){
-                  if(distance < maxDistance){
-                    locationset[i] = [distance, name, lat, lng, description];
+                  if(locationData['distance'] < maxDistance){
+                    locationset[i] = locationData;
                   }
                   else{
                     return;
                   }
                 }
                 else{
-                  locationset[i] = [distance, name, lat, lng, description];
+                  locationset[i] = locationData;
                 }
 
                 i++;
@@ -443,38 +444,41 @@ $.fn.storeLocator = function(options) {
             else{
               //Process XML
               $(data).find('marker').each(function(){
-                var name = $(this).attr('name');
-                var lat = $(this).attr('lat');
-                var lng = $(this).attr('lng');
-                var address = $(this).attr('address');
-                var address2 = $(this).attr('address2');
-                var city = $(this).attr('city');
-                var state = $(this).attr('state');
-                var postal = $(this).attr('postal');
-                var country = $(this).attr('country');
-                var phone = $(this).attr('phone');
-                var email = $(this).attr('email');
-                var web = $(this).attr('web');
-                if ( web ) web = web.replace("http://","");
-                var hours1 = $(this).attr('hours1');
-                var hours2 = $(this).attr('hours2');
-                var hours3 = $(this).attr('hours3');
-                var category = $(this).attr('category');
-                var featured = $(this).attr('featured');
+		var locationData = {
+			'name': $(this).attr('name'),
+			'lat': $(this).attr('lat'),
+			'lng': $(this).attr('lng'),
+			'address': $(this).attr('address'),
+			'address2': $(this).attr('address2'),
+			'city': $(this).attr('city'),
+			'state': $(this).attr('state'),
+			'postal': $(this).attr('postal'),
+			'country': $(this).attr('country'),
+			'phone': $(this).attr('phone'),
+			'email': $(this).attr('email'),
+			'web': $(this).attr('web'),
+			'hours1': $(this).attr('hours1'),
+			'hours2': $(this).attr('hours2'),
+			'hours3': $(this).attr('hours3'),
+			'category': $(this).attr('category'),
+			'featured': $(this).attr('featured')
+		};
 
-                var distance = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,lat,lng, GeoCodeCalc.EarthRadius);
+		if ( locationData['web'] ) locationData['web'] = locationData['web'].replace("http://",""); // Remove scheme (todo: should NOT be done)
+
+                locationData['distance'] = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,locationData['lat'],locationData['lng'], GeoCodeCalc.EarthRadius);
                 
                 //Create the array
                 if(settings.maxDistance === true && firstRun !== true){ 
-                  if(distance < maxDistance){
-                    locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, country, phone, email, web, hours1, hours2, hours3, category, featured];
+                  if(locationData['distance'] < maxDistance){
+                    locationset[i] = locationData;
                   }
                   else{
                     return;
                   }
                 }
                 else{
-                  locationset[i] = [distance, name, lat, lng, address, address2, city, state, postal, country, phone, email, web, hours1, hours2, hours3, category, featured];
+                  locationset[i] = locationData;
                 }
 
                 i++;
@@ -484,9 +488,7 @@ $.fn.storeLocator = function(options) {
           //Distance sorting function
           function sort_numerically(locationsarray){
             locationsarray.sort(function(a, b){
-              var x = a[0];
-              var y = b[0];
-              return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+              return ((a['distance'] < b['distance']) ? -1 : ((a['distance'] > b['distance']) ? 1 : 0));
             });
           }
 
@@ -497,12 +499,12 @@ $.fn.storeLocator = function(options) {
           if(settings.featuredLocations === true){
             //Create array for featured locations
             featuredset = $.grep(locationset, function(val, i){
-              return val[17] === "true";
+              return val['featured'] === "true";
             });
 
             //Create array for normal locations
             normalset = $.grep(locationset, function(val, i){
-              return val[17] !== "true";
+              return val['featured'] !== "true";
             });
 
             //Combine the arrays
@@ -515,13 +517,13 @@ $.fn.storeLocator = function(options) {
 
           //Check the closest marker
           if(settings.maxDistance === true && firstRun !== true){
-            if(locationset[0] === undefined  || locationset[0][0] > maxDistance){
+            if(locationset[0] === undefined  || locationset[0]['distance'] > maxDistance){
               alert(settings.distanceErrorAlert + maxDistance + " " + distUnit);
               return;
             }
           }
           else{
-            if(settings.distanceAlert != -1 && locationset[0][0] > settings.distanceAlert){
+            if(settings.distanceAlert != -1 && locationset[0]['distance'] > settings.distanceAlert){
               alert(settings.distanceErrorAlert + settings.distanceAlert + " " + distUnit);
             }
           }
@@ -529,48 +531,27 @@ $.fn.storeLocator = function(options) {
           //Create the map with jQuery
           $(function(){ 
 
-              var storeDistance, storeName, storeAddress1, storeAddress2, storeCity, storeState, storeCountry, storeZip, storePhone, storeEmail, storeWeb, storeHours1, storeHours2, storeHours3, storeDescription, storeCat, storeFeatured;
+	      var key, value, locationData = {};
 
               //Instead of repeating the same thing twice below
               function create_location_variables(loopcount){
-                storeDistance = locationset[loopcount][0];
-                storeDistance = roundNumber(storeDistance,2);
-                storeName = locationset[loopcount][1];
-                storeAddress1 = locationset[loopcount][4];
-                storeAddress2 = locationset[loopcount][5];
-                storeCity = locationset[loopcount][6];
-                storeState = locationset[loopcount][7];
-                storeZip = locationset[loopcount][8];
-                storeCountry = locationset[loopcount][9];
-                storePhone = locationset[loopcount][10];
-                storeEmail = locationset[loopcount][11]
-                storeWeb = locationset[loopcount][12];
-                storeHours1 = locationset[loopcount][13];
-                storeHours2 = locationset[loopcount][14];
-                storeHours3 = locationset[loopcount][15];
-                storeCat = locationset[loopcount][16];
-                storeFeatured = locationset[loopcount][17];
-              }
+		for ( key in locationset[loopcount] ) {
+			value = locationset[loopcount][key];
 
-              //There are less variables for KML files
-              function create_kml_location_variables(loopcount){
-                storeDistance = locationset[loopcount][0];
-                storeDistance = roundNumber(storeDistance,2);
-                storeName = locationset[loopcount][1];
-                storeDescription = locationset[loopcount][4];
+			if ( key == 'distance' ) {
+				value = roundNumber(value,2);
+			}
+
+			locationData[key] = value;
+		}
               }
 
               //Define the location data for the templates
               function define_location_data(currentMarker){
-                if(settings.dataType === 'kml'){
-                  create_kml_location_variables(currentMarker.get("id"));
-                }
-                else{
-                  create_location_variables(currentMarker.get("id"));
-                }
+                create_location_variables(currentMarker.get("id"));
 
                 var distLength;
-                if(storeDistance <= 1){ 
+                if(locationData['distance'] <= 1){ 
                   if(settings.lengthUnit === "km"){
                     distLength = settings.kilometerLang;
                   }
@@ -598,49 +579,14 @@ $.fn.storeLocator = function(options) {
                 }
                 
                 //Define location data
-                if(settings.dataType === 'kml'){
-                  var locations = {
-                    location: [
-                      {
-                        "distance": storeDistance, 
-                        "markerid": markerId,
-                        "marker": indicator, 
-                        "name": storeName, 
-                        "description": storeDescription,
-                        "length": distLength,
-                        "origin": origin
-                      } 
-                    ]
-                  };
-                }
-                else{
-                  var locations = {
-                    location: [
-                      {
-                        "distance": storeDistance, 
-                        "markerid": markerId,
-                        "marker": indicator, 
-                        "name": storeName, 
-                        "address": storeAddress1, 
-                        "address2": storeAddress2, 
-                        "city": storeCity, 
-                        "state": storeState, 
-                        "postal": storeZip,
-                        "country": storeCountry, 
-                        "phone": storePhone,
-                        "email": storeEmail, 
-                        "web": storeWeb, 
-                        "hours1": storeHours1, 
-                        "hours2": storeHours2, 
-                        "hours3": storeHours3, 
-                        "length": distLength,
-                        "origin": origin,
-                        "category": storeCat,
-                        "featured": storeFeatured
-                      } 
-                    ]
-                  };
-                }
+                var locations = {
+			location: [$.extend(locationData, {
+				'markerid': markerId,
+				'marker': indicator,
+				'length': distLength,
+				'origin': origin
+			})]
+		};
 
                 return locations;
               }
@@ -729,8 +675,8 @@ $.fn.storeLocator = function(options) {
               //Add markers and infowindows loop
               for(var y = 0; y <= storenum; y++) { 
                 var letter = String.fromCharCode("A".charCodeAt(0) + y);
-                var point = new google.maps.LatLng(locationset[y][2], locationset[y][3]);             
-                marker = createMarker(point, locationset[y][1], locationset[y][4], letter, locationset[y][14]);
+                var point = new google.maps.LatLng(locationset[y]['lat'], locationset[y]['lng']);             
+                marker = createMarker(point, locationset[y]['name'], locationset[y]['address'], letter);
                 marker.set("id", y);
                 markers[y] = marker;
                 if((settings.fullMapStart === true && firstRun === true) || settings.zoomLevel === 0){
@@ -789,7 +735,7 @@ $.fn.storeLocator = function(options) {
               $("#" + settings.listDiv + " ul li:odd").css('background', "#" + settings.listColor2);
                
               //Custom marker function - alphabetical
-              function createMarker(point, name, address, letter, type){
+              function createMarker(point, name, address, letter){
                 //Set up pin icon with the Google Charts API for all of our markers
                 var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=" + letter + "|" + settings.pinColor + "|" + settings.pinTextColor,
                   new google.maps.Size(21, 34),
