@@ -377,7 +377,7 @@ $.fn.storeLocator = function(options) {
             if(settings.dataType === 'json' || settings.dataType === 'jsonp'){
               //Process JSON
               $.each(data, function(){
-  	var key, value, locationData = {};
+		var key, value, locationData = {};
 
 		// Parse each data variables
 		for ( key in this ) {
@@ -645,6 +645,8 @@ $.fn.storeLocator = function(options) {
               }
               
               var map = new google.maps.Map(document.getElementById(settings.mapDiv),myOptions);
+              $this.data('map', map);
+
               //Create one infowindow to fill later
               var infowindow = new google.maps.InfoWindow();
 
