@@ -10,6 +10,18 @@ Handlebars is now required: It’s very important to note that the plugin now re
 
 ## Changelog
 
+### Version 1.4.8
+
+This update is made up of contributions from [Mathieu Boillat](https://github.com/ollea) and [Jimmy Rittenborg](https://github.com/JimmyRittenborg):
+
+* Added the possibility to set the 'storeLimit' option to -1, which means unlimited
+* Added the possibility to set the 'distanceAlert' option to -1, which means disable distance alert
+* Added little checks to only format 'web' variable when it is not null otherwise javascript would gives an error
+* Possibility to add custom variables in locations
+* If 'distance' variable is set in location, do not calculate it
+* Simplified some parts of the code
+* If noForm is true, only simulate the submit when the field is actually in focus
+
 ### Version 1.4.7
 
 Added ability to feature locations so that they always show at the top of the location list. To use, set the featuredLocations option to true and add featured="true" to featured locations in your XML or JSON locations data.
