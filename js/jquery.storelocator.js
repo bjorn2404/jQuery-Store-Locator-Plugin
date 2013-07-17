@@ -416,14 +416,23 @@ $.fn.storeLocator = function(options) {
             else if(settings.dataType === 'kml'){
               //Process KML
               $(data).find('Placemark').each(function(){
-            		var locationData = {
-            			'name': $(this).find('name').text(),
-            			'lat': $(this).find('coordinates').text().split(",")[1],
-            			'lng': $(this).find('coordinates').text().split(",")[0],
-            			'description': $(this).find('description').text()
+            		var $this = $(this), locationData = {
+            			'name': $this.find('name').text(),
+            			'lat': $this.find('coordinates').text().split(",")[1],
+            			'lng': $this.find('coordinates').text().split(",")[0],
+            			// Promote setting a locdescription key for a singular description to use in templates instead, as some KML generators (like Google Maps Engine) populates the generic description including all key: values set.
+            			'description': $this.find('description').text() 
             		};
+            		
+            		$this.find('displayName').each(function(){
+                  		var thisDataKey   = $(this).text(),
+                      		thisDataVal   = $(this).next().text();
+                  		locationData[thisDataKey] = thisDataVal;
+        		});
+        		
+        		if ( locationData['web'] ) locationData['web'] = locationData['web'].replace("http://",""); // Remove scheme (todo: should NOT be done)
 
-		            locationData['distance'] = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,locationData['lat'],locationData['lng'], GeoCodeCalc.EarthRadius);
+	            	locationData['distance'] = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,locationData['lat'],locationData['lng'], GeoCodeCalc.EarthRadius);
 
                 //Create the array
                 if(settings.maxDistance === true && firstRun !== true){
@@ -659,7 +668,7 @@ $.fn.storeLocator = function(options) {
               }
 
               //Add origin marker if the setting is set
-              if(settings.originMarker === true && settings.fullMapStart === false){
+              if(firstRun !== true && settings.originMarker === true){
                 var originPinShadow = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
                   new google.maps.Size(40, 37),
                   new google.maps.Point(0, 0),
@@ -672,6 +681,9 @@ $.fn.storeLocator = function(options) {
                     shadow: originPinShadow,
                     draggable: false
                   });
+                  if(settings.zoomLevel === 0){
+                  	bounds.extend(originPoint);
+        					}
               }
               
               //Add markers and infowindows loop
