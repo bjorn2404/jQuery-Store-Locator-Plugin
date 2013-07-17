@@ -17,7 +17,7 @@ $.fn.storeLocator = function(options) {
       'zoomLevel': 12,
       'pinColor': 'fe7569',
       'pinTextColor': '000000',
-      'lengthUnit': 'm',
+      'lengthUnit': 'km',
       'storeLimit': 26,
       'distanceAlert': 60,
       'dataType': 'xml',
@@ -56,7 +56,6 @@ $.fn.storeLocator = function(options) {
       'jsonpCallback': null,
       //Language options
       'geocodeErrorAlert': 'Geocode was not successful for the following reason: ',
-      'blankInputAlert': 'The input box was blank.',
       'addressErrorAlert' : 'Unable to find address',
       'autoGeocodeErrorAlert': 'Automatic location detection failed. Please fill in your address or zip code.',
       'distanceErrorAlert': 'Unfortunately, our closest location is more than ',
@@ -157,6 +156,39 @@ $.fn.storeLocator = function(options) {
   return radius * 2 * Math.asin( Math.min(1, Math.sqrt( ( Math.pow(Math.sin((GeoCodeCalc.DiffRadian(lat1, lat2)) / 2.0), 2.0) + Math.cos(GeoCodeCalc.ToRadian(lat1)) * Math.cos(GeoCodeCalc.ToRadian(lat2)) * Math.pow(Math.sin((GeoCodeCalc.DiffRadian(lng1, lng2)) / 2.0), 2.0) ) ) ) );
   };
 
+  start();
+
+  function start(){
+    //If a default location is set
+    if(settings.defaultLoc === true){
+        //The address needs to be determined for the directions link
+        var r = new ReverseGoogleGeocode();
+        var latlng = new google.maps.LatLng(settings.defaultLat, settings.defaultLng);
+        r.geocode(latlng, function(data) {
+          if(data !== null) {
+            var originAddress = data.address;
+            mapping(settings.defaultLat, settings.defaultLng, originAddress);
+          } else {
+            //Unable to geocode
+            alert(settings.addressErrorAlert);
+          }
+        });
+    }
+
+    //If show full map option is true
+    if(settings.fullMapStart === true){
+        //Just do the mapping without an origin
+        mapping();
+    }
+
+    //HTML5 geolocation API option
+    if(settings.autoGeocode === true){
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(autoGeocode_query, autoGeocode_error);
+        }
+    }
+  }
+
   //Geocode function for the origin location
   function GoogleGeocode(){
     geocoder = new google.maps.Geocoder();
@@ -199,35 +231,6 @@ $.fn.storeLocator = function(options) {
     return Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
   }
 
-  //If a default location is set
-  if(settings.defaultLoc === true){
-      //The address needs to be determined for the directions link
-      var r = new ReverseGoogleGeocode();
-      var latlng = new google.maps.LatLng(settings.defaultLat, settings.defaultLng);
-      r.geocode(latlng, function(data) {
-        if(data !== null) {
-          var originAddress = data.address;
-          mapping(settings.defaultLat, settings.defaultLng, originAddress);
-        } else {
-          //Unable to geocode
-          alert(settings.addressErrorAlert);
-        }
-      });
-  }
-
-  //If show full map option is true
-  if(settings.fullMapStart === true){
-      //Just do the mapping without an origin
-      mapping();
-  }
-
-  //HTML5 geolocation API option
-  if(settings.autoGeocode === true){
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(autoGeocode_query, autoGeocode_error);
-      }
-  }
-
   //If location is detected automatically
   function autoGeocode_query(position){
      //The address needs to be determined for the directions link
@@ -255,23 +258,22 @@ $.fn.storeLocator = function(options) {
     var userinput = $('#' + settings.inputID).val();
 
     if (userinput === ""){
-        //Show alert and stop processing
-        alert(settings.blankInputAlert);
-      }
-      else{
-        var g = new GoogleGeocode();
-        var address = userinput;
-        g.geocode(address, function(data) {
-          if(data !== null) {
-            olat = data.latitude;
-            olng = data.longitude;
-            mapping(olat, olng, userinput, distance);
-          } else {
-            //Unable to geocode
-            alert(settings.addressErrorAlert);
-          }
-        });
-      }
+      start();
+    }
+    else{
+      var g = new GoogleGeocode();
+      var address = userinput;
+      g.geocode(address, function(data) {
+        if(data !== null) {
+          olat = data.latitude;
+          olng = data.longitude;
+          mapping(olat, olng, userinput, distance);
+        } else {
+          //Unable to geocode
+          alert(settings.addressErrorAlert);
+        }
+      });
+    }
   }
 
   //Process form input
@@ -279,17 +281,17 @@ $.fn.storeLocator = function(options) {
     //Handle form submission
     function get_form_values(e){
       //Stop the form submission
-        e.preventDefault();
+      e.preventDefault();
 
-        if(settings.maxDistance === true){
-          var maxDistance = $('#' + settings.maxDistanceID).val();
-          //Start the mapping
-          begin_mapping(maxDistance);
-        }
-        else{
-          //Start the mapping
-          begin_mapping();
-        }
+      if(settings.maxDistance === true){
+        var maxDistance = $('#' + settings.maxDistanceID).val();
+        //Start the mapping
+        begin_mapping(maxDistance);
+      }
+      else{
+        //Start the mapping
+        begin_mapping();
+      }
     }
 
     //ASP.net or regular submission?
@@ -377,28 +379,28 @@ $.fn.storeLocator = function(options) {
             if(settings.dataType === 'json' || settings.dataType === 'jsonp'){
               //Process JSON
               $.each(data, function(){
-              		var key, value, locationData = {};
+                  var key, value, locationData = {};
 
-              		// Parse each data variables
-              		for( key in this ){
-              		  value = this[key];
+                  // Parse each data variables
+                  for( key in this ){
+                    value = this[key];
 
-              			if( key === 'locname' ){
-              				key = 'name'; // Translate locname to name (todo: should NOT be done)
-              			}
-              			else if(key === 'web'){
-              				if ( value ) value = value.replace("http://",""); // Remove scheme (todo: should NOT be done)
-              			}
+                    if( key === 'locname' ){
+                      key = 'name'; // Translate locname to name (todo: should NOT be done)
+                    }
+                    else if(key === 'web'){
+                      if ( value ) value = value.replace("http://",""); // Remove scheme (todo: should NOT be done)
+                    }
 
-              			locationData[key] = value;
-              		}
+                    locationData[key] = value;
+                  }
 
-              		if(!locationData['distance']){
-              			locationData['distance'] = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,locationData['lat'],locationData['lng'], GeoCodeCalc.EarthRadius);
-              		}
+                  if(!locationData['distance']){
+                    locationData['distance'] = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,locationData['lat'],locationData['lng'], GeoCodeCalc.EarthRadius);
+                  }
 
                 //Create the array
-                if(settings.maxDistance === true && firstRun !== true){
+                if(settings.maxDistance === true && firstRun !== true && maxDistance){
                   if(locationData['distance'] < maxDistance){
                     locationset[i] = locationData;
                   }
@@ -416,17 +418,17 @@ $.fn.storeLocator = function(options) {
             else if(settings.dataType === 'kml'){
               //Process KML
               $(data).find('Placemark').each(function(){
-            		var locationData = {
-            			'name': $(this).find('name').text(),
-            			'lat': $(this).find('coordinates').text().split(",")[1],
-            			'lng': $(this).find('coordinates').text().split(",")[0],
-            			'description': $(this).find('description').text()
-            		};
+                var locationData = {
+                  'name': $(this).find('name').text(),
+                  'lat': $(this).find('coordinates').text().split(",")[1],
+                  'lng': $(this).find('coordinates').text().split(",")[0],
+                  'description': $(this).find('description').text()
+                };
 
-		            locationData['distance'] = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,locationData['lat'],locationData['lng'], GeoCodeCalc.EarthRadius);
+                locationData['distance'] = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,locationData['lat'],locationData['lng'], GeoCodeCalc.EarthRadius);
 
                 //Create the array
-                if(settings.maxDistance === true && firstRun !== true){
+                if(settings.maxDistance === true && firstRun !== true && maxDistance){
                   if(locationData['distance'] < maxDistance){
                     locationset[i] = locationData;
                   }
@@ -444,32 +446,32 @@ $.fn.storeLocator = function(options) {
             else{
               //Process XML
               $(data).find('marker').each(function(){
-            		var locationData = {
-            			'name': $(this).attr('name'),
-            			'lat': $(this).attr('lat'),
-            			'lng': $(this).attr('lng'),
-            			'address': $(this).attr('address'),
-            			'address2': $(this).attr('address2'),
-            			'city': $(this).attr('city'),
-            			'state': $(this).attr('state'),
-            			'postal': $(this).attr('postal'),
-            			'country': $(this).attr('country'),
-            			'phone': $(this).attr('phone'),
-            			'email': $(this).attr('email'),
-            			'web': $(this).attr('web'),
-            			'hours1': $(this).attr('hours1'),
-            			'hours2': $(this).attr('hours2'),
-            			'hours3': $(this).attr('hours3'),
-            			'category': $(this).attr('category'),
-            			'featured': $(this).attr('featured')
-            		};
+                var locationData = {
+                  'name': $(this).attr('name'),
+                  'lat': $(this).attr('lat'),
+                  'lng': $(this).attr('lng'),
+                  'address': $(this).attr('address'),
+                  'address2': $(this).attr('address2'),
+                  'city': $(this).attr('city'),
+                  'state': $(this).attr('state'),
+                  'postal': $(this).attr('postal'),
+                  'country': $(this).attr('country'),
+                  'phone': $(this).attr('phone'),
+                  'email': $(this).attr('email'),
+                  'web': $(this).attr('web'),
+                  'hours1': $(this).attr('hours1'),
+                  'hours2': $(this).attr('hours2'),
+                  'hours3': $(this).attr('hours3'),
+                  'category': $(this).attr('category'),
+                  'featured': $(this).attr('featured')
+                };
 
-		            if(locationData['web']) locationData['web'] = locationData['web'].replace("http://",""); // Remove scheme (todo: should NOT be done)
+                if(locationData['web']) locationData['web'] = locationData['web'].replace("http://",""); // Remove scheme (todo: should NOT be done)
 
                 locationData['distance'] = GeoCodeCalc.CalcDistance(orig_lat,orig_lng,locationData['lat'],locationData['lng'], GeoCodeCalc.EarthRadius);
                 
                 //Create the array
-                if(settings.maxDistance === true && firstRun !== true){ 
+                if(settings.maxDistance === true && firstRun !== true && maxDistance){ 
                   if(locationData['distance'] < maxDistance){
                     locationset[i] = locationData;
                   }
@@ -516,7 +518,7 @@ $.fn.storeLocator = function(options) {
           var distUnit = (settings.lengthUnit === "km") ? settings.kilometersLang : settings.milesLang ;
 
           //Check the closest marker
-          if(settings.maxDistance === true && firstRun !== true){
+          if(settings.maxDistance === true && firstRun !== true && maxDistance){
             if(locationset[0] === undefined  || locationset[0]['distance'] > maxDistance){
               alert(settings.distanceErrorAlert + maxDistance + " " + distUnit);
               return;
@@ -531,19 +533,19 @@ $.fn.storeLocator = function(options) {
           //Create the map with jQuery
           $(function(){ 
 
-	           var key, value, locationData = {};
+             var key, value, locationData = {};
 
               //Instead of repeating the same thing twice below
               function create_location_variables(loopcount){
-            		for ( key in locationset[loopcount] ) {
-            			value = locationset[loopcount][key];
+                for ( key in locationset[loopcount] ) {
+                  value = locationset[loopcount][key];
 
-            			if(key === 'distance'){
-            				value = roundNumber(value,2);
-            			}
+                  if(key === 'distance'){
+                    value = roundNumber(value,2);
+                  }
 
-            			locationData[key] = value;
-            		}
+                  locationData[key] = value;
+                }
               }
 
               //Define the location data for the templates
@@ -580,13 +582,13 @@ $.fn.storeLocator = function(options) {
                 
                 //Define location data
                 var locations = {
-            			location: [$.extend(locationData, {
-            				'markerid': markerId,
-            				'marker': indicator,
-            				'length': distLength,
-            				'origin': origin
-            			})]
-            		};
+                  location: [$.extend(locationData, {
+                    'markerid': markerId,
+                    'marker': indicator,
+                    'length': distLength,
+                    'origin': origin
+                  })]
+                };
 
                 return locations;
               }
