@@ -416,12 +416,12 @@ $.fn.storeLocator = function(options) {
             else if(settings.dataType === 'kml'){
               //Process KML
               $(data).find('Placemark').each(function(){
-            		var $this = $(this), locationData = {
-            			'name': $this.find('name').text(),
-            			'lat': $this.find('coordinates').text().split(",")[1],
-            			'lng': $this.find('coordinates').text().split(",")[0],
+            		var $placemark = $(this), locationData = {
+            			'name': $placemark.find('name').text(),
+            			'lat' : $placemark.find('coordinates').text().split(",")[1],
+            			'lng' : $placemark.find('coordinates').text().split(",")[0],
             			// Promote setting a locdescription key for a singular description to use in templates instead, as some KML generators (like Google Maps Engine) populates the generic description including all key: values set.
-            			'description': $this.find('description').text() 
+            			'description': $placemark.find('description').text() 
             		};
             		
             		$this.find('displayName').each(function(){
