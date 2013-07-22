@@ -424,7 +424,7 @@ $.fn.storeLocator = function(options) {
             			'description': $placemark.find('description').text() 
             		};
             		
-            		$this.find('displayName').each(function(){
+            		$placemark.find('displayName').each(function(){
                   		var thisDataKey   = $(this).text(),
                       		thisDataVal   = $(this).next().text();
                   		locationData[thisDataKey] = thisDataVal;
