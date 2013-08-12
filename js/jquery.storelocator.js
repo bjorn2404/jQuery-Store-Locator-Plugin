@@ -17,7 +17,7 @@ $.fn.storeLocator = function(options) {
       'zoomLevel': 12,
       'pinColor': 'fe7569',
       'pinTextColor': '000000',
-      'lengthUnit': 'km',
+      'lengthUnit': 'm',
       'storeLimit': 26,
       'distanceAlert': 60,
       'dataType': 'xml',
