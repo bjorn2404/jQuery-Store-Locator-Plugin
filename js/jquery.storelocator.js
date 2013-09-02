@@ -690,7 +690,7 @@ $.fn.storeLocator = function(options) {
               for(var y = 0; y <= storenum; y++) { 
                 var letter = String.fromCharCode("A".charCodeAt(0) + y);
                 var point = new google.maps.LatLng(locationset[y]['lat'], locationset[y]['lng']);             
-                marker = createMarker(point, locationset[y]['name'], locationset[y]['address'], letter);
+                marker = createMarker(point, locationset[y]['name'], locationset[y]['address'], letter );
                 marker.set("id", y);
                 markers[y] = marker;
                 if((settings.fullMapStart === true && firstRun === true) || settings.zoomLevel === 0){
