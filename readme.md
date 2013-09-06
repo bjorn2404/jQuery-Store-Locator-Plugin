@@ -10,6 +10,20 @@ Handlebars is now required: It’s very important to note that the plugin now re
 
 ## Changelog
 
+### Version 1.4.9
+
+More contributions from [Mathieu Boillat](https://github.com/ollea) and [Jimmy Rittenborg](https://github.com/JimmyRittenborg) in addition to a few style updates:
+
+* Store the map object into the jQuery object in order to retrieve it by calling $object.data('map').
+* Possibility to add custom variables in locations
+* If 'distance' variable is set in location, do not calculate it
+* Enabling the new Google Maps [https://developers.google.com/maps/documentation/javascript/basics#VisualRefresh](visual refresh)
+* Replaced submit image button image with button tag and CSS3
+* Overrode new infowindow Roboto font for consistent style
+* Removed icon shadows because they are no longer work in the upcoming version of Google Maps: see [https://developers.google.com/maps/documentation/javascript/basics#VisualRefresh](Changes in the visual refresh section)
+* Changed "locname" to "name" for each location in the JSON file to match other location data types and to avoid renaming
+* Simplified some parts of the code
+
 ### Version 1.4.8
 
 This update is made up of contributions from [Mathieu Boillat](https://github.com/ollea) and [Jimmy Rittenborg](https://github.com/JimmyRittenborg):

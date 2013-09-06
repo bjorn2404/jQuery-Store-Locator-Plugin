@@ -1,5 +1,5 @@
 /*
-* storeLocator v1.4.8 - jQuery Google Maps Store Locator Plugin
+* storeLocator v1.4.9 - jQuery Google Maps Store Locator Plugin
 * (c) Copyright 2013, Bjorn Holine (http://www.bjornblog.com)
 * Released under the MIT license
 * Distance calculation function by Chris Pietschmann: http://pietschsoft.com/post/2008/02/01/Calculate-Distance-Between-Geocodes-in-C-and-JavaScript.aspx
@@ -316,6 +316,9 @@ $.fn.storeLocator = function(options) {
   function mapping(orig_lat, orig_lng, origin, maxDistance){
   $(function(){
 
+        // Enable the visual refresh https://developers.google.com/maps/documentation/javascript/basics#VisualRefresh
+        google.maps.visualRefresh = true;
+
         var dataTypeRead;
 
         //KML is read as XML
@@ -385,10 +388,7 @@ $.fn.storeLocator = function(options) {
                   for( key in this ){
                     value = this[key];
 
-                    if( key === 'locname' ){
-                      key = 'name'; // Translate locname to name (todo: should NOT be done)
-                    }
-                    else if(key === 'web'){
+                    if(key === 'web'){
                       if ( value ) value = value.replace("http://",""); // Remove scheme (todo: should NOT be done)
                     }
 
@@ -662,16 +662,11 @@ $.fn.storeLocator = function(options) {
 
               //Add origin marker if the setting is set
               if(settings.originMarker === true && settings.fullMapStart === false){
-                var originPinShadow = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
-                  new google.maps.Size(40, 37),
-                  new google.maps.Point(0, 0),
-                  new google.maps.Point(12, 35));
                 var originPoint = new google.maps.LatLng(orig_lat, orig_lng);  
                 var marker = new google.maps.Marker({
                     position: originPoint,
                     map: map,
                     icon: 'http://maps.google.com/mapfiles/ms/icons/'+ settings.originpinColor +'-dot.png',
-                    shadow: originPinShadow,
                     draggable: false
                   });
               }
@@ -745,10 +740,6 @@ $.fn.storeLocator = function(options) {
                   new google.maps.Size(21, 34),
                   new google.maps.Point(0,0),
                   new google.maps.Point(10, 34));
-                var pinShadow = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
-                  new google.maps.Size(40, 37),
-                  new google.maps.Point(0, 0),
-                  new google.maps.Point(12, 35));
                 
                 //Create the markers
                 if(settings.storeLimit === -1 || settings.storeLimit > 26){
@@ -763,7 +754,6 @@ $.fn.storeLocator = function(options) {
                     position: point, 
                     map: map,
                     icon: pinImage,
-                    shadow: pinShadow,
                     draggable: false
                   });
                 }

@@ -1,10 +1,8 @@
-#page-header
-{
+#page-header{
 	float: left;
 }
 
-#store-locator-container
-{
+#store-locator-container{
 	float: left;
 	margin-left: 20px;
 	width: 875px;
@@ -119,20 +117,32 @@
 	#form-input{
 		float: left;
 		margin-top: 3px;
-	}
 
-	#form-input label{
-		font-weight: bold;
+		label{
+			font-weight: bold;
+		}
+
+		input{
+			padding: 4px;
+			line-height: 16px;
+			border: 1px solid #ccc;
+		}
 	}
 
 	#address{
 		margin: 0 0 0 10px;
 	}
 
-	#submit-btn{
+	#submit{
 		float: left;
 		cursor: pointer;
-		margin-left: 10px;
+		margin: 3px 0 0 10px;
+		padding: 3px 6px;
+		background: #ae2118;
+		border: 1px solid #961f17;
+		color: #fff;
+		-webkit-border-radius: 4px;
+	    border-radius: 4px;
 	}
 
 	#loading-map
@@ -149,6 +159,11 @@
 		width: 635px; 
 		height: 530px; 
 	}
+}
+
+/* Infowindow Roboto font override */
+.gm-style div, .gm-style span, .gm-style label, .gm-style a{
+	font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Modal window */

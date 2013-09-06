@@ -1,5 +1,4 @@
-#store-locator-container
-{
+#store-locator-container{
 	float: left;
 	margin-left: 20px;
 	width: 875px;
@@ -7,21 +6,18 @@
 	color: #333;
 }
 
-#page-header
-{
+#page-header{
 	float: left;
 }
 
-#form-container
-{
+#form-container{
 	clear: left;
 	float: left;
 	margin-top: 15px;
 	width: 100%;
 }
 
-#map-container
-{
+#map-container{
 	clear: left;
 	float: left;
 	margin-top: 27px;
@@ -29,19 +25,16 @@
 	width: 875px;
 }
 
-#map-container a
-{
+#map-container a{
 	color: #e76737;
 	text-decoration: none;
 }
 
-#map-container a:hover, #map-container a:active
-{
+#map-container a:hover, #map-container a:active{
 	text-decoration: underline;
 }
 
-#map-container .custom-marker
-{
+#map-container .custom-marker{
 	width: 32px;
 	height: 37px;
 	color: #fff;
@@ -50,16 +43,14 @@
     cursor: pointer;
 }
 
-#loc-list
-{
+#loc-list{
 	float: left; 
 	width: 240px;
 	height: 530px;
 	overflow: auto;
 }
 
-#loc-list ul
-{
+#loc-list ul{
 	display: block;
 	clear: left;
 	float: left;
@@ -68,8 +59,7 @@
 	padding: 0;
 }
 
-#loc-list .list-label
-{
+#loc-list .list-label{
 	float: left;
 	margin: 10px 0 0 6px;
 	padding: 2px 3px;
@@ -80,27 +70,23 @@
 	font-weight: bold;
 }
 
-#loc-list .list-details
-{
+#loc-list .list-details{
 	float: left;
 	margin-left: 6px;
 	width: 165px;
 }
 
-#loc-list .list-content
-{
+#loc-list .list-content{
 	padding: 10px;
 }
 
-#loc-list .loc-dist
-{
+#loc-list .loc-dist{
 	font-weight: bold;
 	font-style: italic;
 	color: #8e8e8e;
 }
 
-#loc-list li
-{
+#loc-list li{
 	display: block;
 	clear: left;
 	float: left;
@@ -110,8 +96,7 @@
 	border: 1px solid #fff; /* Adding this to prevent moving li elements when adding the list-focus class*/
 }
 
-#loc-list .list-focus
-{
+#loc-list .list-focus{
 	border: 1px solid rgba(82,168,236,0.9);
 	-moz-box-shadow: 0 0 8px rgba(82,168,236,0.7);
 	-webkit-box-shadow: 0 0 8px rgba(82,168,236,0.7);
@@ -119,44 +104,49 @@
 	transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
 }
 
-#map-container .loc-name
-{
+#map-container .loc-name{
 	color: #AD2118;
 	font-weight: bold;
 }
 
-#search-form
-{
+#search-form{
 	clear: left;
 	float: left;
 	height: 60px;
 }
 
-#form-input
-{
+#form-input{
 	float: left;
 	margin-top: 3px;
 }
 
-#form-input label
-{
+#form-input label{
 	font-weight: bold;
 }
 
-#address
-{
+#form-input input{
+	padding: 4px;
+	line-height: 16px;
+	border: 1px solid #ccc;
+}
+
+#address{
 	margin: 0 0 0 10px;
 }
 
-#submit-btn
-{
+#submit{
 	float: left;
 	cursor: pointer;
-	margin-left: 10px;
+	margin: 3px 0 0 10px;
+	padding: 3px 6px;
+	background: #ae2118;
+	border: 1px solid #961f17;
+	color: #fff;
+	-webkit-border-radius: 4px;
+    border-radius: 4px;
 }
 
-#loading-map
-{
+#loading-map{
 	float: left;
 	margin: 4px 0 0 10px;
 	width: 16px;
@@ -164,17 +154,20 @@
 	background: url(../images/ajax-loader.gif) no-repeat;
 }
 
-#map
-{
+#map{
 	float: left; 
 	width: 635px; 
 	height: 530px; 
 }
 
+/* Infowindow Roboto font override */
+.gm-style div, .gm-style span, .gm-style label, .gm-style a{
+	font-family: Arial, Helvetica, sans-serif;
+}
+
 /* Modal window */
 
-#overlay
-{
+#overlay{
      position: fixed;
      left: 0px;
      top: 0px;
@@ -184,8 +177,7 @@
      background: url(../images/overlay-bg.png) repeat;
 }
 
-#modal-window
-{
+#modal-window{
 	position: absolute;
 	left: 50%;
     margin-left: -460px; /* width divided by 2 */
@@ -198,14 +190,12 @@
 	box-shadow: 0 0 10px #656565;
 }
 
-#modal-content
-{
+#modal-content{
 	float: left;
 	padding: 0 22px; /* there's already a margin on the top of the map-container div */
 }
 
-#close-icon
-{
+#close-icon{
 	position: absolute;
 	top: -6px;
 	right: -6px;
@@ -221,8 +211,7 @@
 
 /* The following is for the geocode page and not the store locator */
 
-#geocode-result
-{
+#geocode-result{
 	clear: left;
 	float: left;
 	margin-top: 30px;
