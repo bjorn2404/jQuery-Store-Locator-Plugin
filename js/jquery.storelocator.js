@@ -14,6 +14,7 @@ $.fn.storeLocator = function(options) {
       'formContainerDiv': 'form-container',
       'formID': 'user-location',
       'inputID': 'address',
+      'regionID': 'region',
       'zoomLevel': 12,
       'pinColor': 'fe7569',
       'pinTextColor': '000000',
@@ -164,7 +165,7 @@ $.fn.storeLocator = function(options) {
         //The address needs to be determined for the directions link
         var r = new ReverseGoogleGeocode();
         var latlng = new google.maps.LatLng(settings.defaultLat, settings.defaultLng);
-        r.geocode(latlng, function(data) {
+        r.geocode({'latLng': latlng}, function(data) {
           if(data !== null) {
             var originAddress = data.address;
             mapping(settings.defaultLat, settings.defaultLng, originAddress);
@@ -192,8 +193,8 @@ $.fn.storeLocator = function(options) {
   //Geocode function for the origin location
   function GoogleGeocode(){
     geocoder = new google.maps.Geocoder();
-    this.geocode = function(address, callbackFunction) {
-        geocoder.geocode( { 'address': address}, function(results, status) {
+    this.geocode = function(request, callbackFunction) {
+        geocoder.geocode(request, function(results, status) {
           if (status === google.maps.GeocoderStatus.OK) {
             var result = {};
             result.latitude = results[0].geometry.location.lat();
@@ -210,8 +211,8 @@ $.fn.storeLocator = function(options) {
   //Reverse geocode to get address for automatic options needed for directions link
   function ReverseGoogleGeocode(){
     geocoder = new google.maps.Geocoder();
-    this.geocode = function(latlng, callbackFunction) {
-        geocoder.geocode( {'latLng': latlng}, function(results, status) {
+    this.geocode = function(request, callbackFunction) {
+        geocoder.geocode(request, function(results, status) {
           if (status === google.maps.GeocoderStatus.OK) {
             if (results[0]) {
                 var result = {};
@@ -236,7 +237,7 @@ $.fn.storeLocator = function(options) {
      //The address needs to be determined for the directions link
       var r = new ReverseGoogleGeocode();
       var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-      r.geocode(latlng, function(data) {
+      r.geocode({'latLng': latlng}, function(data) {
         if(data !== null) {
           var originAddress = data.address;
           mapping(position.coords.latitude, position.coords.longitude, originAddress);
@@ -256,6 +257,7 @@ $.fn.storeLocator = function(options) {
   function begin_mapping(distance){
     //Get the user input and use it
     var userinput = $('#' + settings.inputID).val();
+    var region = $('#' + settings.regionID).val();
 
     if (userinput === ""){
       start();
@@ -263,7 +265,7 @@ $.fn.storeLocator = function(options) {
     else{
       var g = new GoogleGeocode();
       var address = userinput;
-      g.geocode(address, function(data) {
+      g.geocode({'address': address, 'region': region}, function(data) {
         if(data !== null) {
           olat = data.latitude;
           olng = data.longitude;
@@ -675,7 +677,7 @@ $.fn.storeLocator = function(options) {
               for(var y = 0; y <= storenum; y++) { 
                 var letter = String.fromCharCode("A".charCodeAt(0) + y);
                 var point = new google.maps.LatLng(locationset[y]['lat'], locationset[y]['lng']);             
-                marker = createMarker(point, locationset[y]['name'], locationset[y]['address'], letter );
+                marker = createMarker(point, locationset[y]['name'], locationset[y]['address'], letter);
                 marker.set("id", y);
                 markers[y] = marker;
                 if((settings.fullMapStart === true && firstRun === true) || settings.zoomLevel === 0){
