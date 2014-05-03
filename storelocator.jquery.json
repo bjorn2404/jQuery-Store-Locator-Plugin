@@ -8,6 +8,10 @@
         "name": "Bjorn Holine",
         "url": "http://www.bjornblog.com/"
     },
+		"repository": {
+			"type": "git",
+			"url": "https://github.com/bjorn2404/jQuery-Store-Locator-Plugin.git"
+		},
     "licenses": [
         {
             "type": "MIT",

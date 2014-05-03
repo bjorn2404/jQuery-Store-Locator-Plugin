@@ -1,9 +1,9 @@
 ﻿//Geocode function for the origin location
 function GoogleGeocode() {
-  geocoder = new google.maps.Geocoder();
+  var geocoder = new google.maps.Geocoder();
   this.geocode = function(address, callbackFunction) {
       geocoder.geocode( { 'address': address}, function(results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
+        if (status === google.maps.GeocoderStatus.OK) {
           var result = {};
           result.latitude = results[0].geometry.location.lat();
           result.longitude = results[0].geometry.location.lng();
@@ -24,7 +24,7 @@ $(function() {
     //Get the user input and use it
     var userinput = $('form #address').val();
 
-    if (userinput == "")
+    if (userinput === "")
       {
         alert("The input box was blank.");
       }
