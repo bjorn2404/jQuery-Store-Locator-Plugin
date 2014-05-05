@@ -16,7 +16,10 @@ $.fn.storeLocator = function(options){
 		'formID': 'user-location',
 		'inputID': 'address',
 		'regionID': 'region',
-		'zoomLevel': 12,
+		'mapSettings': {
+			zoom: 12,
+			mapTypeId: google.maps.MapTypeId.ROADMAP
+		},
 		'pinColor': 'fe7569',
 		'pinTextColor': '000000',
 		'lengthUnit': 'm',
@@ -24,6 +27,7 @@ $.fn.storeLocator = function(options){
 		'distanceAlert': 60,
 		'dataType': 'xml',
 		'dataLocation': 'data/locations.xml',
+		'xmlElement': 'marker',
 		'listColor1': 'ffffff',
 		'listColor2': 'eeeeee',
 		'originMarker': false,
@@ -52,6 +56,7 @@ $.fn.storeLocator = function(options){
 		'KMLlistTemplatePath': 'templates/kml-location-list-description.html',
 		'listTemplateID': null,
 		'infowindowTemplateID': null,
+		'taxonomyFilters': null,
 		'callbackBeforeSend': null,
 		'callbackComplete': null,
 		'callbackSuccess': null,
@@ -72,7 +77,39 @@ $.fn.storeLocator = function(options){
   return this.each(function(){
 
   var $this = $(this);
-  var listTemplate, infowindowTemplate;
+  var listTemplate, infowindowTemplate, dataTypeRead, originalData;
+
+	//KML is read as XML
+	if (settings.dataType === 'kml') {
+		dataTypeRead = 'xml';
+	}
+	else {
+		dataTypeRead = settings.dataType;
+	}
+
+	/**
+	 * Changing AJAX call to this function. TODO: Add old callbacks, maybe switch to when/then
+	 */
+	function getData(){
+		var d = $.Deferred();
+
+		$.ajax({
+			type: 'GET',
+			url: settings.dataLocation + (settings.dataType === 'jsonp' ? (settings.dataLocation.match(/\?/) ? '&' : '?') + 'callback=?' : ''),
+			dataType: dataTypeRead,
+			jsonpCallback: (settings.dataType === 'jsonp' ? settings.jsonpCallback : null)
+		}).done(function(p){
+			d.resolve(p);
+		}).fail(d.reject);
+		return d.promise();
+	}
+
+	var originalDataRequest = getData();
+
+	//Save this separately so we can avoid multiple AJAX requests
+	originalDataRequest.done(function(data){
+		originalData = data;
+	});
 
 	/**
 	 * Load the external template files first
@@ -150,6 +187,7 @@ $.fn.storeLocator = function(options){
   var featuredset = [];
   var normalset = [];
   var markers = [];
+	var filters = {};
   var prefix = 'storeLocator';
 
 	/**
@@ -162,7 +200,93 @@ $.fn.storeLocator = function(options){
     markers = [];
     $(document).off('click.'+prefix, settings.listDiv + ' li');
   }
-  
+
+	/**
+	 * Check for existing filter selections
+	 */
+	function checkFilters(){
+		$.each(settings.taxonomyFilters,function(k, v){
+			//Find the existing checked boxes for each filter
+			$(v + ' input[type=checkbox]').each(function(){
+				if($(this).prop('checked')){
+					var catVal = $(this).attr('id');
+
+					//Only add the taxonomy id if it doesn't already exist
+					if(filters[k].indexOf(catVal) === -1){
+						filters[k].push(catVal);
+					}
+				}
+			});
+		});
+	}
+
+	//Taxonomy filtering
+	if(settings.taxonomyFilters !== null){
+
+		//Set up the filters
+		$.each(settings.taxonomyFilters,function(k){
+			filters[k] = [];
+		});
+
+		//Handle filter updates - TODO: This is only working with the map already open at the moment - need to add something to the form submit
+		$('.bh-storelocator-filters-container').on('click change'+prefix, 'input, select', function(e){
+			e.stopPropagation();
+
+			//First check if it's a checkbox or select drop-down
+			if ($(this).is('input[type="checkbox"]')){
+				var catId, locFilterContainer, locFilterKey; //TODO: Change variable loc names to something else
+
+				//First check for existing selections
+				checkFilters();
+
+				catId = $(this).attr('id');
+				locFilterContainer = $(this).parent('ul').attr('id');
+
+				//Get the correct filter key
+				for(var key in settings.taxonomyFilters){
+					if(settings.taxonomyFilters.hasOwnProperty(key)){
+						for(var i = 0; i< settings.taxonomyFilters[key].length; i++){
+							if(settings.taxonomyFilters[key][i] === locFilterContainer){
+								locFilterKey = key;
+							}
+						}
+					}
+				}
+
+				//Add or remove filters based on checkbox values
+				if($(this).prop('checked')){
+					//Remove ids from the filter arrays as they are unchecked
+					var filterIndex = filters[locFilterKey].indexOf(catId);
+					if(filterIndex > -1){
+						filters[locFilterKey].splice(filterIndex, 1);
+						reset();
+						if((olat) && (olng)){
+							begin_mapping();
+						}
+						else {
+							mapping(originalData);
+						}
+					}
+				}
+				else {
+					//Add ids to the filter arrays as they are checked
+					filters[locFilterKey].push(catId);
+					reset();
+					if((olat) && (olng)){
+						begin_mapping();
+					}
+					else{
+						mapping(originalData);
+					}
+				}
+			}
+			//Select filters
+		/*else {
+
+			}*/
+		});
+	}
+
   //Add modal window divs if set
   if(settings.modalWindow === true){
     $this.wrap('<div class="' + settings.overlayDiv + '"><div class="' + settings.modalWindowDiv + '"><div class="' + settings.modalContentDiv + '">');
@@ -207,7 +331,7 @@ $.fn.storeLocator = function(options){
 				r.geocode({'latLng': latlng}, function(data){
           if(data !== null){
             var originAddress = data.address;
-            mapping(settings.defaultLat, settings.defaultLng, originAddress);
+            mapping(originalData, settings.defaultLat, settings.defaultLng, originAddress);
           } else {
             //Unable to geocode
             alert(settings.addressErrorAlert);
@@ -218,7 +342,7 @@ $.fn.storeLocator = function(options){
     //If show full map option is true
     if(settings.fullMapStart === true){
         //Just do the mapping without an origin
-        mapping();
+        mapping(originalData);
     }
 
     //HTML5 geolocation API option
@@ -291,7 +415,7 @@ $.fn.storeLocator = function(options){
 			r.geocode({'latLng': latlng}, function(data){
         if(data !== null){
           var originAddress = data.address;
-          mapping(position.coords.latitude, position.coords.longitude, originAddress);
+          mapping(originalData, position.coords.latitude, position.coords.longitude, originAddress);
         } else {
           //Unable to geocode
           alert(settings.addressErrorAlert);
@@ -325,10 +449,8 @@ $.fn.storeLocator = function(options){
 			unitSystem: unitSystem
 		};
 		directionsService.route(request, function(response, status){
-			console.log(status);
 			if (status === google.maps.DirectionsStatus.OK){
 				return(response);
-				console.log(response);
 			}
 		});
 	}
@@ -351,7 +473,6 @@ $.fn.storeLocator = function(options){
 		};
 
 		service.getDistanceMatrix(request, function(response, status){
-			console.log(status);
 			if (status === google.maps.DistanceMatrixStatus.OK){
 				return(response);
 			}
@@ -380,7 +501,7 @@ $.fn.storeLocator = function(options){
         if(data !== null){
           olat = data.latitude;
           olng = data.longitude;
-          mapping(olat, olng, userinput, distance);
+          mapping(originalData, olat, olng, userinput, distance);
         } else {
           //Unable to geocode
           alert(settings.addressErrorAlert);
@@ -430,12 +551,13 @@ $.fn.storeLocator = function(options){
 	/**
 	 * Now all the mapping stuff
 	 *
+	 * @param data {kml,xml,or json} all location data
 	 * @param orig_lat {number} origin latitude
 	 * @param orig_lng {number} origin longitude
 	 * @param origin {string} origin address
 	 * @param maxDistance {number} optional maximum distance
 	 */
-  function mapping(orig_lat, orig_lng, origin, maxDistance){
+  function mapping(data, orig_lat, orig_lng, origin, maxDistance){
   $(function(){
 
         //Enable the visual refresh https://developers.google.com/maps/documentation/javascript/basics#VisualRefresh
@@ -444,48 +566,10 @@ $.fn.storeLocator = function(options){
 				//Setup the origin point
 				var originPoint = new google.maps.LatLng(orig_lat, orig_lng);
 
-        var dataTypeRead;
-
-        //KML is read as XML
-        if(settings.dataType === 'kml'){
-          dataTypeRead = 'xml';
-        }
-        else{
-          dataTypeRead = settings.dataType;
-        }
-
 				/**
 				 * Process the location data with AJAX
 				 */
-        $.ajax({
-        type: 'GET',
-        url: settings.dataLocation + (settings.dataType === 'jsonp' ? (settings.dataLocation.match(/\?/) ? '&' : '?') + 'callback=?' : ''),
-        dataType: dataTypeRead,
-        jsonpCallback: (settings.dataType === 'jsonp' ? settings.jsonpCallback : null),
-        beforeSend: function (){
-          // Callback
-          if(settings.callbackBeforeSend){
-            settings.callbackBeforeSend.call(this);
-          }
-
-          //Loading
-          if(settings.loading === true){
-            $('.' + settings.formContainerDiv).append('<div class="' + settings.loadingDiv +'"><\/div>');
-          }
-
-        },
-        complete: function (event, request, options){
-            // Callback
-            if(settings.callbackComplete){
-              settings.callbackComplete.call(this, event, request, options);
-            }
-
-            //Loading remove
-            if(settings.loading === true){
-              $('.' + settings.loadingDiv).remove();
-            }
-        },
-        success: function (data, xhr, options){
+				originalDataRequest.then(function(){
             // Callback
             if(settings.callbackSuccess){
               settings.callbackSuccess.call(this, data, xhr, options);
@@ -574,26 +658,12 @@ $.fn.storeLocator = function(options){
             }
             else{
               //Process XML
-              $(data).find('marker').each(function(){
-                var locationData = {
-                  'name': $(this).attr('name'),
-                  'lat': $(this).attr('lat'),
-                  'lng': $(this).attr('lng'),
-                  'address': $(this).attr('address'),
-                  'address2': $(this).attr('address2'),
-                  'city': $(this).attr('city'),
-                  'state': $(this).attr('state'),
-                  'postal': $(this).attr('postal'),
-                  'country': $(this).attr('country'),
-                  'phone': $(this).attr('phone'),
-                  'email': $(this).attr('email'),
-                  'web': $(this).attr('web'),
-                  'hours1': $(this).attr('hours1'),
-                  'hours2': $(this).attr('hours2'),
-                  'hours3': $(this).attr('hours3'),
-                  'category': $(this).attr('category'),
-                  'featured': $(this).attr('featured')
-                };
+              $(data).find(settings.xmlElement).each(function(){
+								var locationData = {};
+
+								$.each(this.attributes, function(i, attrib){
+									locationData[attrib.name] = attrib.value;
+								});
 
                 if(locationData['web']) locationData['web'] = locationData['web'].replace('http://',''); // Remove scheme (todo: should NOT be done)
 
@@ -608,9 +678,9 @@ $.fn.storeLocator = function(options){
 									originsArray[i] = originPoint;
 									destinationsArray[i] = locDest;
 								}
-                
+
                 //Create the array
-                if(settings.maxDistance === true && firstRun !== true && maxDistance){ 
+                if(settings.maxDistance === true && firstRun !== true && maxDistance){
                   if(locationData['distance'] < maxDistance){
                     locationset[i] = locationData;
                   }
@@ -619,7 +689,20 @@ $.fn.storeLocator = function(options){
                   }
                 }
                 else{
-                  locationset[i] = locationData;
+									//Taxonomy filtering
+									if(settings.taxonomyFilters !== null){
+										$.each(settings.taxonomyFilters,function(k){
+											if(locationData[k].indexOf(filters[k]) > -1){
+												locationset[i] = locationData;
+											}
+											else{
+												return;
+											}
+										});
+									}
+									else{
+										locationset[i] = locationData;
+									}
                 }
 
                 i++;
@@ -627,10 +710,10 @@ $.fn.storeLocator = function(options){
             }
 
 					//Distance calculation update testing - there is a 100 element request limit
-					if(locationset.length < 26){
+					/*if(locationset.length < 26){
 						var matrix = calculateDistances(originsArray, destinationsArray);
 						//console.log(matrix);
-					}
+					}*/
 
           //Distance sorting function
           function sort_numerically(locationsarray){
@@ -674,9 +757,9 @@ $.fn.storeLocator = function(options){
               alert(settings.distanceErrorAlert + settings.distanceAlert + ' ' + distUnit);
             }
           }
-          
+
           //Create the map with jQuery
-          $(function(){ 
+          $(function(){
 
              var key, value, locationData = {};
 
@@ -698,20 +781,20 @@ $.fn.storeLocator = function(options){
                 create_location_variables(currentMarker.get('id'));
 
                 var distLength;
-                if(locationData['distance'] <= 1){ 
+                if(locationData['distance'] <= 1){
                   if(settings.lengthUnit === 'km'){
                     distLength = settings.kilometerLang;
                   }
                   else{
-                    distLength = settings.mileLang; 
+                    distLength = settings.mileLang;
                   }
                 }
-                else{ 
+                else{
                   if(settings.lengthUnit === 'km'){
                     distLength = settings.kilometersLang;
                   }
                   else{
-                    distLength = settings.milesLang; 
+                    distLength = settings.milesLang;
                   }
                 }
 
@@ -724,7 +807,7 @@ $.fn.storeLocator = function(options){
                 else{
                   var indicator = String.fromCharCode('A'.charCodeAt(0) + markerId);
                 }
-                
+
                 //Define location data
                 var locations = {
                   location: [$.extend(locationData, {
@@ -777,18 +860,13 @@ $.fn.storeLocator = function(options){
               }
 
               //Google maps settings
-              if((settings.fullMapStart === true && firstRun === true) || settings.zoomLevel === 0){
-                var myOptions = {
-                  mapTypeId: google.maps.MapTypeId.ROADMAP
-                };
+              if((settings.fullMapStart === true && firstRun === true) || settings.mapSettings.zoom === 0){
+                var myOptions = settings.mapSettings;
                 var bounds = new google.maps.LatLngBounds();
               }
               else{
-                var myOptions = {
-                  zoom: settings.zoomLevel,
-                  center: originPoint,
-                  mapTypeId: google.maps.MapTypeId.ROADMAP
-                };
+								settings.mapSettings.center = originPoint;
+                var myOptions = settings.mapSettings;
               }
 
               var map = new google.maps.Map(document.getElementById(settings.mapDiv.replace('#')),myOptions);
@@ -815,15 +893,15 @@ $.fn.storeLocator = function(options){
                     draggable: false
                   });
               }
-              
+
               //Add markers and infowindows loop
               for(var y = 0; y <= storenum; y++){
                 var letter = String.fromCharCode('A'.charCodeAt(0) + y);
-                var point = new google.maps.LatLng(locationset[y]['lat'], locationset[y]['lng']);             
+                var point = new google.maps.LatLng(locationset[y]['lat'], locationset[y]['lng']);
                 marker = createMarker(point, locationset[y]['name'], locationset[y]['address'], letter );
                 marker.set('id', y);
                 markers[y] = marker;
-                if((settings.fullMapStart === true && firstRun === true) || settings.zoomLevel === 0){
+                if((settings.fullMapStart === true && firstRun === true) || settings.mapSettings.zoom === 0){
                   bounds.extend(point);
                 }
                 //Pass variables to the pop-up infowindows
@@ -831,10 +909,10 @@ $.fn.storeLocator = function(options){
               }
 
               //Center and zoom if no origin or zoom was provided
-              if((settings.fullMapStart === true && firstRun === true) || settings.zoomLevel === 0){
+              if((settings.fullMapStart === true && firstRun === true) || settings.mapSettings.zoom === 0){
                 map.fitBounds(bounds);
               }
-               
+
                //Create the links that focus on the related marker
                $(settings.listDiv + ' ul').empty();
                $(markers).each(function(x, marker){
@@ -877,7 +955,7 @@ $.fn.storeLocator = function(options){
               //Add the list li background colors
               $(settings.listDiv + ' ul li:even').css('background', '#' + settings.listColor1);
               $(settings.listDiv + ' ul li:odd').css('background', '#' + settings.listColor2);
-               
+
               //Custom marker function - alphabetical
               function createMarker(point, name, address, letter){
                 //Set up pin icon with the Google Charts API for all of our markers
@@ -885,18 +963,18 @@ $.fn.storeLocator = function(options){
                   new google.maps.Size(21, 34),
                   new google.maps.Point(0,0),
                   new google.maps.Point(10, 34));
-                
+
                 //Create the markers
                 if(settings.storeLimit === -1 || settings.storeLimit > 26){
                   var marker = new google.maps.Marker({
-                    position: point, 
+                    position: point,
                     map: map,
                     draggable: false
                   });
                 }
                 else{
                   var marker = new google.maps.Marker({
-                    position: point, 
+                    position: point,
                     map: map,
                     icon: pinImage,
                     draggable: false
@@ -908,7 +986,7 @@ $.fn.storeLocator = function(options){
 
               //Infowindows
               function create_infowindow(marker, location){
-                
+
                 //Define the location data
                 var locations = define_location_data(marker);
 
@@ -941,8 +1019,7 @@ $.fn.storeLocator = function(options){
               }
 
           });
-        }   
-      });
+        });
     });
   }
 

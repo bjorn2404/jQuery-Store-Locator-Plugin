@@ -87,7 +87,11 @@ module.exports = function(grunt) {
       },
       src: {
         files: ['src/**/*'],
-        tasks: ['less', 'concat', 'uglify', 'usebanner', 'cssmin']
+        tasks: ['less', 'concat', 'uglify', 'usebanner', 'cssmin'],
+				options: {
+					spawn: false,
+					livereload: true
+				},
       },
       test: {
         files: '<%= jshint.test.src %>',

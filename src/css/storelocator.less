@@ -23,6 +23,84 @@
 		width: 100%;
 	}
 
+	#search-form{
+		clear: left;
+		float: left;
+		height: 60px;
+	}
+
+	.form-input{
+		float: left;
+		margin-top: 3px;
+
+		label{
+			font-weight: bold;
+		}
+
+		input{
+			padding: 4px;
+			line-height: 16px;
+			border: 1px solid #ccc;
+		}
+	}
+
+	#address{
+		margin: 0 0 0 10px;
+	}
+
+	button{
+		float: left;
+		cursor: pointer;
+		margin: 3px 0 0 10px;
+		padding: 3px 6px;
+		background: #ae2118;
+		border: 1px solid #961f17;
+		color: #fff;
+		-webkit-border-radius: 4px;
+		border-radius: 4px;
+	}
+
+	.bh-storelocator-loading
+	{
+		float: left;
+		margin: 4px 0 0 10px;
+		width: 16px;
+		height: 16px;
+		background: url(../img/ajax-loader.gif) no-repeat;
+	}
+
+	.bh-storelocator-filters-container{
+		clear: both;
+		float: left;
+		width: 100%;
+		margin: 15px 0;
+
+		.bh-storelocator-filters{
+			list-style: none;
+			float: left;
+			padding: 0;
+			margin: 0 100px 0 0;
+
+			li{
+				display: block;
+				clear: left;
+				float: left;
+				width: 100%;
+				margin: 5px 0;
+
+				label{
+					display: inline;
+				}
+
+				input{
+					display: block;
+					float: left;
+					margin: 2px 8px 2px 0;
+				}
+			}
+		}
+	}
+
 	.bh-storelocator-map-container{
 		clear: left;
 		float: left;
@@ -113,52 +191,6 @@
 		/* Picked up by both list and infowindows */
 		color: #AD2118;
 		font-weight: bold;
-	}
-
-	#search-form{
-		clear: left;
-		float: left;
-		height: 60px;
-	}
-
-	.form-input{
-		float: left;
-		margin-top: 3px;
-
-		label{
-			font-weight: bold;
-		}
-
-		input{
-			padding: 4px;
-			line-height: 16px;
-			border: 1px solid #ccc;
-		}
-	}
-
-	#address{
-		margin: 0 0 0 10px;
-	}
-
-	button{
-		float: left;
-		cursor: pointer;
-		margin: 3px 0 0 10px;
-		padding: 3px 6px;
-		background: #ae2118;
-		border: 1px solid #961f17;
-		color: #fff;
-		-webkit-border-radius: 4px;
-	  border-radius: 4px;
-	}
-
-	.bh-storelocator-loading
-	{
-		float: left;
-		margin: 4px 0 0 10px;
-		width: 16px;
-		height: 16px;
-		background: url(../img/ajax-loader.gif) no-repeat;
 	}
 
 	.bh-storelocator-map{
