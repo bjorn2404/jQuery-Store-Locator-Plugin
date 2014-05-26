@@ -30,27 +30,27 @@
 				<ul id="category-filters-container1" class="bh-storelocator-filters">
 					<li>
 						<label>
-							<input type="checkbox" id="category1" name="category1"> Restaurant
+							<input type="checkbox" name="category" value="Restaurant"> Restaurant
 						</label>
 					</li>
 					<li>
 						<label>
-							<input type="checkbox" id="category2" name="category2"> Bar
+							<input type="checkbox" name="category" value="Bar"> Bar
 						</label>
 					</li>
 					<li>
 						<label>
-							<input type="checkbox" id="category3" name="category3"> Cafe
+							<input type="checkbox" name="category" value="Cafe"> Cafe
 						</label>
 					</li>
 					<li>
 						<label>
-							<input type="checkbox" id="category4" name="category4"> Bakery
+							<input type="checkbox" name="category" value="Bakery"> Bakery
 						</label>
 					</li>
 					<li>
 						<label>
-							<input type="checkbox" id="category5" name="category5"> Coffee
+							<input type="checkbox" name="category" value="Coffee"> Coffee
 						</label>
 					</li>
 				</ul>
@@ -58,17 +58,17 @@
 				<ul id="category-filters-container2" class="bh-storelocator-filters">
 					<li>
 						<label>
-							<input type="checkbox" id="feature1" name="category1"> Fresh Guacamole
+							<input type="checkbox" name="feature" value="Fresh Guacamole"> Fresh Guacamole
 						</label>
 					</li>
 					<li>
 						<label>
-							<input type="checkbox" id="feature2" name="category2"> Online Ordering
+							<input type="checkbox" name="feature" value="Online Ordering"> Online Ordering
 						</label>
 					</li>
 					<li>
 						<label>
-							<input type="checkbox" id="feature3" name="category3"> Margaritas
+							<input type="checkbox" name="feature" value="Margaritas"> Margaritas
 						</label>
 					</li>
 				</ul>
@@ -93,8 +93,8 @@
 	$(function() {
 		$('.bh-storelocator-map-container').storeLocator({
 			'taxonomyFilters' : {
-				'category' : '#category-filters-container1',
-				'features' : '#category-filters-container2'
+				'category' : 'category-filters-container1',
+				'features' : 'category-filters-container2'
 			}
 		});
 	});

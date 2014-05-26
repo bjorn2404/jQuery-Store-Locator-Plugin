@@ -229,24 +229,24 @@ $.fn.storeLocator = function(options){
 		});
 
 		//Handle filter updates - TODO: This is only working with the map already open at the moment - need to add something to the form submit
-		$('.bh-storelocator-filters-container').on('click change'+prefix, 'input, select', function(e){
+		$('.bh-storelocator-filters-container').on('change', 'input', function(e){
 			e.stopPropagation();
 
 			//First check if it's a checkbox or select drop-down
-			if ($(this).is('input[type="checkbox"]')){
+			if($(this).is('input[type="checkbox"]')){
 				var catId, locFilterContainer, locFilterKey; //TODO: Change variable loc names to something else
 
 				//First check for existing selections
 				checkFilters();
 
-				catId = $(this).attr('id');
-				locFilterContainer = $(this).parent('ul').attr('id');
+				catId = $(this).val();
+				locFilterContainer = $(this).closest('ul').attr('id');
 
 				//Get the correct filter key
 				for(var key in settings.taxonomyFilters){
 					if(settings.taxonomyFilters.hasOwnProperty(key)){
 						for(var i = 0; i< settings.taxonomyFilters[key].length; i++){
-							if(settings.taxonomyFilters[key][i] === locFilterContainer){
+							if(settings.taxonomyFilters[key] === locFilterContainer){
 								locFilterKey = key;
 							}
 						}
@@ -255,6 +255,17 @@ $.fn.storeLocator = function(options){
 
 				//Add or remove filters based on checkbox values
 				if($(this).prop('checked')){
+					//Add ids to the filter arrays as they are checked
+					filters[locFilterKey].push(catId);
+					reset();
+					if((olat) && (olng)){
+						begin_mapping();
+					}
+					else{
+						mapping(originalData);
+					}
+				}
+				else {
 					//Remove ids from the filter arrays as they are unchecked
 					var filterIndex = filters[locFilterKey].indexOf(catId);
 					if(filterIndex > -1){
@@ -266,17 +277,6 @@ $.fn.storeLocator = function(options){
 						else {
 							mapping(originalData);
 						}
-					}
-				}
-				else {
-					//Add ids to the filter arrays as they are checked
-					filters[locFilterKey].push(catId);
-					reset();
-					if((olat) && (olng)){
-						begin_mapping();
-					}
-					else{
-						mapping(originalData);
 					}
 				}
 			}
@@ -689,25 +689,50 @@ $.fn.storeLocator = function(options){
                   }
                 }
                 else{
-									//Taxonomy filtering
-									if(settings.taxonomyFilters !== null){
-										$.each(settings.taxonomyFilters,function(k){
-											if(locationData[k].indexOf(filters[k]) > -1){
-												locationset[i] = locationData;
-											}
-											else{
-												return;
-											}
-										});
-									}
-									else{
 										locationset[i] = locationData;
-									}
                 }
 
                 i++;
               });
             }
+
+					function checkFilters(data, filters) {
+						for (var k in filters) {
+							if (!(new RegExp(filters[k].join("")).test(data[k]))){
+								return false;
+							}
+							else{
+								return true;
+							}
+						}
+					}
+
+					//Taxonomy filtering setup
+					if(settings.taxonomyFilters !== null){
+						var taxFilters = {};
+
+						$.each(filters, function(k,v){
+							//Let's use regex
+							for(var z = 0; z < v.length; z++){
+								//Creating a new object so we don't mess up the original filters
+								if(!taxFilters[k]){
+									taxFilters[k] = [];
+								}
+								taxFilters[k][z] = '(?=.*\\b'
+										+ v[z].replace(/([\^\$\/\.\*\+\?\|\(\)\[\]\{\}\\])/g, "\\$1")
+										+ '\\b)';
+							}
+						});
+
+						//Filter the data
+						var filteredset = $.grep(locationset, function(val, i){
+							return checkFilters(val, taxFilters);
+						});
+
+						if(filteredset.length){
+							locationset = filteredset;
+						}
+					}
 
 					//Distance calculation update testing - there is a 100 element request limit
 					/*if(locationset.length < 26){
@@ -909,7 +934,7 @@ $.fn.storeLocator = function(options){
               }
 
               //Center and zoom if no origin or zoom was provided
-              if((settings.fullMapStart === true && firstRun === true) || settings.mapSettings.zoom === 0){
+              if((settings.fullMapStart === true && firstRun === true) || (settings.mapSettings.zoom === 0)){
                 map.fitBounds(bounds);
               }
 
