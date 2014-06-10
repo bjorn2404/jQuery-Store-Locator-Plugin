@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-05-25
+/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-06-09
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2014 Bjorn Holine; Licensed MIT */
 
@@ -74,7 +74,7 @@ $.fn.storeLocator = function(options){
   return this.each(function(){
 
   var $this = $(this);
-  var listTemplate, infowindowTemplate, dataTypeRead, originalData;
+  var listTemplate, infowindowTemplate, dataTypeRead, originalData, originalZoom;
 
 	//KML is read as XML
 	if (settings.dataType === 'kml') {
@@ -107,6 +107,9 @@ $.fn.storeLocator = function(options){
 	originalDataRequest.done(function(data){
 		originalData = data;
 	});
+
+	//Save the original zoom setting so it can be retrieved if taxonomy filtering resets it
+	originalZoom = settings.mapSettings.zoom;
 
 	/**
 	 * Load the external template files first
@@ -226,7 +229,7 @@ $.fn.storeLocator = function(options){
 		});
 
 		//Handle filter updates - TODO: This is only working with the map already open at the moment - need to add something to the form submit
-		$('.bh-storelocator-filters-container').on('change', 'input', function(e){
+		$('.bh-storelocator-filters-container').on('change.'+prefix, 'input', function(e){
 			e.stopPropagation();
 
 			//First check if it's a checkbox or select drop-down
@@ -254,12 +257,15 @@ $.fn.storeLocator = function(options){
 				if($(this).prop('checked')){
 					//Add ids to the filter arrays as they are checked
 					filters[locFilterKey].push(catId);
-					reset();
-					if((olat) && (olng)){
-						begin_mapping();
-					}
-					else{
-						mapping(originalData);
+					if($('#'+settings.mapDiv).hasClass('bh-storelocator-map-open') === true){
+						reset();
+						if((olat) && (olng)){
+							settings.mapSettings.zoom = 0;
+							begin_mapping();
+						}
+						else{
+							mapping(originalData);
+						}
 					}
 				}
 				else {
@@ -267,12 +273,15 @@ $.fn.storeLocator = function(options){
 					var filterIndex = filters[locFilterKey].indexOf(catId);
 					if(filterIndex > -1){
 						filters[locFilterKey].splice(filterIndex, 1);
-						reset();
-						if((olat) && (olng)){
-							begin_mapping();
-						}
-						else {
-							mapping(originalData);
+						if($('#'+settings.mapDiv).hasClass('bh-storelocator-map-open') === true){
+							reset();
+							if((olat) && (olng)){
+								settings.mapSettings.zoom = originalZoom; //TODO: Maybe move into reset function
+								begin_mapping();
+							}
+							else {
+								mapping(originalData);
+							}
 						}
 					}
 				}
@@ -579,14 +588,14 @@ $.fn.storeLocator = function(options){
 						var destinationsArray = [];
 
             //Set a variable for fullMapStart so we can detect the first run
-            if(settings.fullMapStart === true && $(settings.mapDiv).hasClass('mapOpen') === false){
+            if(settings.fullMapStart === true && $('#'+settings.mapDiv).hasClass('bh-storelocator-map-open') === false){
                 firstRun = true;
             }
             else{
               reset();
             }
 
-            $(settings.mapDiv).addClass('mapOpen');
+            $('#' + settings.mapDiv).addClass('bh-storelocator-map-open');
 
             //Depending on your data structure and what you want to include in the maps, you may need to change the following variables or comment them out
             if(settings.dataType === 'json' || settings.dataType === 'jsonp'){
@@ -709,25 +718,38 @@ $.fn.storeLocator = function(options){
 						var taxFilters = {};
 
 						$.each(filters, function(k,v){
-							//Let's use regex
-							for(var z = 0; z < v.length; z++){
-								//Creating a new object so we don't mess up the original filters
-								if(!taxFilters[k]){
-									taxFilters[k] = [];
+							if(v.length > 0){
+								//Let's use regex
+								for(var z = 0; z < v.length; z++){
+									//Creating a new object so we don't mess up the original filters
+									if(!taxFilters[k]){
+										taxFilters[k] = [];
+									}
+									taxFilters[k][z] = '(?=.*\\b'
+											+ v[z].replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1")
+											+ '\\b)';
 								}
-								taxFilters[k][z] = '(?=.*\\b'
-										+ v[z].replace(/([\^\$\/\.\*\+\?\|\(\)\[\]\{\}\\])/g, "\\$1")
-										+ '\\b)';
 							}
 						});
 
 						//Filter the data
-						var filteredset = $.grep(locationset, function(val, i){
-							return checkFilters(val, taxFilters);
-						});
+						if(!$.isEmptyObject(taxFilters)){
+							var filteredset = $.grep(locationset, function(val, i){
+								return checkFilters(val, taxFilters);
+							});
 
-						if(filteredset.length){
 							locationset = filteredset;
+						}
+					}
+
+					//TODO: isEmptyObject not supported in old IE - use another method
+					if($.isEmptyObject(locationset)){
+						locationset[0] = {
+							'address': 'No locations were found with the given criteria. Please modify your selections or input.',
+							'address2': '',
+							'lat': '',
+							'lng': '',
+							'name': 'No results'
 						}
 					}
 
@@ -882,8 +904,8 @@ $.fn.storeLocator = function(options){
               }
 
               //Google maps settings
-              if((settings.fullMapStart === true && firstRun === true) || settings.mapSettings.zoom === 0){
-                var myOptions = settings.mapSettings;
+              if((settings.fullMapStart === true && firstRun === true) || (settings.mapSettings.zoom === 0)){
+								var myOptions = settings.mapSettings;
                 var bounds = new google.maps.LatLngBounds();
               }
               else{
@@ -930,7 +952,7 @@ $.fn.storeLocator = function(options){
                 create_infowindow(marker);
               }
 
-              //Center and zoom if no origin or zoom was provided
+              //Center and zoom if no origin or zoom was provided or upon taxonomy filter
               if((settings.fullMapStart === true && firstRun === true) || (settings.mapSettings.zoom === 0)){
                 map.fitBounds(bounds);
               }
