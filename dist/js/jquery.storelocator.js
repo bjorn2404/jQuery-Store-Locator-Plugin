@@ -1,11 +1,11 @@
-/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-06-09
+/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-06-22
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2014 Bjorn Holine; Licensed MIT */
 
 (function($){
 $.fn.storeLocator = function(options){
 
-  //Do not change these settings in this file - options should be set in the plugin call
+  //Do not change these settings in this file - settings should be overridden in the plugin call
 	var settings = $.extend( {
 		'mapDiv': 'map',
 		'listDiv': '.bh-storelocator-loc-list',
@@ -202,6 +202,20 @@ $.fn.storeLocator = function(options){
   }
 
 	/**
+	 * Count the selected filters
+	 */
+	function countFilters(){
+		//TODO: Maybe check for empty object here first
+		var filterCount = 0;
+
+		for(var key in filters){
+			filterCount += filters[key].length;
+		}
+
+		return filterCount;
+	}
+
+	/**
 	 * Check for existing filter selections
 	 */
 	function checkFilters(){
@@ -228,7 +242,7 @@ $.fn.storeLocator = function(options){
 			filters[k] = [];
 		});
 
-		//Handle filter updates - TODO: This is only working with the map already open at the moment - need to add something to the form submit
+		//Handle filter updates
 		$('.bh-storelocator-filters-container').on('change.'+prefix, 'input', function(e){
 			e.stopPropagation();
 
@@ -276,7 +290,12 @@ $.fn.storeLocator = function(options){
 						if($('#'+settings.mapDiv).hasClass('bh-storelocator-map-open') === true){
 							reset();
 							if((olat) && (olng)){
-								settings.mapSettings.zoom = originalZoom; //TODO: Maybe move into reset function
+								if(countFilters() === 0){
+									settings.mapSettings.zoom = originalZoom;
+								}
+								else{
+									settings.mapSettings.zoom = 0;
+								}
 								begin_mapping();
 							}
 							else {
@@ -702,7 +721,7 @@ $.fn.storeLocator = function(options){
               });
             }
 
-					function checkFilters(data, filters) {
+					function filterData(data, filters) {
 						for (var k in filters) {
 							if (!(new RegExp(filters[k].join("")).test(data[k]))){
 								return false;
@@ -735,14 +754,14 @@ $.fn.storeLocator = function(options){
 						//Filter the data
 						if(!$.isEmptyObject(taxFilters)){
 							var filteredset = $.grep(locationset, function(val, i){
-								return checkFilters(val, taxFilters);
+								return filterData(val, taxFilters);
 							});
 
 							locationset = filteredset;
 						}
 					}
 
-					//TODO: isEmptyObject not supported in old IE - use another method
+					//TODO: isEmptyObject not supported in old IE - maybe use another method
 					if($.isEmptyObject(locationset)){
 						locationset[0] = {
 							'address': 'No locations were found with the given criteria. Please modify your selections or input.',
@@ -952,7 +971,7 @@ $.fn.storeLocator = function(options){
                 create_infowindow(marker);
               }
 
-              //Center and zoom if no origin or zoom was provided or upon taxonomy filter
+              //Center and zoom if no origin or zoom was provided
               if((settings.fullMapStart === true && firstRun === true) || (settings.mapSettings.zoom === 0)){
                 map.fitBounds(bounds);
               }
