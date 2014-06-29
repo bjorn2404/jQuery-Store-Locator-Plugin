@@ -72,6 +72,19 @@
 						</label>
 					</li>
 				</ul>
+
+				<ul id="city-filter" class="bh-storelocator-filters">
+					<li><h3>City</h3></li>
+					<li>
+						<select name="city">
+							<option value="">All cities</option>
+							<option value="Minneapolis">Minneapolis</option>
+							<option value="Bloomington">Bloomington</option>
+							<option value="Golden Valley">Golden Valley</option>
+							<option value="St. Louis Park">St. Louis Park</option>
+						</select>
+					</li>
+				</ul>
 			</div>
 		</form>
 
@@ -93,6 +106,7 @@
 	$(function() {
 		$('.bh-storelocator-map-container').storeLocator({
 			'taxonomyFilters' : {
+				'city' : 'city-filter',
 				'category' : 'category-filters-container1',
 				'features' : 'category-filters-container2'
 			}

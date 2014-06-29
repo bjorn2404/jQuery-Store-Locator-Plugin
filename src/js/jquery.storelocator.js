@@ -223,18 +223,45 @@ $.fn.storeLocator = function(options){
 	 */
 	function checkFilters(){
 		$.each(settings.taxonomyFilters,function(k, v){
-			//Find the existing checked boxes for each filter
+			//Find the existing checked boxes for each checkbox filter
 			$(v + ' input[type=checkbox]').each(function(){
 				if($(this).prop('checked')){
-					var catVal = $(this).attr('id');
+					var filterVal = $(this).attr('id');
 
 					//Only add the taxonomy id if it doesn't already exist
-					if(filters[k].indexOf(catVal) === -1){
-						filters[k].push(catVal);
+					if(filters[k].indexOf(filterVal) === -1){
+						filters[k].push(filterVal);
 					}
 				}
 			});
+
+			//Find the existing selected value for each select filter
+			$(v + ' select').each(function(){
+				var filterVal = $(this).attr('id');
+
+				//Only add the taxonomy id if it doesn't already exist
+				if(filters[k].indexOf(filterVal) === -1){
+					filters[k].push(filterVal);
+				}
+			});
 		});
+	}
+
+	/**
+	 * Get the filter key from the taxonomyFilter setting
+	 *
+	 * @param filterContainer {string} ID of the changed filter's container
+	 */
+	function getFilterKey(filterContainer){
+		for(var key in settings.taxonomyFilters){
+			if(settings.taxonomyFilters.hasOwnProperty(key)){
+				for(var i = 0; i< settings.taxonomyFilters[key].length; i++){
+					if(settings.taxonomyFilters[key] === filterContainer){
+						return key;
+					}
+				}
+			}
+		}
 	}
 
 	//Taxonomy filtering
@@ -246,72 +273,100 @@ $.fn.storeLocator = function(options){
 		});
 
 		//Handle filter updates
-		$('.bh-storelocator-filters-container').on('change.'+prefix, 'input', function(e){
+		$('.bh-storelocator-filters-container').on('change.'+prefix, 'input, select', function(e){
 			e.stopPropagation();
 
-			//First check if it's a checkbox or select drop-down
-			if($(this).is('input[type="checkbox"]')){
-				var catId, locFilterContainer, locFilterKey; //TODO: Change variable loc names to something else
+			var filterId, filterContainer, filterKey;
 
+			//Handle checkbox filters
+			if($(this).is('input[type="checkbox"]')){
 				//First check for existing selections
 				checkFilters();
 
-				catId = $(this).val();
-				locFilterContainer = $(this).closest('ul').attr('id');
+				filterId = $(this).val();
+				filterContainer = $(this).closest('.bh-storelocator-filters').attr('id');
+				filterKey = getFilterKey(filterContainer);
 
-				//Get the correct filter key
-				for(var key in settings.taxonomyFilters){
-					if(settings.taxonomyFilters.hasOwnProperty(key)){
-						for(var i = 0; i< settings.taxonomyFilters[key].length; i++){
-							if(settings.taxonomyFilters[key] === locFilterContainer){
-								locFilterKey = key;
-							}
-						}
-					}
-				}
-
-				//Add or remove filters based on checkbox values
-				if($(this).prop('checked')){
-					//Add ids to the filter arrays as they are checked
-					filters[locFilterKey].push(catId);
-					if($('#'+settings.mapDiv).hasClass('bh-storelocator-map-open') === true){
-						reset();
-						if((olat) && (olng)){
-							settings.mapSettings.zoom = 0;
-							begin_mapping();
-						}
-						else{
-							mapping(originalData);
-						}
-					}
-				}
-				else {
-					//Remove ids from the filter arrays as they are unchecked
-					var filterIndex = filters[locFilterKey].indexOf(catId);
-					if(filterIndex > -1){
-						filters[locFilterKey].splice(filterIndex, 1);
+				if(filterKey){
+					//Add or remove filters based on checkbox values
+					if($(this).prop('checked')){
+						//Add ids to the filter arrays as they are checked
+						filters[filterKey].push(filterId);
 						if($('#'+settings.mapDiv).hasClass('bh-storelocator-map-open') === true){
 							reset();
 							if((olat) && (olng)){
-								if(countFilters() === 0){
-									settings.mapSettings.zoom = originalZoom;
-								}
-								else{
-									settings.mapSettings.zoom = 0;
-								}
+								settings.mapSettings.zoom = 0;
 								begin_mapping();
 							}
-							else {
+							else{
 								mapping(originalData);
+							}
+						}
+					}
+					else {
+						//Remove ids from the filter arrays as they are unchecked
+						var filterIndex = filters[filterKey].indexOf(filterId);
+						if(filterIndex > -1){
+							filters[filterKey].splice(filterIndex, 1);
+							if($('#'+settings.mapDiv).hasClass('bh-storelocator-map-open') === true){
+								reset();
+								if((olat) && (olng)){
+									if(countFilters() === 0){
+										settings.mapSettings.zoom = originalZoom;
+									}
+									else{
+										settings.mapSettings.zoom = 0;
+									}
+									begin_mapping();
+								}
+								else {
+									mapping(originalData);
+								}
 							}
 						}
 					}
 				}
 			}
-			//Select filters
-		/*else {
+			//Handle select filters
+			else if($(this).is('select')){
+				//First check for existing selections
+				checkFilters();
 
-			}*/
+				filterId = $(this).val();
+				filterContainer = $(this).closest('.bh-storelocator-filters').attr('id');
+				filterKey = getFilterKey(filterContainer);
+
+				//Check for blank filter on select since default val could be empty
+				if(filterId){
+					if(filterKey){
+						filters[filterKey] = [filterId];
+						if($('#'+settings.mapDiv).hasClass('bh-storelocator-map-open') === true){
+							reset();
+							if((olat) && (olng)){
+								settings.mapSettings.zoom = 0;
+								begin_mapping();
+							}
+							else{
+								mapping(originalData);
+							}
+						}
+					}
+				}
+				//Reset if the default option is selected
+				else{
+					if(filterKey){
+						filters[filterKey] = [];
+					}
+					reset();
+					if((olat) && (olng)){
+						settings.mapSettings.zoom = originalZoom;
+						begin_mapping();
+					}
+					else{
+						mapping(originalData);
+					}
+				}
+			}
 		});
 	}
 
@@ -724,14 +779,17 @@ $.fn.storeLocator = function(options){
               });
             }
 
-					function filterData(data, filters) {
+					function filterData(data, filters){
+						var filterTest = true;
+
 						for (var k in filters) {
 							if (!(new RegExp(filters[k].join("")).test(data[k]))){
-								return false;
+								filterTest = false;
 							}
-							else{
-								return true;
-							}
+						}
+
+						if(filterTest){
+							return true;
 						}
 					}
 
