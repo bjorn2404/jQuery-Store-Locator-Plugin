@@ -85,6 +85,19 @@
 						</select>
 					</li>
 				</ul>
+				
+				<ul id="postal-filter" class="bh-storelocator-filters">
+					<li><h3>Zip</h3></li>
+					<li>
+						<input type="radio" name="postal" value="55416">55416
+					</li>
+					<li>
+						<input type="radio" name="postal" value="55343">55343
+					</li>
+					<li>
+						<input type="radio" name="postal" value="55402">55402
+					</li>
+				</ul>
 			</div>
 		</form>
 
@@ -106,9 +119,10 @@
 	$(function() {
 		$('.bh-storelocator-map-container').storeLocator({
 			'taxonomyFilters' : {
-				'city' : 'city-filter',
 				'category' : 'category-filters-container1',
-				'features' : 'category-filters-container2'
+				'features' : 'category-filters-container2',
+				'city' : 'city-filter',
+				'postal': 'postal-filter' 
 			}
 		});
 	});
