@@ -36,10 +36,10 @@
 		'bounceMarker': true,
 		'slideMap': true,
 		'modalWindow': false,
-		'overlayDiv': '.bh-storelocator-overlay',
-		'modalWindowDiv': '.bh-storelocator-modal-window',
-		'modalContentDiv': '.bh-storelocator-modal-content',
-		'modalCloseIconDiv': '.bh-storelocator-modal-close-icon',
+		'overlayDiv': 'bh-storelocator-overlay',
+		'modalWindowDiv': 'bh-storelocator-modal-window',
+		'modalContentDiv': 'bh-storelocator-modal-content',
+		'modalCloseIconDiv': 'bh-storelocator-modal-close-icon',
 		'defaultLoc': false,
 		'defaultLat': '',
 		'defaultLng': '',
@@ -213,14 +213,15 @@
 	 * Count the selected filters
 	 */
 	function countFilters(){
-		//TODO: Maybe check for empty object here first
-		var filterCount = 0;
+        var filterCount = 0;
 
-		for(var key in filters){
-			filterCount += filters[key].length;
-		}
+		if(!isEmptyObject(filters)){
+            for(var key in filters){
+                filterCount += filters[key].length;
+            }
+        }
 
-		return filterCount;
+        return filterCount;
 	}
 
 	/**
@@ -493,6 +494,20 @@
 		return Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
 	}
 
+    /**
+     * Checks to see if the object is empty. Using this instead of $.isEmptyObject for legacy browser support
+     *
+     * @param obj {object} the object to check
+     * @returns {boolean}
+     */
+    function isEmptyObject(obj) {
+        for(var key in obj) {
+            if(obj.hasOwnProperty(key))
+                return false;
+        }
+        return true;
+    }
+
 	/**
 	 * HTML5 geocoding function for automatic location detection
 	 */
@@ -511,10 +526,26 @@
 			});
 	}
 
-	function autoGeocode_error(error){
+    /**
+     * Handle autoGeocode failure
+     *
+     * @param error
+     */
+    function autoGeocode_error(error){
 		//If automatic detection doesn't work show an error
 		alert(settings.autoGeocodeErrorAlert);
 	}
+
+    /**
+     * Location distance sorting function
+     *
+     * @param locationsarray {array} locationset array
+     */
+    function sort_numerically(locationsarray){
+        locationsarray.sort(function(a, b){
+            return ((a['distance'] < b['distance']) ? -1 : ((a['distance'] > b['distance']) ? 1 : 0));
+        });
+    }
 
 	/**
 	 * Google distance calculation WIP
@@ -611,6 +642,42 @@
 		mapping(originalData, olat, olng, userInput, maxDistance, newPage);
 	}
 
+    /**
+     * Map marker setup
+     *
+     * @param point
+     * @param name
+     * @param address
+     * @param letter
+     * @returns {google.maps.Marker}
+     */
+    function createMarker(point, name, address, letter, map){
+        //Set up pin icon with the Google Charts API for all of our markers
+        var pinImage = new google.maps.MarkerImage('https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=' + letter + '|' + settings.pinColor + '|' + settings.pinTextColor,
+            new google.maps.Size(21, 34),
+            new google.maps.Point(0,0),
+            new google.maps.Point(10, 34));
+
+        //Create the markers
+        if(settings.storeLimit === -1 || settings.storeLimit > 26){
+            var marker = new google.maps.Marker({
+                position: point,
+                map: map,
+                draggable: false
+            });
+        }
+        else{
+            var marker = new google.maps.Marker({
+                position: point,
+                map: map,
+                icon: pinImage,
+                draggable: false
+            });
+        }
+
+        return marker;
+    }
+
 	/**
 	 * Set up the normal mapping
 	 *
@@ -641,6 +708,18 @@
 			});
 		}
 	}
+
+    /**
+     * Modal window close function
+     */
+    function modalClose(){
+        // Callback
+        if (settings.callbackModalOpen){
+            settings.callbackModalOpen.call(this);
+        }
+
+        $('.' + settings.overlayDiv).hide();
+    }
 
 	/**
 	 * Process the form input
@@ -864,7 +943,7 @@
 						});
 
 						//Filter the data
-						if(!$.isEmptyObject(taxFilters)){
+						if(!isEmptyObject(taxFilters)){
 							var filteredset = $.grep(locationset, function(val, i){
 								return filterData(val, taxFilters);
 							});
@@ -873,8 +952,7 @@
 						}
 					}
 
-					//TODO: isEmptyObject not supported in old IE - maybe use another method
-					if($.isEmptyObject(locationset)){
+					if(isEmptyObject(locationset)){
 						locationset[0] = {
 							'address': settings.noResultsDesc,
 							'address2': '',
@@ -889,13 +967,6 @@
 						var matrix = calculateDistances(originsArray, destinationsArray);
 						//console.log(matrix);
 					}*/
-
-					//Distance sorting function
-					function sort_numerically(locationsarray){
-						locationsarray.sort(function(a, b){
-							return ((a['distance'] < b['distance']) ? -1 : ((a['distance'] > b['distance']) ? 1 : 0));
-						});
-					}
 
 					//Sort the multi-dimensional array by distance
 					sort_numerically(locationset);
@@ -1008,15 +1079,6 @@
 								return locations;
 							}
 
-							function modalClose(){
-								// Callback
-								if (settings.callbackModalOpen){
-									settings.callbackModalOpen.call(this);
-								}
-							
-								$(settings.overlayDiv).hide();
-							}
-
 							//Slide in the map container
 							if(settings.slideMap === true){
 								$this.slideDown();
@@ -1031,7 +1093,7 @@
 								//Pop up the modal window
 								$('.' + settings.overlayDiv).fadeIn();
 								//Close modal when close icon is clicked and when background overlay is clicked TODO: Make sure this works with multiple
-								$(document).on('click.'+prefix, settings.modalCloseIconDiv + ', ' + settings.overlayDiv, function(){
+								$(document).on('click.'+prefix, '.' + settings.modalCloseIconDiv + ', .' + settings.overlayDiv, function(){
 										modalClose();
 								});
 								//Prevent clicks within the modal window from closing the entire thing
@@ -1133,7 +1195,7 @@
 								}
 								
 								var point = new google.maps.LatLng(locationset[y]['lat'], locationset[y]['lng']);
-								marker = createMarker(point, locationset[y]['name'], locationset[y]['address'], letter );
+								marker = createMarker(point, locationset[y]['name'], locationset[y]['address'], letter, map );
 								marker.set('id', y);
 								markers[y] = marker;
 								if((settings.fullMapStart === true && firstRun === true) || settings.mapSettings.zoom === 0){
@@ -1190,34 +1252,6 @@
 							//Add the list li background colors
 							$(settings.listDiv + ' ul li:even').css('background', '#' + settings.listColor1);
 							$(settings.listDiv + ' ul li:odd').css('background', '#' + settings.listColor2);
-
-							//Custom marker function - alphabetical
-							function createMarker(point, name, address, letter){
-								//Set up pin icon with the Google Charts API for all of our markers
-								var pinImage = new google.maps.MarkerImage('https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=' + letter + '|' + settings.pinColor + '|' + settings.pinTextColor,
-									new google.maps.Size(21, 34),
-									new google.maps.Point(0,0),
-									new google.maps.Point(10, 34));
-
-								//Create the markers
-								if(settings.storeLimit === -1 || settings.storeLimit > 26){
-									var marker = new google.maps.Marker({
-										position: point,
-										map: map,
-										draggable: false
-									});
-								}
-								else{
-									var marker = new google.maps.Marker({
-										position: point,
-										map: map,
-										icon: pinImage,
-										draggable: false
-									});
-								}
-
-								return marker;
-							}
 
 							//Infowindows
 							function create_infowindow(marker, location){

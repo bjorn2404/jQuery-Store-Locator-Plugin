@@ -1,3 +1,5 @@
+[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
+
 # [jQuery Google Maps Store Locator Plugin](http://www.bjornblog.com/web/jquery-store-locator-plugin)
 
 ### [Please see my blog for more information and examples](http://www.bjornblog.com/web/jquery-store-locator-plugin).
