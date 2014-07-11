@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-07-10
+/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-07-11
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2014 Bjorn Holine; Licensed MIT */
 
@@ -80,14 +80,32 @@
 
 	var $this = $(this);
 	var listTemplate, infowindowTemplate, dataTypeRead, originalData, originalZoom;
-    var userInput, olat, olng, marker, storeNum;
-    var locationset = [];
-    var featuredset = [];
-    var normalset = [];
-    var markers = [];
-    var filters = {};
-    var locationData = {};
-    var prefix = 'storeLocator';
+	var userInput, olat, olng, marker, storeNum;
+	var locationset = [];
+	var featuredset = [];
+	var normalset = [];
+	var markers = [];
+	var filters = {};
+	var locationData = {};
+    var GeoCodeCalc = {};
+	var prefix = 'storeLocator';
+
+    //Calculate geocode distance functions
+    if(settings.lengthUnit === 'km'){
+        //Kilometers
+        GeoCodeCalc.EarthRadius = 6367.0;
+    }
+    else{
+        //Default is miles
+        GeoCodeCalc.EarthRadius = 3956.0;
+    }
+    GeoCodeCalc.ToRadian = function(v){ return v * (Math.PI / 180); };
+    GeoCodeCalc.DiffRadian = function(v1, v2){
+        return GeoCodeCalc.ToRadian(v2) - GeoCodeCalc.ToRadian(v1);
+    };
+    GeoCodeCalc.CalcDistance = function(lat1, lng1, lat2, lng2, radius){
+        return radius * 2 * Math.asin( Math.min(1, Math.sqrt( ( Math.pow(Math.sin((GeoCodeCalc.DiffRadian(lat1, lat2)) / 2.0), 2.0) + Math.cos(GeoCodeCalc.ToRadian(lat1)) * Math.cos(GeoCodeCalc.ToRadian(lat2)) * Math.pow(Math.sin((GeoCodeCalc.DiffRadian(lng1, lng2)) / 2.0), 2.0) ) ) ) );
+    };
 
     /**
      * Reset function
@@ -98,6 +116,23 @@
         normalset = [];
         markers = [];
         $(document).off('click.'+prefix, settings.listDiv + ' li');
+    }
+
+    /**
+     * Changing AJAX call to this function. TODO: Add old callbacks, maybe switch to when/then
+     */
+    function getData(){
+        var d = $.Deferred();
+
+        $.ajax({
+            type: 'GET',
+            url: settings.dataLocation + (settings.dataType === 'jsonp' ? (settings.dataLocation.match(/\?/) ? '&' : '?') + 'callback=?' : ''),
+            dataType: dataTypeRead,
+            jsonpCallback: (settings.dataType === 'jsonp' ? settings.jsonpCallback : null)
+        }).done(function(p){
+            d.resolve(p);
+        }).fail(d.reject);
+        return d.promise();
     }
 
     /**
@@ -547,255 +582,9 @@
 
     }
 
-
-	//KML is read as XML
-	if (settings.dataType === 'kml') {
-		dataTypeRead = 'xml';
-	}
-	else {
-		dataTypeRead = settings.dataType;
-	}
-
-	/**
-	 * Changing AJAX call to this function. TODO: Add old callbacks, maybe switch to when/then
-	 */
-	function getData(){
-		var d = $.Deferred();
-
-		$.ajax({
-			type: 'GET',
-			url: settings.dataLocation + (settings.dataType === 'jsonp' ? (settings.dataLocation.match(/\?/) ? '&' : '?') + 'callback=?' : ''),
-			dataType: dataTypeRead,
-			jsonpCallback: (settings.dataType === 'jsonp' ? settings.jsonpCallback : null)
-		}).done(function(p){
-			d.resolve(p);
-		}).fail(d.reject);
-		return d.promise();
-	}
-
-	var originalDataRequest = getData();
-
-	//Save this separately so we can avoid multiple AJAX requests
-	originalDataRequest.done(function(data){
-		originalData = data;
-	});
-
-	//Save the original zoom setting so it can be retrieved if taxonomy filtering resets it
-	originalZoom = settings.mapSettings.zoom;
-
-	/**
-	 * Load the external template files first
-	 */
-	//Get the KML templates
-	if(settings.dataType === 'kml' && settings.listTemplateID === null && settings.infowindowTemplateID === null){
-		//Try loading the external template files
-		$.when(
-			//KML infowindows
-			$.get(settings.KMLinfowindowTemplatePath, function(template){
-				var source = template;
-				infowindowTemplate = Handlebars.compile(source);
-			}),
-
-			//KML locations list
-			$.get(settings.KMLlistTemplatePath, function(template){
-				var source = template;
-				listTemplate = Handlebars.compile(source);
-			})
-
-		).then(function(){
-			//Continue to the main script if templates are loaded successfully
-			locator();
-
-		}, function(){
-			//KML templates not loaded - you can add a console.log here to see if your templates are failing
-
-		});
-	}
-	//Handle script tag template method
-	else if(settings.listTemplateID !== null && settings.infowindowTemplateID !== null){
-		//TODO: Test this
-		//Infowindows
-		infowindowTemplate = Handlebars.compile($(settings.infowindowTemplateID).html());
-
-		//Locations list
-		listTemplate = Handlebars.compile($(settings.listTemplateID).html());
-
-		//Continue to the main script
-		locator();
-	}
-	//Get the JSON/XML templates
-	else{
-		//Try loading the external template files
-		$.when(
-			//Infowindows
-			$.get(settings.infowindowTemplatePath, function(template){
-				var source = template;
-				infowindowTemplate = Handlebars.compile(source);
-			}),
-
-			//Locations list
-			$.get(settings.listTemplatePath, function(template){
-				var source = template;
-				listTemplate = Handlebars.compile(source);
-			})
-
-		).then(function(){
-			//Continue to the main script if templates are loaded successfully
-			locator();
-
-		}, function(){
-			//JSON/XML templates not loaded - you can add a console.log here to see if your templates are failing
-
-		});
-	}
-
-	/**
-	 * Primary locator script runs after the templates are loaded
-	 */
-	function locator(){
-
-
-	//Taxonomy filtering
-	if(settings.taxonomyFilters !== null){
-
-		//Set up the filters
-		$.each(settings.taxonomyFilters,function(k){
-			filters[k] = [];
-		});
-
-		//Handle filter updates
-		$('.bh-storelocator-filters-container').on('change.'+prefix, 'input, select', function(e){
-			e.stopPropagation();
-
-			var filterId, filterContainer, filterKey;
-
-			//Handle checkbox filters
-			if($(this).is('input[type="checkbox"]')){
-				//First check for existing selections
-				checkFilters();
-
-				filterId = $(this).val();
-				filterContainer = $(this).closest('.bh-storelocator-filters').attr('id');
-				filterKey = getFilterKey(filterContainer);
-
-				if(filterKey){
-					//Add or remove filters based on checkbox values
-					if($(this).prop('checked')){
-						//Add ids to the filter arrays as they are checked
-						filters[filterKey].push(filterId);
-						if($('#'+settings.mapDiv).hasClass('bh-storelocator-map-open') === true){
-							reset();
-							if((olat) && (olng)){
-								settings.mapSettings.zoom = 0;
-								begin_mapping();
-							}
-							else{
-								mapping(originalData);
-							}
-						}
-					}
-					else {
-						//Remove ids from the filter arrays as they are unchecked
-						var filterIndex = filters[filterKey].indexOf(filterId);
-						if(filterIndex > -1){
-							filters[filterKey].splice(filterIndex, 1);
-							if($('#'+settings.mapDiv).hasClass('bh-storelocator-map-open') === true){
-								reset();
-								if((olat) && (olng)){
-									if(countFilters() === 0){
-										settings.mapSettings.zoom = originalZoom;
-									}
-									else{
-										settings.mapSettings.zoom = 0;
-									}
-									begin_mapping();
-								}
-								else {
-									mapping(originalData);
-								}
-							}
-						}
-					}
-				}
-			}
-			//Handle select or radio filters
-			else if($(this).is('select') || $(this).is('input[type="radio"]')){
-				//First check for existing selections
-				checkFilters();
-
-				filterId = $(this).val();
-				filterContainer = $(this).closest('.bh-storelocator-filters').attr('id');
-				filterKey = getFilterKey(filterContainer);
-
-				//Check for blank filter on select since default val could be empty
-				if(filterId){
-					if(filterKey){
-						filters[filterKey] = [filterId];
-						if($('#'+settings.mapDiv).hasClass('bh-storelocator-map-open') === true){
-							reset();
-							if((olat) && (olng)){
-								settings.mapSettings.zoom = 0;
-								begin_mapping();
-							}
-							else{
-								mapping(originalData);
-							}
-						}
-					}
-				}
-				//Reset if the default option is selected
-				else{
-					if(filterKey){
-						filters[filterKey] = [];
-					}
-					reset();
-					if((olat) && (olng)){
-						settings.mapSettings.zoom = originalZoom;
-						begin_mapping();
-					}
-					else{
-						mapping(originalData);
-					}
-				}
-			}
-		});
-	}
-
-	//Add modal window divs if set
-	if(settings.modalWindow === true){
-		$this.wrap('<div class="' + settings.overlayDiv + '"><div class="' + settings.modalWindowDiv + '"><div class="' + settings.modalContentDiv + '">');
-		$('.' + settings.modalWindowDiv).prepend('<div class="' + settings.modalCloseIconDiv + '"><\/div>');
-		$('.' + settings.overlayDiv).hide();
-	}
-
-	if(settings.slideMap === true){
-		//Let's hide the map container to begin
-		$this.hide();
-	}
-
-	//Calculate geocode distance functions - you could use Google's distance service instead
-	var GeoCodeCalc = {};
-	if(settings.lengthUnit === 'km'){
-		//Kilometers
-		GeoCodeCalc.EarthRadius = 6367.0;
-	}
-	else{
-			//Default is miles
-			GeoCodeCalc.EarthRadius = 3956.0;
-	}
-	GeoCodeCalc.ToRadian = function(v){ return v * (Math.PI / 180); };
-	GeoCodeCalc.DiffRadian = function(v1, v2){
-	return GeoCodeCalc.ToRadian(v2) - GeoCodeCalc.ToRadian(v1);
-	};
-	GeoCodeCalc.CalcDistance = function(lat1, lng1, lat2, lng2, radius){
-	return radius * 2 * Math.asin( Math.min(1, Math.sqrt( ( Math.pow(Math.sin((GeoCodeCalc.DiffRadian(lat1, lat2)) / 2.0), 2.0) + Math.cos(GeoCodeCalc.ToRadian(lat1)) * Math.cos(GeoCodeCalc.ToRadian(lat2)) * Math.pow(Math.sin((GeoCodeCalc.DiffRadian(lng1, lng2)) / 2.0), 2.0) ) ) ) );
-	};
-
-	start();
-
-	/**
-	 * HTML5 geocoding function for automatic location detection
-	 */
+    /**
+     * HTML5 geocoding function for automatic location detection
+     */
     function autoGeocode_query(position) {
         //The address needs to be determined for the directions link
         var r = new ReverseGoogleGeocode();
@@ -817,105 +606,67 @@
      * @param error
      */
     function autoGeocode_error(error){
-		//If automatic detection doesn't work show an error
-		alert(settings.autoGeocodeErrorAlert);
-	}
+        //If automatic detection doesn't work show an error
+        alert(settings.autoGeocodeErrorAlert);
+    }
 
-	/**
-	 * Change the page
-	 *
-	 * @param newPage
-	 */
-	function paginationChange(newPage){
-		var maxDistance;
+    /**
+     * Change the page
+     *
+     * @param newPage
+     */
+    function paginationChange(newPage){
+        var maxDistance;
 
-		if(settings.maxDistance === true){
-			maxDistance = $('#' + settings.maxDistanceID).val();
-		}
+        if(settings.maxDistance === true){
+            maxDistance = $('#' + settings.maxDistanceID).val();
+        }
 
-		reset();
-		mapping(originalData, olat, olng, userInput, maxDistance, newPage);
-	}
+        reset();
+        mapping(originalData, olat, olng, userInput, maxDistance, newPage);
+    }
 
-	/**
-	 * Set up the normal mapping
-	 *
-	 * @param distance {number} optional maximum distance
-	 */
-	function begin_mapping(distance){
-		//Get the user input and use it
-		userInput = $('#' + settings.inputID).val();
+    /**
+     * Set up the normal mapping
+     *
+     * @param distance {number} optional maximum distance
+     */
+    function begin_mapping(distance){
+        //Get the user input and use it
+        userInput = $('#' + settings.inputID).val();
 
-		//Get the region setting if set
-		var region = $('#' + settings.regionID).val();
+        //Get the region setting if set
+        var region = $('#' + settings.regionID).val();
 
-		if (userInput === ''){
-			start();
-		}
-		else{
-			var g = new GoogleGeocode();
-			var address = userInput;
-			g.geocode({'address': address, 'region': region}, function(data){
-				if(data !== null){
-					olat = data.latitude;
-					olng = data.longitude;
-					mapping(originalData, olat, olng, userInput, distance);
-				} else {
-					//Unable to geocode
-					alert(settings.addressErrorAlert);
-				}
-			});
-		}
-	}
+        if (userInput === ''){
+            start();
+        }
+        else{
+            var g = new GoogleGeocode();
+            var address = userInput;
+            g.geocode({'address': address, 'region': region}, function(data){
+                if(data !== null){
+                    olat = data.latitude;
+                    olng = data.longitude;
+                    mapping(originalData, olat, olng, userInput, distance);
+                } else {
+                    //Unable to geocode
+                    alert(settings.addressErrorAlert);
+                }
+            });
+        }
+    }
 
-	/**
-	 * Process the form input
-	 */
-	$(function(){
-		//Handle form submission
-		function get_form_values(e){
-			//Stop the form submission
-			e.preventDefault();
-
-			if(settings.maxDistance === true){
-				var maxDistance = $('#' + settings.maxDistanceID).val();
-				//Start the mapping
-				begin_mapping(maxDistance);
-			}
-			else{
-				//Start the mapping
-				begin_mapping();
-			}
-		}
-
-		//ASP.net or regular submission?
-		if(settings.noForm === true){
-			$(document).on('click.'+prefix, '.' + settings.formContainerDiv + ' button', function(e){
-				get_form_values(e);
-			});
-			$(document).on('keyup.'+prefix, function(e){
-				if (e.keyCode === 13 && $('#' + settings.inputID).is(':focus')){
-					get_form_values(e);
-				}
-			});
-		}
-		else{
-			$(document).on('submit.'+prefix, '#' + settings.formID, function(e){
-				get_form_values(e);
-			});
-		}
-	});
-
-	/**
-	 * The primary mapping function that runs everything
-	 *
-	 * @param data {kml,xml,or json} all location data
-	 * @param orig_lat {number} origin latitude
-	 * @param orig_lng {number} origin longitude
-	 * @param origin {string} origin address
-	 * @param maxDistance {number} optional maximum distance
-	 */
-	function mapping(data, orig_lat, orig_lng, origin, maxDistance, page){
+    /**
+     * The primary mapping function that runs everything
+     *
+     * @param data {kml,xml,or json} all location data
+     * @param orig_lat {number} origin latitude
+     * @param orig_lng {number} origin longitude
+     * @param origin {string} origin address
+     * @param maxDistance {number} optional maximum distance
+     */
+    function mapping(data, orig_lat, orig_lng, origin, maxDistance, page){
         $(function () {
 
             //Enable the visual refresh https://developers.google.com/maps/documentation/javascript/basics#VisualRefresh
@@ -1320,8 +1071,253 @@
                 });
             });
         });
+    }
+
+    /**
+     * Primary locator function runs after the templates are loaded
+     */
+    function locator(){
+        //Taxonomy filtering
+        if(settings.taxonomyFilters !== null){
+
+            //Set up the filters
+            $.each(settings.taxonomyFilters,function(k){
+                filters[k] = [];
+            });
+
+            //Handle filter updates
+            $('.bh-storelocator-filters-container').on('change.'+prefix, 'input, select', function(e){
+                e.stopPropagation();
+
+                var filterId, filterContainer, filterKey;
+
+                //Handle checkbox filters
+                if($(this).is('input[type="checkbox"]')){
+                    //First check for existing selections
+                    checkFilters();
+
+                    filterId = $(this).val();
+                    filterContainer = $(this).closest('.bh-storelocator-filters').attr('id');
+                    filterKey = getFilterKey(filterContainer);
+
+                    if(filterKey){
+                        //Add or remove filters based on checkbox values
+                        if($(this).prop('checked')){
+                            //Add ids to the filter arrays as they are checked
+                            filters[filterKey].push(filterId);
+                            if($('#'+settings.mapDiv).hasClass('bh-storelocator-map-open') === true){
+                                reset();
+                                if((olat) && (olng)){
+                                    settings.mapSettings.zoom = 0;
+                                    begin_mapping();
+                                }
+                                else{
+                                    mapping(originalData);
+                                }
+                            }
+                        }
+                        else {
+                            //Remove ids from the filter arrays as they are unchecked
+                            var filterIndex = filters[filterKey].indexOf(filterId);
+                            if(filterIndex > -1){
+                                filters[filterKey].splice(filterIndex, 1);
+                                if($('#'+settings.mapDiv).hasClass('bh-storelocator-map-open') === true){
+                                    reset();
+                                    if((olat) && (olng)){
+                                        if(countFilters() === 0){
+                                            settings.mapSettings.zoom = originalZoom;
+                                        }
+                                        else{
+                                            settings.mapSettings.zoom = 0;
+                                        }
+                                        begin_mapping();
+                                    }
+                                    else {
+                                        mapping(originalData);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                //Handle select or radio filters
+                else if($(this).is('select') || $(this).is('input[type="radio"]')){
+                    //First check for existing selections
+                    checkFilters();
+
+                    filterId = $(this).val();
+                    filterContainer = $(this).closest('.bh-storelocator-filters').attr('id');
+                    filterKey = getFilterKey(filterContainer);
+
+                    //Check for blank filter on select since default val could be empty
+                    if(filterId){
+                        if(filterKey){
+                            filters[filterKey] = [filterId];
+                            if($('#'+settings.mapDiv).hasClass('bh-storelocator-map-open') === true){
+                                reset();
+                                if((olat) && (olng)){
+                                    settings.mapSettings.zoom = 0;
+                                    begin_mapping();
+                                }
+                                else{
+                                    mapping(originalData);
+                                }
+                            }
+                        }
+                    }
+                    //Reset if the default option is selected
+                    else{
+                        if(filterKey){
+                            filters[filterKey] = [];
+                        }
+                        reset();
+                        if((olat) && (olng)){
+                            settings.mapSettings.zoom = originalZoom;
+                            begin_mapping();
+                        }
+                        else{
+                            mapping(originalData);
+                        }
+                    }
+                }
+            });
+        }
+
+        //Add modal window divs if set
+        if(settings.modalWindow === true){
+            $this.wrap('<div class="' + settings.overlayDiv + '"><div class="' + settings.modalWindowDiv + '"><div class="' + settings.modalContentDiv + '">');
+            $('.' + settings.modalWindowDiv).prepend('<div class="' + settings.modalCloseIconDiv + '"><\/div>');
+            $('.' + settings.overlayDiv).hide();
+        }
+
+        if(settings.slideMap === true){
+            //Let's hide the map container to begin
+            $this.hide();
+        }
+
+        start();
+
+        /**
+         * Process the form input
+         */
+        $(function(){
+            //Handle form submission
+            function get_form_values(e){
+                //Stop the form submission
+                e.preventDefault();
+
+                if(settings.maxDistance === true){
+                    var maxDistance = $('#' + settings.maxDistanceID).val();
+                    //Start the mapping
+                    begin_mapping(maxDistance);
+                }
+                else{
+                    //Start the mapping
+                    begin_mapping();
+                }
+            }
+
+            //ASP.net or regular submission?
+            if(settings.noForm === true){
+                $(document).on('click.'+prefix, '.' + settings.formContainerDiv + ' button', function(e){
+                    get_form_values(e);
+                });
+                $(document).on('keyup.'+prefix, function(e){
+                    if (e.keyCode === 13 && $('#' + settings.inputID).is(':focus')){
+                        get_form_values(e);
+                    }
+                });
+            }
+            else{
+                $(document).on('submit.'+prefix, '#' + settings.formID, function(e){
+                    get_form_values(e);
+                });
+            }
+        });
+    }
+
+	//KML is read as XML
+	if (settings.dataType === 'kml') {
+		dataTypeRead = 'xml';
+	}
+	else {
+		dataTypeRead = settings.dataType;
 	}
 
+	var originalDataRequest = getData();
+
+	//Save this separately so we can avoid multiple AJAX requests
+	originalDataRequest.done(function(data){
+		originalData = data;
+	});
+
+	//Save the original zoom setting so it can be retrieved if taxonomy filtering resets it
+	originalZoom = settings.mapSettings.zoom;
+
+	/**
+	 * Load the external template files first
+	 */
+	//Get the KML templates
+	if(settings.dataType === 'kml' && settings.listTemplateID === null && settings.infowindowTemplateID === null){
+		//Try loading the external template files
+		$.when(
+			//KML infowindows
+			$.get(settings.KMLinfowindowTemplatePath, function(template){
+				var source = template;
+				infowindowTemplate = Handlebars.compile(source);
+			}),
+
+			//KML locations list
+			$.get(settings.KMLlistTemplatePath, function(template){
+				var source = template;
+				listTemplate = Handlebars.compile(source);
+			})
+
+		).then(function(){
+			//Continue to the main script if templates are loaded successfully
+			locator();
+
+		}, function(){
+			//KML templates not loaded - you can add a console.log here to see if your templates are failing
+
+		});
+	}
+	//Handle script tag template method
+	else if(settings.listTemplateID !== null && settings.infowindowTemplateID !== null){
+		//TODO: Test this
+		//Infowindows
+		infowindowTemplate = Handlebars.compile($(settings.infowindowTemplateID).html());
+
+		//Locations list
+		listTemplate = Handlebars.compile($(settings.listTemplateID).html());
+
+		//Continue to the main script
+		locator();
+	}
+	//Get the JSON/XML templates
+	else{
+		//Try loading the external template files
+		$.when(
+			//Infowindows
+			$.get(settings.infowindowTemplatePath, function(template){
+				var source = template;
+				infowindowTemplate = Handlebars.compile(source);
+			}),
+
+			//Locations list
+			$.get(settings.listTemplatePath, function(template){
+				var source = template;
+				listTemplate = Handlebars.compile(source);
+			})
+
+		).then(function(){
+			//Continue to the main script if templates are loaded successfully
+			locator();
+
+		}, function(){
+			//JSON/XML templates not loaded - you can add a console.log here to see if your templates are failing
+
+		});
 	}
 
 	});
