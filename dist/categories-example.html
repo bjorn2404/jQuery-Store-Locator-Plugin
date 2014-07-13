@@ -103,7 +103,7 @@
 
 	</div>
 
-	<div class="bh-storelocator-map-container">
+	<div id="map-container" class="bh-storelocator-map-container">
 		<div class="bh-storelocator-loc-list">
 			<ul class="list"></ul>
 		</div>
@@ -117,7 +117,7 @@
 <script src="js/jquery.storelocator.js"></script>
 <script>
 	$(function() {
-		$('.bh-storelocator-map-container').storeLocator({
+		$('#map-container').storeLocator({
 			'taxonomyFilters' : {
 				'category' : 'category-filters-container1',
 				'features' : 'category-filters-container2',
