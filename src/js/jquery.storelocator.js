@@ -1248,116 +1248,123 @@
 			});
 		},
 
+        /**
+         * Taxonomy filtering
+         */
+        taxonomyFiltering: function() {
+            var _this = this;
+
+            // Set up the filters
+            $.each(this.settings.taxonomyFilters, function (k) {
+                filters[k] = [];
+            });
+
+            // Handle filter updates
+            $('.bh-storelocator-filters-container').on('change.' + prefix, 'input, select', function (e) {
+                e.stopPropagation();
+
+                var filterId, filterContainer, filterKey;
+
+                // Handle checkbox filters
+                if ($(this).is('input[type="checkbox"]')) {
+                    // First check for existing selections
+                    _this.checkFilters();
+
+                    filterId = $(this).val();
+                    filterContainer = $(this).closest('.bh-storelocator-filters').attr('id');
+                    filterKey = _this.getFilterKey(filterContainer);
+
+                    if (filterKey) {
+                        // Add or remove filters based on checkbox values
+                        if ($(this).prop('checked')) {
+                            // Add ids to the filter arrays as they are checked
+                            filters[filterKey].push(filterId);
+                            if ($('#' + _this.settings.mapDiv).hasClass('bh-storelocator-map-open') === true) {
+                                _this.reset();
+                                if ((olat) && (olng)) {
+                                    _this.settings.mapSettings.zoom = 0;
+                                    _this.beginMapping();
+                                }
+                                else {
+                                    _this.mapping(originalData);
+                                }
+                            }
+                        }
+                        else {
+                            // Remove ids from the filter arrays as they are unchecked
+                            var filterIndex = filters[filterKey].indexOf(filterId);
+                            if (filterIndex > -1) {
+                                filters[filterKey].splice(filterIndex, 1);
+                                if ($('#' + _this.settings.mapDiv).hasClass('bh-storelocator-map-open') === true) {
+                                    _this.reset();
+                                    if ((olat) && (olng)) {
+                                        if (_this.countFilters() === 0) {
+                                            _this.settings.mapSettings.zoom = originalZoom;
+                                        }
+                                        else {
+                                            _this.settings.mapSettings.zoom = 0;
+                                        }
+                                        _this.beginMapping();
+                                    }
+                                    else {
+                                        _this.mapping(originalData);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                // Handle select or radio filters
+                else if ($(this).is('select') || $(this).is('input[type="radio"]')) {
+                    // First check for existing selections
+                    _this.checkFilters();
+
+                    filterId = $(this).val();
+                    filterContainer = $(this).closest('.bh-storelocator-filters').attr('id');
+                    filterKey = _this.getFilterKey(filterContainer);
+
+                    // Check for blank filter on select since default val could be empty
+                    if (filterId) {
+                        if (filterKey) {
+                            filters[filterKey] = [filterId];
+                            if ($('#' + _this.settings.mapDiv).hasClass('bh-storelocator-map-open') === true) {
+                                _this.reset();
+                                if ((olat) && (olng)) {
+                                    _this.settings.mapSettings.zoom = 0;
+                                    _this.beginMapping();
+                                }
+                                else {
+                                    _this.mapping(originalData);
+                                }
+                            }
+                        }
+                    }
+                    // Reset if the default option is selected
+                    else {
+                        if (filterKey) {
+                            filters[filterKey] = [];
+                        }
+                        _this.reset();
+                        if ((olat) && (olng)) {
+                            _this.settings.mapSettings.zoom = originalZoom;
+                            _this.beginMapping();
+                        }
+                        else {
+                            _this.mapping(originalData);
+                        }
+                    }
+                }
+            });
+        },
+
 		/**
 		 * Primary locator function runs after the templates are loaded
 		 */
 		locator: function () {
-			var _this = this;
-			// Taxonomy filtering
-			if (this.settings.taxonomyFilters !== null) {
-
-				// Set up the filters
-				$.each(this.settings.taxonomyFilters, function (k) {
-					filters[k] = [];
-				});
-
-				// Handle filter updates
-				$('.bh-storelocator-filters-container').on('change.' + prefix, 'input, select', function (e) {
-					e.stopPropagation();
-
-					var filterId, filterContainer, filterKey;
-
-					// Handle checkbox filters
-					if ($(this).is('input[type="checkbox"]')) {
-						// First check for existing selections
-						_this.checkFilters();
-
-						filterId = $(this).val();
-						filterContainer = $(this).closest('.bh-storelocator-filters').attr('id');
-						filterKey = _this.getFilterKey(filterContainer);
-
-						if (filterKey) {
-							// Add or remove filters based on checkbox values
-							if ($(this).prop('checked')) {
-								// Add ids to the filter arrays as they are checked
-								filters[filterKey].push(filterId);
-								if ($('#' + _this.settings.mapDiv).hasClass('bh-storelocator-map-open') === true) {
-									_this.reset();
-									if ((olat) && (olng)) {
-										_this.settings.mapSettings.zoom = 0;
-										_this.beginMapping();
-									}
-									else {
-										_this.mapping(originalData);
-									}
-								}
-							}
-							else {
-								// Remove ids from the filter arrays as they are unchecked
-								var filterIndex = filters[filterKey].indexOf(filterId);
-								if (filterIndex > -1) {
-									filters[filterKey].splice(filterIndex, 1);
-									if ($('#' + _this.settings.mapDiv).hasClass('bh-storelocator-map-open') === true) {
-										_this.reset();
-										if ((olat) && (olng)) {
-											if (_this.countFilters() === 0) {
-												_this.settings.mapSettings.zoom = originalZoom;
-											}
-											else {
-												_this.settings.mapSettings.zoom = 0;
-											}
-											_this.beginMapping();
-										}
-										else {
-											_this.mapping(originalData);
-										}
-									}
-								}
-							}
-						}
-					}
-					// Handle select or radio filters
-					else if ($(this).is('select') || $(this).is('input[type="radio"]')) {
-						// First check for existing selections
-						_this.checkFilters();
-
-						filterId = $(this).val();
-						filterContainer = $(this).closest('.bh-storelocator-filters').attr('id');
-						filterKey = _this.getFilterKey(filterContainer);
-
-						// Check for blank filter on select since default val could be empty
-						if (filterId) {
-							if (filterKey) {
-								filters[filterKey] = [filterId];
-								if ($('#' + _this.settings.mapDiv).hasClass('bh-storelocator-map-open') === true) {
-									_this.reset();
-									if ((olat) && (olng)) {
-										_this.settings.mapSettings.zoom = 0;
-										_this.beginMapping();
-									}
-									else {
-										_this.mapping(originalData);
-									}
-								}
-							}
-						}
-						// Reset if the default option is selected
-						else {
-							if (filterKey) {
-								filters[filterKey] = [];
-							}
-							_this.reset();
-							if ((olat) && (olng)) {
-								_this.settings.mapSettings.zoom = originalZoom;
-								_this.beginMapping();
-							}
-							else {
-								_this.mapping(originalData);
-							}
-						}
-					}
-				});
-			}
+            // Do taxonomy filtering if set
+            if (this.settings.taxonomyFilters !== null) {
+                this.taxonomyFiltering();
+            }
 
 			// Add modal window divs if set
 			if (this.settings.modalWindow === true) {
