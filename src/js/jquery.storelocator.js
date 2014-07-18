@@ -17,7 +17,7 @@
 	}
 
 	// Variables used across multiple functions		
-	var $this, listTemplate, infowindowTemplate, dataTypeRead, originalData, originalDataRequest, originalZoom, userInput, olat, olng, storeNum;
+	var $this, listTemplate, infowindowTemplate, dataTypeRead, originalData, originalDataRequest, originalZoom, userInput, olat, olng, storeNum, directionsDisplay, directionsService;
 	var featuredset, locationset, normalset, markers = [];
 	var filters = {};
 	var locationData = {};
@@ -68,6 +68,7 @@
 		'featuredLocations'        : false,
 		'pagination'               : false,
 		'locationsPerPage'         : 10,
+		'inlineDirections'         : false,
 		'infowindowTemplatePath'   : 'templates/infowindow-description.html',
 		'listTemplatePath'         : 'templates/location-list-description.html',
 		'KMLinfowindowTemplatePath': 'templates/kml-infowindow-description.html',
@@ -121,9 +122,6 @@
 		 * Init function
 		 */
 		init: function () {
-			var source;
-			var _this = this;
-			
 			// Calculate geocode distance functions
 			if (this.settings.lengthUnit === 'km') {
 				//Kilometers
@@ -142,22 +140,36 @@
 				dataTypeRead = this.settings.dataType;
 			}
 
+			// Do the initial data request
 			originalDataRequest = this.getData();
 
-			// Save this separately so we can avoid multiple AJAX requests
+			// Save separately so we can avoid multiple AJAX requests
 			originalDataRequest.done(function (data) {
 				originalData = data;
 			});
 
 			// Save the original zoom setting so it can be retrieved if taxonomy filtering resets it
 			originalZoom = this.settings.mapSettings.zoom;
+			
+			// Set up the directionsService if it's true
+			if(this.settings.inlineDirections === true){
+				directionsDisplay = new google.maps.DirectionsRenderer();
+				directionsService = new google.maps.DirectionsService();
+			}
+			
+			// Load the templates and continue from there
+			this.loadTemplates();
+		},
 
-			/**
-			 * Load the external template files first
-			 */
+		/**
+		 * Load templates
+		 */
+		loadTemplates: function () {
+			var source;
+			var _this = this;
 			// Get the KML templates
 			if (this.settings.dataType === 'kml' && this.settings.listTemplateID === null && this.settings.infowindowTemplateID === null) {
-				
+
 				// Try loading the external template files
 				$.when(
 					// KML infowindows
@@ -165,13 +177,12 @@
 						source = template;
 						infowindowTemplate = Handlebars.compile(source);
 					}),
-
+	
 					// KML locations list
 					$.get(this.settings.KMLlistTemplatePath, function (template) {
 						source = template;
 						listTemplate = Handlebars.compile(source);
 					})
-
 				).then(function () {
 					// Continue to the main script if templates are loaded successfully
 					_this.locator();
@@ -202,13 +213,12 @@
 						source = template;
 						infowindowTemplate = Handlebars.compile(source);
 					}),
-
+	
 					// Locations list
 					$.get(this.settings.listTemplatePath, function (template) {
 						source = template;
 						listTemplate = Handlebars.compile(source);
 					})
-
 				).then(function () {
 					// Continue to the main script if templates are loaded successfully
 					_this.locator();
@@ -219,7 +229,7 @@
 				});
 			}
 		},
-
+		
 		/**
 		 * Reset function
 		 */
@@ -1072,299 +1082,304 @@
 					_this.paginationSetup();
 				}
 
-				// Create the map with jQuery
-				$(function () {
 
-					var storeStart, storeNumToShow, myOptions;
+				var storeStart, storeNumToShow, myOptions;
 
-					// Slide in the map container
-					if (_this.settings.slideMap === true) {
-						$this.slideDown();
+				// Slide in the map container
+				if (_this.settings.slideMap === true) {
+					$this.slideDown();
+				}
+				// Set up the modal window
+				if (_this.settings.modalWindow === true) {
+					// Callback
+					if (_this.settings.callbackModalOpen) {
+						_this.settings.callbackModalOpen.call(this);
 					}
-					// Set up the modal window
-					if (_this.settings.modalWindow === true) {
-						// Callback
-						if (_this.settings.callbackModalOpen) {
-							_this.settings.callbackModalOpen.call(this);
-						}
 
-						// Pop up the modal window
-						$('.' + _this.settings.overlayDiv).fadeIn();
-						// Close modal when close icon is clicked and when background overlay is clicked TODO: Make sure this works with multiple
-						$(document).on('click.' + prefix, '.' + _this.settings.modalCloseIconDiv + ', .' + _this.settings.overlayDiv, function () {
+					// Pop up the modal window
+					$('.' + _this.settings.overlayDiv).fadeIn();
+					// Close modal when close icon is clicked and when background overlay is clicked TODO: Make sure this works with multiple
+					$(document).on('click.' + prefix, '.' + _this.settings.modalCloseIconDiv + ', .' + _this.settings.overlayDiv, function () {
+						_this.modalClose();
+					});
+					// Prevent clicks within the modal window from closing the entire thing
+					$(document).on('click.' + prefix, _this.settings.modalWindowDiv, function (e) {
+						e.stopPropagation();
+					});
+					// Close modal when escape key is pressed
+					$(document).on('keyup.' + prefix, function (e) {
+						if (e.keyCode === 27) {
 							_this.modalClose();
-						});
-						// Prevent clicks within the modal window from closing the entire thing
-						$(document).on('click.' + prefix, _this.settings.modalWindowDiv, function (e) {
-							e.stopPropagation();
-						});
-						// Close modal when escape key is pressed
-						$(document).on('keyup.' + prefix, function (e) {
-							if (e.keyCode === 27) {
-								_this.modalClose();
-							}
-						});
-					}
-
-					// Avoid error if number of locations is less than the default of 26
-					if (_this.settings.storeLimit === -1 || (locationset.length ) < _this.settings.storeLimit) {
-						storeNum = locationset.length;
-					}
-					else {
-						storeNum = _this.settings.storeLimit;
-					}
-
-					// If pagination is on, change the store limit to the setting and slice the locationset array
-					if (_this.settings.pagination === true) {
-						storeNumToShow = _this.settings.locationsPerPage;
-						storeStart = page * _this.settings.locationsPerPage;
-
-						locationset = locationset.slice(storeStart, storeStart + storeNumToShow);
-						storeNum = locationset.length;
-					}
-					else {
-						storeNumToShow = storeNum;
-						storeStart = 0;
-					}
-
-					// Google maps settings
-					if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0)) {
-						myOptions = _this.settings.mapSettings;
-						var bounds = new google.maps.LatLngBounds();
-					}
-					else if (_this.settings.pagination === true) {
-						// Update the map to focus on the first point in the new set
-						var nextPoint = new google.maps.LatLng(locationset[0].lat, locationset[0].lng);
-
-						if (page === 0) {
-							_this.settings.mapSettings.center = originPoint;
-							myOptions = _this.settings.mapSettings;
 						}
-						else {
-							_this.settings.mapSettings.center = nextPoint;
-							myOptions = _this.settings.mapSettings;
-						}
-					}
-					else {
+					});
+				}
+
+				// Avoid error if number of locations is less than the default of 26
+				if (_this.settings.storeLimit === -1 || (locationset.length ) < _this.settings.storeLimit) {
+					storeNum = locationset.length;
+				}
+				else {
+					storeNum = _this.settings.storeLimit;
+				}
+
+				// If pagination is on, change the store limit to the setting and slice the locationset array
+				if (_this.settings.pagination === true) {
+					storeNumToShow = _this.settings.locationsPerPage;
+					storeStart = page * _this.settings.locationsPerPage;
+
+					locationset = locationset.slice(storeStart, storeStart + storeNumToShow);
+					storeNum = locationset.length;
+				}
+				else {
+					storeNumToShow = storeNum;
+					storeStart = 0;
+				}
+
+				// Google maps settings
+				if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0)) {
+					myOptions = _this.settings.mapSettings;
+					var bounds = new google.maps.LatLngBounds();
+				}
+				else if (_this.settings.pagination === true) {
+					// Update the map to focus on the first point in the new set
+					var nextPoint = new google.maps.LatLng(locationset[0].lat, locationset[0].lng);
+
+					if (page === 0) {
 						_this.settings.mapSettings.center = originPoint;
 						myOptions = _this.settings.mapSettings;
 					}
-
-					var map = new google.maps.Map(document.getElementById(_this.settings.mapDiv.replace('#')), myOptions);
-					// Load the map
-					$this.data(_this.settings.mapDiv.replace('#'), map);
-
-					// Create one infowindow to fill later
-					var infowindow = new google.maps.InfoWindow();
-
-					// Add origin marker if the setting is set
-					if (_this.settings.originMarker === true && settings.fullMapStart === false) {
-						var marker = new google.maps.Marker({
-							position : originPoint,
-							map      : map,
-							icon     : 'https://maps.google.com/mapfiles/ms/icons/' + _this.settings.originpinColor + '-dot.png',
-							draggable: false
-						});
+					else {
+						_this.settings.mapSettings.center = nextPoint;
+						myOptions = _this.settings.mapSettings;
 					}
+				}
+				else {
+					_this.settings.mapSettings.center = originPoint;
+					myOptions = _this.settings.mapSettings;
+				}
 
-					// Handle pagination
-					$(document).on('click.' + prefix, '.bh-storelocator-pagination li', function () {
-						// Remove the current class
-						$('.bh-storelocator-pagination li').attr('class', '');
+				var map = new google.maps.Map(document.getElementById(_this.settings.mapDiv.replace('#')), myOptions);
+				// Load the map
+				$this.data(_this.settings.mapDiv.replace('#'), map);
 
-						// Add the current class
-						$(this).addClass('bh-storelocator-current');
+				// Create one infowindow to fill later
+				var infowindow = new google.maps.InfoWindow();
 
-						// Run paginationChange
-						_this.paginationChange($(this).attr('data-page'));
+				// Add origin marker if the setting is set
+				if (_this.settings.originMarker === true && settings.fullMapStart === false) {
+					var marker = new google.maps.Marker({
+						position : originPoint,
+						map      : map,
+						icon     : 'https://maps.google.com/mapfiles/ms/icons/' + _this.settings.originpinColor + '-dot.png',
+						draggable: false
 					});
+				}
 
-					// Add markers and infowindows loop
-					for (var y = 0; y <= storeNumToShow - 1; y++) {
-						var letter = "";
+				// Handle pagination
+				$(document).on('click.' + prefix, '.bh-storelocator-pagination li', function () {
+					// Remove the current class
+					$('.bh-storelocator-pagination li').attr('class', '');
 
-						if (page > 0) {
-							letter = String.fromCharCode('A'.charCodeAt(0) + (storeStart + y));
-						}
-						else {
-							letter = String.fromCharCode('A'.charCodeAt(0) + y);
-						}
+					// Add the current class
+					$(this).addClass('bh-storelocator-current');
 
-						var point = new google.maps.LatLng(locationset[y].lat, locationset[y].lng);
-						marker = _this.createMarker(point, locationset[y].name, locationset[y].address, letter, map);
-						marker.set('id', y);
-						markers[y] = marker;
-						if ((_this.settings.fullMapStart === true && firstRun === true) || _this.settings.mapSettings.zoom === 0) {
-							bounds.extend(point);
-						}
-						// Pass variables to the pop-up infowindows
-						_this.createInfowindow(marker, null, infowindow, storeStart, page);
-					}
-
-					// Center and zoom if no origin or zoom was provided
-					if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0)) {
-						map.fitBounds(bounds);
-					}
-
-					// Create the links that focus on the related marker
-					$(_this.settings.listDiv + ' ul').empty();
-					$(markers).each(function (x, marker) {
-						var letter = String.fromCharCode('A'.charCodeAt(0) + x);
-						// This needs to happen outside the loop or there will be a closure problem with creating the infowindows attached to the list click
-						var currentMarker = markers[x];
-						_this.listClick(currentMarker, storeStart, page);
-					});
-
-					// Handle clicks from the list
-					$(document).on('click.' + prefix, _this.settings.listDiv + ' li', function () {
-						var markerId = $(this).data('markerid');
-
-						var selectedMarker = markers[markerId];
-
-						// Focus on the list
-						$(_this.settings.listDiv + ' li').removeClass('list-focus');
-						$(_this.settings.listDiv + ' li[data-markerid=' + markerId + ']').addClass('list-focus');
-
-						map.panTo(selectedMarker.getPosition());
-						var listLoc = 'left';
-						if (_this.settings.bounceMarker === true) {
-							selectedMarker.setAnimation(google.maps.Animation.BOUNCE);
-							setTimeout(function () {
-										selectedMarker.setAnimation(null);
-										_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
-									}, 700
-							);
-						}
-						else {
-							_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
-						}
-					});
-
-					// Add the list li background colors
-					$(_this.settings.listDiv + ' ul li:even').css('background', '#' + _this.settings.listColor1);
-					$(_this.settings.listDiv + ' ul li:odd').css('background', '#' + _this.settings.listColor2);
-
+					// Run paginationChange
+					_this.paginationChange($(this).attr('data-page'));
 				});
+
+				// Add markers and infowindows loop
+				for (var y = 0; y <= storeNumToShow - 1; y++) {
+					var letter = "";
+
+					if (page > 0) {
+						letter = String.fromCharCode('A'.charCodeAt(0) + (storeStart + y));
+					}
+					else {
+						letter = String.fromCharCode('A'.charCodeAt(0) + y);
+					}
+
+					var point = new google.maps.LatLng(locationset[y].lat, locationset[y].lng);
+					marker = _this.createMarker(point, locationset[y].name, locationset[y].address, letter, map);
+					marker.set('id', y);
+					markers[y] = marker;
+					if ((_this.settings.fullMapStart === true && firstRun === true) || _this.settings.mapSettings.zoom === 0) {
+						bounds.extend(point);
+					}
+					// Pass variables to the pop-up infowindows
+					_this.createInfowindow(marker, null, infowindow, storeStart, page);
+				}
+
+				// Center and zoom if no origin or zoom was provided
+				if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0)) {
+					map.fitBounds(bounds);
+				}
+
+				// Create the links that focus on the related marker
+				$(_this.settings.listDiv + ' ul').empty();
+				$(markers).each(function (x, marker) {
+					var letter = String.fromCharCode('A'.charCodeAt(0) + x);
+					// This needs to happen outside the loop or there will be a closure problem with creating the infowindows attached to the list click
+					var currentMarker = markers[x];
+					_this.listClick(currentMarker, storeStart, page);
+				});
+
+				// Handle clicks from the list
+				$(document).on('click.' + prefix, _this.settings.listDiv + ' li', function () {
+					var markerId = $(this).data('markerid');
+
+					var selectedMarker = markers[markerId];
+
+					// Focus on the list
+					$(_this.settings.listDiv + ' li').removeClass('list-focus');
+					$(_this.settings.listDiv + ' li[data-markerid=' + markerId + ']').addClass('list-focus');
+
+					map.panTo(selectedMarker.getPosition());
+					var listLoc = 'left';
+					if (_this.settings.bounceMarker === true) {
+						selectedMarker.setAnimation(google.maps.Animation.BOUNCE);
+						setTimeout(function () {
+									selectedMarker.setAnimation(null);
+									_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
+								}, 700
+						);
+					}
+					else {
+						_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
+					}
+				});
+
+				// Add the list li background colors
+				$(_this.settings.listDiv + ' ul li:even').css('background', '#' + _this.settings.listColor1);
+				$(_this.settings.listDiv + ' ul li:odd').css('background', '#' + _this.settings.listColor2);
+				
+				// Handle inline directions
+				if(_this.settings.inlineDirections === true){
+					$(document).on('click.' + prefix, _this.settings.listDiv + ' li .loc-directions a', function (e) {
+						e.preventDefault();
+						// Directions request
+						
+					});
+				}
 			});
 		},
 
-        /**
-         * Taxonomy filtering
-         */
-        taxonomyFiltering: function() {
-            var _this = this;
+		/**
+		 * Taxonomy filtering
+		 */
+		taxonomyFiltering: function() {
+				var _this = this;
 
-            // Set up the filters
-            $.each(this.settings.taxonomyFilters, function (k) {
-                filters[k] = [];
-            });
+				// Set up the filters
+				$.each(this.settings.taxonomyFilters, function (k) {
+						filters[k] = [];
+				});
 
-            // Handle filter updates
-            $('.bh-storelocator-filters-container').on('change.' + prefix, 'input, select', function (e) {
-                e.stopPropagation();
+				// Handle filter updates
+				$('.bh-storelocator-filters-container').on('change.' + prefix, 'input, select', function (e) {
+						e.stopPropagation();
 
-                var filterId, filterContainer, filterKey;
+						var filterId, filterContainer, filterKey;
 
-                // Handle checkbox filters
-                if ($(this).is('input[type="checkbox"]')) {
-                    // First check for existing selections
-                    _this.checkFilters();
+						// Handle checkbox filters
+						if ($(this).is('input[type="checkbox"]')) {
+								// First check for existing selections
+								_this.checkFilters();
 
-                    filterId = $(this).val();
-                    filterContainer = $(this).closest('.bh-storelocator-filters').attr('id');
-                    filterKey = _this.getFilterKey(filterContainer);
+								filterId = $(this).val();
+								filterContainer = $(this).closest('.bh-storelocator-filters').attr('id');
+								filterKey = _this.getFilterKey(filterContainer);
 
-                    if (filterKey) {
-                        // Add or remove filters based on checkbox values
-                        if ($(this).prop('checked')) {
-                            // Add ids to the filter arrays as they are checked
-                            filters[filterKey].push(filterId);
-                            if ($('#' + _this.settings.mapDiv).hasClass('bh-storelocator-map-open') === true) {
-                                _this.reset();
-                                if ((olat) && (olng)) {
-                                    _this.settings.mapSettings.zoom = 0;
-                                    _this.beginMapping();
-                                }
-                                else {
-                                    _this.mapping(originalData);
-                                }
-                            }
-                        }
-                        else {
-                            // Remove ids from the filter arrays as they are unchecked
-                            var filterIndex = filters[filterKey].indexOf(filterId);
-                            if (filterIndex > -1) {
-                                filters[filterKey].splice(filterIndex, 1);
-                                if ($('#' + _this.settings.mapDiv).hasClass('bh-storelocator-map-open') === true) {
-                                    _this.reset();
-                                    if ((olat) && (olng)) {
-                                        if (_this.countFilters() === 0) {
-                                            _this.settings.mapSettings.zoom = originalZoom;
-                                        }
-                                        else {
-                                            _this.settings.mapSettings.zoom = 0;
-                                        }
-                                        _this.beginMapping();
-                                    }
-                                    else {
-                                        _this.mapping(originalData);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                // Handle select or radio filters
-                else if ($(this).is('select') || $(this).is('input[type="radio"]')) {
-                    // First check for existing selections
-                    _this.checkFilters();
+								if (filterKey) {
+										// Add or remove filters based on checkbox values
+										if ($(this).prop('checked')) {
+												// Add ids to the filter arrays as they are checked
+												filters[filterKey].push(filterId);
+												if ($('#' + _this.settings.mapDiv).hasClass('bh-storelocator-map-open') === true) {
+														_this.reset();
+														if ((olat) && (olng)) {
+																_this.settings.mapSettings.zoom = 0;
+																_this.beginMapping();
+														}
+														else {
+																_this.mapping(originalData);
+														}
+												}
+										}
+										else {
+												// Remove ids from the filter arrays as they are unchecked
+												var filterIndex = filters[filterKey].indexOf(filterId);
+												if (filterIndex > -1) {
+														filters[filterKey].splice(filterIndex, 1);
+														if ($('#' + _this.settings.mapDiv).hasClass('bh-storelocator-map-open') === true) {
+																_this.reset();
+																if ((olat) && (olng)) {
+																		if (_this.countFilters() === 0) {
+																				_this.settings.mapSettings.zoom = originalZoom;
+																		}
+																		else {
+																				_this.settings.mapSettings.zoom = 0;
+																		}
+																		_this.beginMapping();
+																}
+																else {
+																		_this.mapping(originalData);
+																}
+														}
+												}
+										}
+								}
+						}
+						// Handle select or radio filters
+						else if ($(this).is('select') || $(this).is('input[type="radio"]')) {
+								// First check for existing selections
+								_this.checkFilters();
 
-                    filterId = $(this).val();
-                    filterContainer = $(this).closest('.bh-storelocator-filters').attr('id');
-                    filterKey = _this.getFilterKey(filterContainer);
+								filterId = $(this).val();
+								filterContainer = $(this).closest('.bh-storelocator-filters').attr('id');
+								filterKey = _this.getFilterKey(filterContainer);
 
-                    // Check for blank filter on select since default val could be empty
-                    if (filterId) {
-                        if (filterKey) {
-                            filters[filterKey] = [filterId];
-                            if ($('#' + _this.settings.mapDiv).hasClass('bh-storelocator-map-open') === true) {
-                                _this.reset();
-                                if ((olat) && (olng)) {
-                                    _this.settings.mapSettings.zoom = 0;
-                                    _this.beginMapping();
-                                }
-                                else {
-                                    _this.mapping(originalData);
-                                }
-                            }
-                        }
-                    }
-                    // Reset if the default option is selected
-                    else {
-                        if (filterKey) {
-                            filters[filterKey] = [];
-                        }
-                        _this.reset();
-                        if ((olat) && (olng)) {
-                            _this.settings.mapSettings.zoom = originalZoom;
-                            _this.beginMapping();
-                        }
-                        else {
-                            _this.mapping(originalData);
-                        }
-                    }
-                }
-            });
-        },
+								// Check for blank filter on select since default val could be empty
+								if (filterId) {
+										if (filterKey) {
+												filters[filterKey] = [filterId];
+												if ($('#' + _this.settings.mapDiv).hasClass('bh-storelocator-map-open') === true) {
+														_this.reset();
+														if ((olat) && (olng)) {
+																_this.settings.mapSettings.zoom = 0;
+																_this.beginMapping();
+														}
+														else {
+																_this.mapping(originalData);
+														}
+												}
+										}
+								}
+								// Reset if the default option is selected
+								else {
+										if (filterKey) {
+												filters[filterKey] = [];
+										}
+										_this.reset();
+										if ((olat) && (olng)) {
+												_this.settings.mapSettings.zoom = originalZoom;
+												_this.beginMapping();
+										}
+										else {
+												_this.mapping(originalData);
+										}
+								}
+						}
+				});
+		},
 
 		/**
 		 * Primary locator function runs after the templates are loaded
 		 */
 		locator: function () {
-            // Do taxonomy filtering if set
-            if (this.settings.taxonomyFilters !== null) {
-                this.taxonomyFiltering();
-            }
+			// Do taxonomy filtering if set
+			if (this.settings.taxonomyFilters !== null) {
+					this.taxonomyFiltering();
+			}
 
 			// Add modal window divs if set
 			if (this.settings.modalWindow === true) {
