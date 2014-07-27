@@ -157,6 +157,15 @@
   box-shadow: 0 0 8px rgba(82, 168, 236, 0.7);
   transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
 }
+.bh-storelocator-container .bh-storelocator-loc-list .bh-storelocator-close-directions-container {
+  width: 100%;
+  height: 20px;
+  position: relative;
+}
+.bh-storelocator-container .bh-storelocator-loc-list .bh-storelocator-close-directions-container .bh-storelocator-close-icon {
+  top: 0;
+  right: 6px;
+}
 .bh-storelocator-container .loc-name {
   /* Picked up by both list and infowindows */
   color: #ae2118;
@@ -217,10 +226,12 @@
   padding: 0 22px;
   /* there's already a margin on the top of the map-container div */
 }
-.bh-storelocator-overlay .bh-storelocator-modal-window .bh-storelocator-modal-close-icon {
-  position: absolute;
+.bh-storelocator-overlay .bh-storelocator-modal-window .bh-storelocator-close-icon {
   top: -6px;
   right: -6px;
+}
+.bh-storelocator-close-icon {
+  position: absolute;
   width: 18px;
   height: 18px;
   cursor: pointer;
@@ -228,11 +239,4 @@
   border: 1px solid #000000;
   border-radius: 3px;
   box-shadow: 0 0 3px #656565;
-}
-/* The following is for the geocode page and not the store locator */
-#geocode-result {
-  clear: left;
-  float: left;
-  margin-top: 30px;
-  width: 100%;
 }

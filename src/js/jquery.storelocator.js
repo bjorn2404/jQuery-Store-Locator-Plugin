@@ -4,7 +4,7 @@
  * Released under the MIT license
  */
 
-/* global define, window, document, Handlebars, alert, google */
+/* global define, window, document, Handlebars, google */
 
 ;(function ($, window, document, undefined) {
 	'use strict';
@@ -22,7 +22,6 @@
 	var filters = {};
 	var locationData = {};
 	var GeoCodeCalc = {};
-	var prefix = 'storeLocator';
 
 	// Create the defaults once. Do not change these settings in this file - settings should be overridden in the plugin call
 	var defaults = {
@@ -54,7 +53,7 @@
 		'overlayDiv'               : 'bh-storelocator-overlay',
 		'modalWindowDiv'           : 'bh-storelocator-modal-window',
 		'modalContentDiv'          : 'bh-storelocator-modal-content',
-		'modalCloseIconDiv'        : 'bh-storelocator-modal-close-icon',
+		'closeIconDiv'             : 'bh-storelocator-close-icon',
 		'defaultLoc'               : false,
 		'defaultLat'               : '',
 		'defaultLng'               : '',
@@ -155,7 +154,13 @@
 			if(this.settings.inlineDirections === true){
 				directionsDisplay = new google.maps.DirectionsRenderer();
 				directionsService = new google.maps.DirectionsService();
+				$(this.settings.listDiv).prepend('<div class="bh-storelocator-directions-panel"></div>');
 			}
+			
+			// Add Handlebars helper for handling URL output
+			Handlebars.registerHelper('niceURL', function(url) {
+				return url.replace('https://', '').replace('http://', '');
+			});
 			
 			// Load the templates and continue from there
 			this.loadTemplates();
@@ -238,7 +243,7 @@
 			featuredset = [];
 			normalset = [];
 			markers = [];
-			$(document).off('click.' + prefix, this.settings.listDiv + ' li');
+			$(document).off('click', this.settings.listDiv + ' li');
 		},
 
 		/**
@@ -268,17 +273,17 @@
 			var _this = this;
 			// ASP.net or regular submission?
 			if (this.settings.noForm === true) {
-				$(document).on('click.' + prefix, '.' + this.settings.formContainerDiv + ' button', function (e) {
+				$(document).on('click', '.' + this.settings.formContainerDiv + ' button', function (e) {
 					_this.getFormValues(e);
 				});
-				$(document).on('keyup.' + prefix, function (e) {
+				$(document).on('keyup', function (e) {
 					if (e.keyCode === 13 && $('#' + _this.settings.inputID).is(':focus')) {
 						_this.getFormValues(e);
 					}
 				});
 			}
 			else {
-				$(document).on('submit.' + prefix, '#' + this.settings.formID, function (e) {
+				$(document).on('submit', '#' + this.settings.formID, function (e) {
 					_this.getFormValues(e);
 				});
 			}
@@ -630,10 +635,11 @@
 			var marker;
 
 			// Set up pin icon with the Google Charts API for all of our markers
-			var pinImage = new google.maps.MarkerImage('https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=' + letter + '|' + this.settings.pinColor + '|' + this.settings.pinTextColor,
+			/*var pinImage = new google.maps.MarkerImage('https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=' + letter + '|' + this.settings.pinColor + '|' + this.settings.pinTextColor,
 					new google.maps.Size(21, 34),
 					new google.maps.Point(0, 0),
-					new google.maps.Point(10, 34));
+					new google.maps.Point(10, 34));*/
+			var pinImage = new google.maps.MarkerImage('http://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-waypoint-b.png&text=' + letter + '&psize=16&font=fonts/Roboto-Regular.ttf&color=ff333333&ax=44&ay=48');
 
 			// Create the markers
 			if (this.settings.storeLimit === -1 || this.settings.storeLimit > 26) {
@@ -808,6 +814,95 @@
 		},
 
 		/**
+		 * Get the address by marker ID
+		 * 
+		 * @param markerID {number} location ID
+		 * @returns {string} Formatted address
+		 */
+		getAddressByMarker: function(markerID) {
+			var formattedAddress = null;
+			// Set up formatted address
+			if(locationset[markerID].address){ formattedAddress += locationset[markerID].address + ' '; }
+			if(locationset[markerID].address2){ formattedAddress += locationset[markerID].address2 + ' '; }
+			if(locationset[markerID].city){ formattedAddress += locationset[markerID].city + ', '; }
+			if(locationset[markerID].state){ formattedAddress += locationset[markerID].state + ' '; }
+			if(locationset[markerID].postal){ formattedAddress += locationset[markerID].postal + ' '; }
+			if(locationset[markerID].country){ formattedAddress += locationset[markerID].country + ' '; }
+			
+			return formattedAddress;
+		},
+
+		/**
+		 * Clear the markers from the map
+		 */
+		clearMarkers: function() {
+			for (var i = 0; i < locationset.length; i++) {
+				markers[i].setMap(null);
+			}
+		},
+
+		/**
+		 * Handle inline direction requests
+		 * 
+		 * @param origin {string} origin address
+		 * @param locID {number} location ID
+		 * @param map
+		 */
+		directionsRequest: function(origin, locID, map) {
+			var destination = this.getAddressByMarker(locID);
+
+			if(destination) {
+				// Hide the location list
+				$(this.settings.listDiv + ' ul').hide();
+				// Remove the markers
+				this.clearMarkers();
+
+				// Directions request
+				directionsDisplay.setMap(map);
+				directionsDisplay.setPanel($('.bh-storelocator-directions-panel').get(0));
+
+				var request = {
+					origin: origin,
+					destination: destination,
+					travelMode: google.maps.TravelMode.DRIVING
+				};
+				directionsService.route(request, function(response, status) {
+					if (status === google.maps.DirectionsStatus.OK) {
+						directionsDisplay.setDirections(response);
+					}
+				});
+
+				$(this.settings.listDiv).prepend('<div class="bh-storelocator-close-directions-container"><div class="' + this.settings.closeIconDiv + '"></div></div>');
+			}
+
+			$(document).off('click', this.settings.listDiv + ' li .loc-directions a');
+		},
+
+		/**
+		 * Close the directions panel and reset the map with the original locationset and zoom
+		 */
+		closeDirections: function() {
+			// Remove the close icon, remove the directions, add the list back
+			$('.bh-storelocator-close-directions-container').remove();
+			$(this.settings.listDiv + ' .adp').remove();
+			$(this.settings.listDiv + ' ul').fadeIn();
+			
+			this.reset();
+			
+			if ((olat) && (olng)) {
+				if (this.countFilters() === 0) {
+					this.settings.mapSettings.zoom = originalZoom;
+				}
+				else {
+					this.settings.mapSettings.zoom = 0;
+				}
+				this.beginMapping();
+			}
+
+			$(document).off('click', this.settings.listDiv + ' .bh-storelocator-close-icon');
+		},
+
+		/**
 		 * Set up the normal mapping
 		 *
 		 * @param distance {number} optional maximum distance
@@ -850,6 +945,8 @@
 		 */
 		mapping: function (data, orig_lat, orig_lng, origin, maxDistance, page) {
 			var _this = this;
+			var firstRun, marker, bounds, storeStart, storeNumToShow, myOptions;
+			var i = 0;
 			// Enable the visual refresh https://developers.google.com/maps/documentation/javascript/basics#VisualRefresh
 			google.maps.visualRefresh = true;
 
@@ -867,13 +964,8 @@
 			originalDataRequest.then(function () {
 				// Callback
 				if (_this.settings.callbackSuccess) {
-					_this.settings.callbackSuccess.call(_this, data, xhr, options);
+					_this.settings.callbackSuccess.call(this);
 				}
-
-				var i = 0;
-				var firstRun;
-				var originsArray = [];
-				var destinationsArray = [];
 
 				// Set a variable for fullMapStart so we can detect the first run
 				if (_this.settings.fullMapStart === true && $('#' + _this.settings.mapDiv).hasClass('bh-storelocator-map-open') === false) {
@@ -895,12 +987,6 @@
 						for (key in this) {
 							if (this.hasOwnProperty(key)) {
 								value = this[key];
-
-								if (key === 'web') {
-									if (value) {
-										value = value.replace('http://', '');
-									} // Remove scheme (todo: should NOT be done)
-								}
 
 								locationData[key] = value;
 							}
@@ -936,7 +1022,9 @@
 							'description': $(this).find('description').text()
 						};
 
-						locationData.distance = _this.geoCodeCalcCalcDistance(orig_lat, orig_lng, locationData.lat, locationData.lng, GeoCodeCalc.EarthRadius);
+						if (!locationData.distance) {
+							locationData.distance = _this.geoCodeCalcCalcDistance(orig_lat, orig_lng, locationData.lat, locationData.lng, GeoCodeCalc.EarthRadius);
+						}
 
 						// Create the array
 						if (_this.settings.maxDistance === true && firstRun !== true && maxDistance) {
@@ -963,20 +1051,8 @@
 							locationData[attrib.name] = attrib.value;
 						});
 
-						if (locationData.web) {
-							locationData.web = locationData.web.replace('http://', '');
-						} // Remove scheme (todo: should NOT be done)
-
 						if (!locationData.distance) {
 							locationData.distance = _this.geoCodeCalcCalcDistance(orig_lat, orig_lng, locationData.lat, locationData.lng, GeoCodeCalc.EarthRadius);
-							var locDest = new google.maps.LatLng(locationData.lat, locationData.lng);
-							// Need to use distance matrix api or old calculation
-							// var locDistance = calcRoute(originPoint, locDest);
-							// console.log(originPoint);
-							// locationData['distance'] = locDistance['routes'][0]
-
-							originsArray[i] = originPoint;
-							destinationsArray[i] = locDest;
 						}
 
 						// Create the array
@@ -995,7 +1071,6 @@
 						i++;
 					});
 				}
-
 
 				// Taxonomy filtering setup
 				if (_this.settings.taxonomyFilters !== null) {
@@ -1035,12 +1110,6 @@
 					};
 				}
 
-				// Distance calculation update testing - there is a 100 element request limit
-				/*if(locationset.length < 26){
-				var matrix = calculateDistances(originsArray, destinationsArray);
-				//console.log(matrix);
-				}*/
-
 				// Sort the multi-dimensional array by distance
 				_this.sortNumerically(locationset);
 
@@ -1048,12 +1117,12 @@
 				if (_this.settings.featuredLocations === true) {
 					// Create array for featured locations
 					featuredset = $.grep(locationset, function (val, i) {
-						return val['featured'] === 'true';
+						return val.featured === 'true';
 					});
 
 					// Create array for normal locations
 					normalset = $.grep(locationset, function (val, i) {
-						return val['featured'] !== 'true';
+						return val.featured !== 'true';
 					});
 
 					// Combine the arrays
@@ -1082,9 +1151,6 @@
 					_this.paginationSetup();
 				}
 
-
-				var storeStart, storeNumToShow, myOptions;
-
 				// Slide in the map container
 				if (_this.settings.slideMap === true) {
 					$this.slideDown();
@@ -1099,15 +1165,15 @@
 					// Pop up the modal window
 					$('.' + _this.settings.overlayDiv).fadeIn();
 					// Close modal when close icon is clicked and when background overlay is clicked TODO: Make sure this works with multiple
-					$(document).on('click.' + prefix, '.' + _this.settings.modalCloseIconDiv + ', .' + _this.settings.overlayDiv, function () {
+					$(document).on('click', '.' + _this.settings.closeIconDiv + ', .' + _this.settings.overlayDiv, function () {
 						_this.modalClose();
 					});
 					// Prevent clicks within the modal window from closing the entire thing
-					$(document).on('click.' + prefix, _this.settings.modalWindowDiv, function (e) {
+					$(document).on('click', _this.settings.modalWindowDiv, function (e) {
 						e.stopPropagation();
 					});
 					// Close modal when escape key is pressed
-					$(document).on('keyup.' + prefix, function (e) {
+					$(document).on('keyup', function (e) {
 						if (e.keyCode === 27) {
 							_this.modalClose();
 						}
@@ -1138,7 +1204,7 @@
 				// Google maps settings
 				if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0)) {
 					myOptions = _this.settings.mapSettings;
-					var bounds = new google.maps.LatLngBounds();
+					bounds = new google.maps.LatLngBounds();
 				}
 				else if (_this.settings.pagination === true) {
 					// Update the map to focus on the first point in the new set
@@ -1158,7 +1224,7 @@
 					myOptions = _this.settings.mapSettings;
 				}
 
-				var map = new google.maps.Map(document.getElementById(_this.settings.mapDiv.replace('#')), myOptions);
+				var map = new google.maps.Map(document.getElementById(_this.settings.mapDiv), myOptions);
 				// Load the map
 				$this.data(_this.settings.mapDiv.replace('#'), map);
 
@@ -1166,8 +1232,8 @@
 				var infowindow = new google.maps.InfoWindow();
 
 				// Add origin marker if the setting is set
-				if (_this.settings.originMarker === true && settings.fullMapStart === false) {
-					var marker = new google.maps.Marker({
+				if (_this.settings.originMarker === true && _this.settings.fullMapStart === false) {
+					marker = new google.maps.Marker({
 						position : originPoint,
 						map      : map,
 						icon     : 'https://maps.google.com/mapfiles/ms/icons/' + _this.settings.originpinColor + '-dot.png',
@@ -1176,7 +1242,7 @@
 				}
 
 				// Handle pagination
-				$(document).on('click.' + prefix, '.bh-storelocator-pagination li', function () {
+				$(document).on('click', '.bh-storelocator-pagination li', function () {
 					// Remove the current class
 					$('.bh-storelocator-pagination li').attr('class', '');
 
@@ -1186,6 +1252,21 @@
 					// Run paginationChange
 					_this.paginationChange($(this).attr('data-page'));
 				});
+
+				// Inline directions
+				if(_this.settings.inlineDirections === true){
+					// Open directions
+					$(document).on('click', _this.settings.listDiv + ' li .loc-directions a', function (e) {
+						e.preventDefault();
+						var locID = $(this).closest('li').attr('data-markerid');
+						_this.directionsRequest(origin, locID, map);
+					});
+
+					// Close directions
+					$(document).on('click', _this.settings.listDiv + ' .bh-storelocator-close-icon', function () {
+						_this.closeDirections();
+					});
+				}
 
 				// Add markers and infowindows loop
 				for (var y = 0; y <= storeNumToShow - 1; y++) {
@@ -1218,13 +1299,12 @@
 				$(_this.settings.listDiv + ' ul').empty();
 				$(markers).each(function (x, marker) {
 					var letter = String.fromCharCode('A'.charCodeAt(0) + x);
-					// This needs to happen outside the loop or there will be a closure problem with creating the infowindows attached to the list click
 					var currentMarker = markers[x];
 					_this.listClick(currentMarker, storeStart, page);
 				});
 
 				// Handle clicks from the list
-				$(document).on('click.' + prefix, _this.settings.listDiv + ' li', function () {
+				$(document).on('click', _this.settings.listDiv + ' li', function () {
 					var markerId = $(this).data('markerid');
 
 					var selectedMarker = markers[markerId];
@@ -1247,19 +1327,16 @@
 						_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
 					}
 				});
+				
+				// Prevent bubbling from list content links
+				$(document).on('click', _this.settings.listDiv + ' li a', function (e) {
+					e.stopPropagation();
+				});
 
 				// Add the list li background colors
 				$(_this.settings.listDiv + ' ul li:even').css('background', '#' + _this.settings.listColor1);
 				$(_this.settings.listDiv + ' ul li:odd').css('background', '#' + _this.settings.listColor2);
 				
-				// Handle inline directions
-				if(_this.settings.inlineDirections === true){
-					$(document).on('click.' + prefix, _this.settings.listDiv + ' li .loc-directions a', function (e) {
-						e.preventDefault();
-						// Directions request
-						
-					});
-				}
 			});
 		},
 
@@ -1275,7 +1352,7 @@
 				});
 
 				// Handle filter updates
-				$('.bh-storelocator-filters-container').on('change.' + prefix, 'input, select', function (e) {
+				$('.bh-storelocator-filters-container').on('change', 'input, select', function (e) {
 						e.stopPropagation();
 
 						var filterId, filterContainer, filterKey;
@@ -1384,7 +1461,7 @@
 			// Add modal window divs if set
 			if (this.settings.modalWindow === true) {
 				$this.wrap('<div class="' + this.settings.overlayDiv + '"><div class="' + this.settings.modalWindowDiv + '"><div class="' + this.settings.modalContentDiv + '">');
-				$('.' + this.settings.modalWindowDiv).prepend('<div class="' + this.settings.modalCloseIconDiv + '"><\/div>');
+				$('.' + this.settings.modalWindowDiv).prepend('<div class="' + this.settings.closeIconDiv + '"></div>');
 				$('.' + this.settings.overlayDiv).hide();
 			}
 
