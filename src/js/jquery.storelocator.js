@@ -35,7 +35,7 @@
 			zoom     : 12,
 			mapTypeId: google.maps.MapTypeId.ROADMAP
 		},
-		'pinColor'                 : 'fe7569',
+		'pinColor'                 : 'fe7569', //TODO: New marker settings
 		'pinTextColor'             : '000000',
 		'lengthUnit'               : 'm',
 		'storeLimit'               : 26,
@@ -62,7 +62,7 @@
 		'maxDistanceID'            : 'maxdistance',
 		'fullMapStart'             : false,
 		'noForm'                   : false,
-		'loading'                  : false,
+		'loading'                  : false, //TODO: Add loading back
 		'loadingDiv'               : 'bh-storelocator-loading',
 		'featuredLocations'        : false,
 		'pagination'               : false,
@@ -76,7 +76,6 @@
 		'infowindowTemplateID'     : null,
 		'taxonomyFilters'          : null,
 		'callbackBeforeSend'       : null,
-		'callbackComplete'         : null,
 		'callbackSuccess'          : null,
 		'callbackModalOpen'        : null,
 		'callbackModalClose'       : null,
@@ -138,17 +137,6 @@
 			else {
 				dataTypeRead = this.settings.dataType;
 			}
-
-			// Do the initial data request
-			originalDataRequest = this.getData();
-
-			// Save separately so we can avoid multiple AJAX requests
-			originalDataRequest.done(function (data) {
-				originalData = data;
-			});
-
-			// Save the original zoom setting so it can be retrieved if taxonomy filtering resets it
-			originalZoom = this.settings.mapSettings.zoom;
 			
 			// Set up the directionsService if it's true
 			if(this.settings.inlineDirections === true){
@@ -156,6 +144,9 @@
 				directionsService = new google.maps.DirectionsService();
 				$(this.settings.listDiv).prepend('<div class="bh-storelocator-directions-panel"></div>');
 			}
+
+			// Save the original zoom setting so it can be retrieved if taxonomy filtering resets it
+			originalZoom = this.settings.mapSettings.zoom;
 			
 			// Add Handlebars helper for handling URL output
 			Handlebars.registerHelper('niceURL', function(url) {
@@ -199,7 +190,6 @@
 			}
 			// Handle script tag template method
 			else if (this.settings.listTemplateID !== null && this.settings.infowindowTemplateID !== null) {
-				//TODO: Test this
 				// Infowindows
 				infowindowTemplate = Handlebars.compile($(this.settings.infowindowTemplateID).html());
 
@@ -233,6 +223,31 @@
 
 				});
 			}
+		},
+
+		/**
+		 * Primary locator function runs after the templates are loaded
+		 */
+		locator: function () {
+			// Do taxonomy filtering if set
+			if (this.settings.taxonomyFilters !== null) {
+				this.taxonomyFiltering();
+			}
+
+			// Add modal window divs if set
+			if (this.settings.modalWindow === true) {
+				$this.wrap('<div class="' + this.settings.overlayDiv + '"><div class="' + this.settings.modalWindowDiv + '"><div class="' + this.settings.modalContentDiv + '">');
+				$('.' + this.settings.modalWindowDiv).prepend('<div class="' + this.settings.closeIconDiv + '"></div>');
+				$('.' + this.settings.overlayDiv).hide();
+			}
+
+			if (this.settings.slideMap === true) {
+				// Let's hide the map container to begin
+				$this.hide();
+			}
+
+			this.start();
+			this.processFormInput();
 		},
 		
 		/**
@@ -290,14 +305,26 @@
 		},
 
 		/**
-		 * Changing AJAX call to this function. TODO: Add old callbacks, maybe switch to when/then
+		 * AJAX data request
 		 */
-		getData: function () {
+		getData: function (lat, lng, address) {
 			var d = $.Deferred();
+			
+			// Before send callback
+			if (this.settings.callbackBeforeSend) {
+				this.settings.callbackBeforeSend.call(this);
+			}
 
+			// AJAX request
 			$.ajax({
 				type         : 'GET',
 				url          : this.settings.dataLocation + (this.settings.dataType === 'jsonp' ? (this.settings.dataLocation.match(/\?/) ? '&' : '?') + 'callback=?' : ''),
+				// Passing the lat, lng, and address with the AJAX request so they can optionally be used by back-end languages
+				data: {
+					'origLat' : lat,
+					'origLng' : lng,
+					'origAddress': address
+				},
 				dataType     : dataTypeRead,
 				jsonpCallback: (this.settings.dataType === 'jsonp' ? this.settings.jsonpCallback : null)
 			}).done(function (p) {
@@ -384,10 +411,10 @@
 				r.geocode({'latLng': latlng}, function (data) {
 					if (data !== null) {
 						var originAddress = data.address;
-						_this.mapping(originalData, _this.settings.defaultLat, _this.settings.defaultLng, originAddress);
+						_this.mapping(_this.settings.defaultLat, _this.settings.defaultLng, originAddress);
 					} else {
 						// Unable to geocode
-						alert(this.settings.addressErrorAlert);
+						alert(_this.settings.addressErrorAlert);
 					}
 				});
 			}
@@ -395,7 +422,7 @@
 			// If show full map option is true
 			if (this.settings.fullMapStart === true) {
 				// Just do the mapping without an origin
-				this.mapping(originalData);
+				this.mapping();
 			}
 
 			// HTML5 geolocation API option
@@ -572,57 +599,6 @@
 		},
 
 		/**
-		 * Google distance calculation WIP
-		 */
-		calcRoute: function (start, end) {
-			var unitSystem;
-			var directionsService = new google.maps.DirectionsService();
-
-			if (this.settings.lengthUnit === 'm') {
-				unitSystem = google.maps.UnitSystem.IMPERIAL;
-			}
-			else {
-				unitSystem = google.maps.UnitSystem.METRIC;
-			}
-
-			var request = {
-				origin     : start,
-				destination: end,
-				travelMode : google.maps.TravelMode.DRIVING, //Make new setting
-				unitSystem : unitSystem
-			};
-			directionsService.route(request, function (response, status) {
-				if (status === google.maps.DirectionsStatus.OK) {
-					return(response);
-				}
-			});
-		},
-
-		/**
-		 * Google distance matrix request probably not going to use but save for later
-		 *
-		 * @param origins {array} origins - in this case, the origin will always be what the user enters
-		 * @param destinations {array} locations
-		 */
-		calculateDistances: function (origins, destinations) {
-			var service = new google.maps.DistanceMatrixService();
-			var request = {
-				origins      : origins,
-				destinations : destinations,
-				travelMode   : google.maps.TravelMode.DRIVING,
-				unitSystem   : google.maps.UnitSystem.IMPERIAL, //TODO: make setting
-				avoidHighways: false,
-				avoidTolls   : false
-			};
-
-			service.getDistanceMatrix(request, function (response, status) {
-				if (status === google.maps.DistanceMatrixStatus.OK) {
-					return(response);
-				}
-			});
-		},
-
-		/**
 		 * Map marker setup
 		 *
 		 * @param point
@@ -634,11 +610,7 @@
 		createMarker: function (point, name, address, letter, map) {
 			var marker;
 
-			// Set up pin icon with the Google Charts API for all of our markers
-			/*var pinImage = new google.maps.MarkerImage('https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=' + letter + '|' + this.settings.pinColor + '|' + this.settings.pinTextColor,
-					new google.maps.Size(21, 34),
-					new google.maps.Point(0, 0),
-					new google.maps.Point(10, 34));*/
+			// Letter markers image
 			var pinImage = new google.maps.MarkerImage('http://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-waypoint-b.png&text=' + letter + '&psize=16&font=fonts/Roboto-Regular.ttf&color=ff333333&ax=44&ay=48');
 
 			// Create the markers
@@ -650,6 +622,7 @@
 				});
 			}
 			else {
+				// Default dot marker
 				marker = new google.maps.Marker({
 					position : point,
 					map      : map,
@@ -707,7 +680,7 @@
 			}
 
 			// Define location data
-			var locations = {
+			return {
 				location: [$.extend(locationData, {
 					'markerid': markerId,
 					'marker'  : indicator,
@@ -715,18 +688,16 @@
 					'origin'  : userInput
 				})]
 			};
-
-			return locations;
 		},
 
 		/**
-		 * Set up the list templates TODO: Maybe rename this function because it's doing more than just handling the clicks
+		 * Set up the list templates
 		 *
 		 * @param marker {object} Google Maps marker
 		 * @param storeStart {number} optional first location on the current page
 		 * @param page {number} optional current page
 		 */
-		listClick: function (marker, storeStart, page) {
+		listSetup: function (marker, storeStart, page) {
 			// Define the location data
 			var locations = this.defineLocationData(marker, storeStart, page);
 
@@ -779,7 +750,7 @@
 			r.geocode({'latLng': latlng}, function (data) {
 				if (data !== null) {
 					var originAddress = data.address;
-					_this.mapping(originalData, position.coords.latitude, position.coords.longitude, originAddress);
+					_this.mapping(position.coords.latitude, position.coords.longitude, originAddress);
 				} else {
 					// Unable to geocode
 					alert(this.settings.addressErrorAlert);
@@ -810,7 +781,7 @@
 			}
 
 			this.reset();
-			this.mapping(originalData, olat, olng, userInput, maxDistance, newPage);
+			this.mapping(olat, olng, userInput, maxDistance, newPage);
 		},
 
 		/**
@@ -925,7 +896,9 @@
 					if (data !== null) {
 						olat = data.latitude;
 						olng = data.longitude;
-						_this.mapping(originalData, olat, olng, userInput, distance);
+
+						// Run the mapping function
+						_this.mapping(olat, olng, userInput, distance);
 					} else {
 						// Unable to geocode
 						alert(this.settings.addressErrorAlert);
@@ -943,7 +916,7 @@
 		 * @param origin {string} origin address
 		 * @param maxDistance {number} optional maximum distance
 		 */
-		mapping: function (data, orig_lat, orig_lng, origin, maxDistance, page) {
+		mapping: function (orig_lat, orig_lng, origin, maxDistance, page) {
 			var _this = this;
 			var firstRun, marker, bounds, storeStart, storeNumToShow, myOptions;
 			var i = 0;
@@ -958,10 +931,23 @@
 				page = 0;
 			}
 
+			// Do the initial data request - doing this here so the lat/lng and address can be passed over and used if needed
+			originalDataRequest = _this.getData(olat, olng, origin);
+
+			// Save data separately so we can avoid multiple AJAX requests
+			originalDataRequest.done(function (data) {
+				// Success callback
+				if (_this.settings.callbackSuccess) {
+					_this.settings.callbackSuccess.call(this);
+				}
+
+				originalData = data;
+			});
+
 			/**
 			 * Process the location data
 			 */
-			originalDataRequest.then(function () {
+			originalDataRequest.then(function (data) {
 				// Callback
 				if (_this.settings.callbackSuccess) {
 					_this.settings.callbackSuccess.call(this);
@@ -1164,7 +1150,7 @@
 
 					// Pop up the modal window
 					$('.' + _this.settings.overlayDiv).fadeIn();
-					// Close modal when close icon is clicked and when background overlay is clicked TODO: Make sure this works with multiple
+					// Close modal when close icon is clicked and when background overlay is clicked
 					$(document).on('click', '.' + _this.settings.closeIconDiv + ', .' + _this.settings.overlayDiv, function () {
 						_this.modalClose();
 					});
@@ -1300,7 +1286,7 @@
 				$(markers).each(function (x, marker) {
 					var letter = String.fromCharCode('A'.charCodeAt(0) + x);
 					var currentMarker = markers[x];
-					_this.listClick(currentMarker, storeStart, page);
+					_this.listSetup(currentMarker, storeStart, page);
 				});
 
 				// Handle clicks from the list
@@ -1378,7 +1364,7 @@
 																_this.beginMapping();
 														}
 														else {
-																_this.mapping(originalData);
+																_this.mapping();
 														}
 												}
 										}
@@ -1399,7 +1385,7 @@
 																		_this.beginMapping();
 																}
 																else {
-																		_this.mapping(originalData);
+																		_this.mapping();
 																}
 														}
 												}
@@ -1426,7 +1412,7 @@
 																_this.beginMapping();
 														}
 														else {
-																_this.mapping(originalData);
+																_this.mapping();
 														}
 												}
 										}
@@ -1442,36 +1428,11 @@
 												_this.beginMapping();
 										}
 										else {
-												_this.mapping(originalData);
+												_this.mapping();
 										}
 								}
 						}
 				});
-		},
-
-		/**
-		 * Primary locator function runs after the templates are loaded
-		 */
-		locator: function () {
-			// Do taxonomy filtering if set
-			if (this.settings.taxonomyFilters !== null) {
-					this.taxonomyFiltering();
-			}
-
-			// Add modal window divs if set
-			if (this.settings.modalWindow === true) {
-				$this.wrap('<div class="' + this.settings.overlayDiv + '"><div class="' + this.settings.modalWindowDiv + '"><div class="' + this.settings.modalContentDiv + '">');
-				$('.' + this.settings.modalWindowDiv).prepend('<div class="' + this.settings.closeIconDiv + '"></div>');
-				$('.' + this.settings.overlayDiv).hide();
-			}
-
-			if (this.settings.slideMap === true) {
-				// Let's hide the map container to begin
-				$this.hide();
-			}
-
-			this.start();
-			this.processFormInput();
 		}
 
 	});
