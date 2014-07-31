@@ -10,40 +10,40 @@
 .gm-style a {
   font-family: Arial, Helvetica, sans-serif;
 }
-.bh-storelocator-container {
+.bh-sl-container {
   float: left;
   margin-left: 20px;
   width: 875px;
   font: normal 12px Arial, Helvetica, sans-serif;
   color: #333333;
 }
-.bh-storelocator-container .bh-storelocator-form-container {
+.bh-sl-container .bh-sl-form-container {
   clear: left;
   float: left;
   margin-top: 15px;
   width: 100%;
 }
-.bh-storelocator-container #search-form {
+.bh-sl-container #search-form {
   clear: left;
   float: left;
   height: 60px;
 }
-.bh-storelocator-container .form-input {
+.bh-sl-container .form-input {
   float: left;
   margin-top: 3px;
 }
-.bh-storelocator-container .form-input label {
+.bh-sl-container .form-input label {
   font-weight: bold;
 }
-.bh-storelocator-container .form-input input {
+.bh-sl-container .form-input input {
   padding: 4px;
   line-height: 16px;
   border: 1px solid #cccccc;
 }
-.bh-storelocator-container #address {
+.bh-sl-container #address {
   margin: 0 0 0 10px;
 }
-.bh-storelocator-container button {
+.bh-sl-container button {
   float: left;
   cursor: pointer;
   margin: 3px 0 0 10px;
@@ -54,62 +54,62 @@
   -webkit-border-radius: 4px;
   border-radius: 4px;
 }
-.bh-storelocator-container .bh-storelocator-loading {
+.bh-sl-container .bh-sl-loading {
   float: left;
   margin: 4px 0 0 10px;
   width: 16px;
   height: 16px;
   background: url(../img/ajax-loader.gif) no-repeat;
 }
-.bh-storelocator-container .bh-storelocator-filters-container {
+.bh-sl-container .bh-sl-filters-container {
   clear: both;
   float: left;
   width: 100%;
   margin: 15px 0;
 }
-.bh-storelocator-container .bh-storelocator-filters-container .bh-storelocator-filters {
+.bh-sl-container .bh-sl-filters-container .bh-sl-filters {
   list-style: none;
   float: left;
   padding: 0;
   margin: 0 100px 0 0;
 }
-.bh-storelocator-container .bh-storelocator-filters-container .bh-storelocator-filters li {
+.bh-sl-container .bh-sl-filters-container .bh-sl-filters li {
   display: block;
   clear: left;
   float: left;
   width: 100%;
   margin: 5px 0;
 }
-.bh-storelocator-container .bh-storelocator-filters-container .bh-storelocator-filters li label {
+.bh-sl-container .bh-sl-filters-container .bh-sl-filters li label {
   display: inline;
 }
-.bh-storelocator-container .bh-storelocator-filters-container .bh-storelocator-filters li input {
+.bh-sl-container .bh-sl-filters-container .bh-sl-filters li input {
   display: block;
   float: left;
   margin: 2px 8px 2px 0;
 }
-.bh-storelocator-container .bh-storelocator-map-container {
+.bh-sl-container .bh-sl-map-container {
   clear: left;
   float: left;
   margin-top: 27px;
   height: 530px;
   width: 875px;
 }
-.bh-storelocator-container .bh-storelocator-map-container a {
+.bh-sl-container .bh-sl-map-container a {
   color: #e76737;
   text-decoration: none;
 }
-.bh-storelocator-container .bh-storelocator-map-container a:hover,
-.bh-storelocator-container .bh-storelocator-map-container a:active {
+.bh-sl-container .bh-sl-map-container a:hover,
+.bh-sl-container .bh-sl-map-container a:active {
   text-decoration: underline;
 }
-.bh-storelocator-container .bh-storelocator-loc-list {
+.bh-sl-container .bh-sl-loc-list {
   float: left;
   width: 240px;
   height: 530px;
   overflow: auto;
 }
-.bh-storelocator-container .bh-storelocator-loc-list ul {
+.bh-sl-container .bh-sl-loc-list ul {
   display: block;
   clear: left;
   float: left;
@@ -117,7 +117,7 @@
   margin: 0;
   padding: 0;
 }
-.bh-storelocator-container .bh-storelocator-loc-list ul li {
+.bh-sl-container .bh-sl-loc-list ul li {
   display: block;
   clear: left;
   float: left;
@@ -127,7 +127,7 @@
   border: 1px solid #ffffff;
   /* Adding this to prevent moving li elements when adding the list-focus class*/
 }
-.bh-storelocator-container .bh-storelocator-loc-list .list-label {
+.bh-sl-container .bh-sl-loc-list .list-label {
   float: left;
   margin: 10px 0 0 6px;
   padding: 2px 3px;
@@ -137,55 +137,55 @@
   color: #ffffff;
   font-weight: bold;
 }
-.bh-storelocator-container .bh-storelocator-loc-list .list-details {
+.bh-sl-container .bh-sl-loc-list .list-details {
   float: left;
   margin-left: 6px;
   width: 165px;
 }
-.bh-storelocator-container .bh-storelocator-loc-list .list-details .list-content {
+.bh-sl-container .bh-sl-loc-list .list-details .list-content {
   padding: 10px;
 }
-.bh-storelocator-container .bh-storelocator-loc-list .list-details .loc-dist {
+.bh-sl-container .bh-sl-loc-list .list-details .loc-dist {
   font-weight: bold;
   font-style: italic;
   color: #8e8e8e;
 }
-.bh-storelocator-container .bh-storelocator-loc-list .list-focus {
+.bh-sl-container .bh-sl-loc-list .list-focus {
   border: 1px solid rgba(82, 168, 236, 0.9);
   -moz-box-shadow: 0 0 8px rgba(82, 168, 236, 0.7);
   -webkit-box-shadow: 0 0 8px rgba(82, 168, 236, 0.7);
   box-shadow: 0 0 8px rgba(82, 168, 236, 0.7);
   transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
 }
-.bh-storelocator-container .bh-storelocator-loc-list .bh-storelocator-close-directions-container {
+.bh-sl-container .bh-sl-loc-list .bh-sl-close-directions-container {
   width: 100%;
   height: 20px;
   position: relative;
 }
-.bh-storelocator-container .bh-storelocator-loc-list .bh-storelocator-close-directions-container .bh-storelocator-close-icon {
+.bh-sl-container .bh-sl-loc-list .bh-sl-close-directions-container .bh-sl-close-icon {
   top: 0;
   right: 6px;
 }
-.bh-storelocator-container .loc-name {
+.bh-sl-container .loc-name {
   /* Picked up by both list and infowindows */
   color: #ae2118;
   font-weight: bold;
 }
-.bh-storelocator-container .bh-storelocator-map {
+.bh-sl-container .bh-sl-map {
   float: left;
   width: 635px;
   height: 530px;
 }
-.bh-storelocator-container .bh-storelocator-pagination-container {
+.bh-sl-container .bh-sl-pagination-container {
   clear: both;
 }
-.bh-storelocator-container .bh-storelocator-pagination-container ol {
+.bh-sl-container .bh-sl-pagination-container ol {
   list-style-type: none;
   text-align: center;
   margin: 0;
   padding: 10px 0;
 }
-.bh-storelocator-container .bh-storelocator-pagination-container ol li {
+.bh-sl-container .bh-sl-pagination-container ol li {
   display: inline-block;
   padding: 10px;
   cursor: pointer;
@@ -193,13 +193,13 @@
   color: #ae2118;
   text-decoration: underline;
 }
-.bh-storelocator-container .bh-storelocator-pagination-container ol .bh-storelocator-current {
+.bh-sl-container .bh-sl-pagination-container ol .bh-sl-current {
   color: #333333;
   cursor: auto;
   text-decoration: none;
 }
 /* Modal window */
-.bh-storelocator-overlay {
+.bh-sl-overlay {
   position: fixed;
   left: 0px;
   top: 0px;
@@ -208,7 +208,7 @@
   z-index: 10000;
   background: url(../img/overlay-bg.png) repeat;
 }
-.bh-storelocator-overlay .bh-storelocator-modal-window {
+.bh-sl-overlay .bh-sl-modal-window {
   position: absolute;
   left: 50%;
   margin-left: -460px;
@@ -221,16 +221,16 @@
   border-radius: 10px;
   box-shadow: 0 0 10px #656565;
 }
-.bh-storelocator-overlay .bh-storelocator-modal-window .bh-storelocator-modal-content {
+.bh-sl-overlay .bh-sl-modal-window .bh-sl-modal-content {
   float: left;
   padding: 0 22px;
   /* there's already a margin on the top of the map-container div */
 }
-.bh-storelocator-overlay .bh-storelocator-modal-window .bh-storelocator-close-icon {
+.bh-sl-overlay .bh-sl-modal-window .bh-sl-close-icon {
   top: -6px;
   right: -6px;
 }
-.bh-storelocator-close-icon {
+.bh-sl-close-icon {
   position: absolute;
   width: 18px;
   height: 18px;

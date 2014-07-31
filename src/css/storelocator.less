@@ -22,14 +22,14 @@
 	font-family: @arialFont;
 }
 
-.bh-storelocator-container{
+.bh-sl-container{
 	float: left;
 	margin-left: 20px;
 	width: 875px;
 	font: normal 12px @arialFont;
 	color: @textgray;
 
-	.bh-storelocator-form-container{
+	.bh-sl-form-container{
 		clear: left;
 		float: left;
 		margin-top: 15px;
@@ -73,7 +73,7 @@
 		border-radius: 4px;
 	}
 
-	.bh-storelocator-loading
+	.bh-sl-loading
 	{
 		float: left;
 		margin: 4px 0 0 10px;
@@ -82,13 +82,13 @@
 		background: url(../img/ajax-loader.gif) no-repeat;
 	}
 
-	.bh-storelocator-filters-container{
+	.bh-sl-filters-container{
 		clear: both;
 		float: left;
 		width: 100%;
 		margin: 15px 0;
 
-		.bh-storelocator-filters{
+		.bh-sl-filters{
 			list-style: none;
 			float: left;
 			padding: 0;
@@ -114,7 +114,7 @@
 		}
 	}
 
-	.bh-storelocator-map-container{
+	.bh-sl-map-container{
 		clear: left;
 		float: left;
 		margin-top: 27px;
@@ -130,7 +130,7 @@
 		}
 	}
 
-	.bh-storelocator-loc-list{
+	.bh-sl-loc-list{
 		float: left; 
 		width: 240px;
 		height: 530px;
@@ -190,12 +190,12 @@
 			transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
 		}
 
-		.bh-storelocator-close-directions-container{
+		.bh-sl-close-directions-container{
 			width: 100%;
 			height: 20px;
 			position: relative;
 
-			.bh-storelocator-close-icon{
+			.bh-sl-close-icon{
 				top: 0;
 				right: 6px;
 			}
@@ -208,13 +208,13 @@
 		font-weight: bold;
 	}
 
-	.bh-storelocator-map{
+	.bh-sl-map{
 		float: left; 
 		width: 635px; 
 		height: 530px; 
 	}
 	
-	.bh-storelocator-pagination-container{
+	.bh-sl-pagination-container{
 		clear: both;
 		
 		ol{
@@ -232,7 +232,7 @@
 				text-decoration: underline;
 			}
 			
-			.bh-storelocator-current{
+			.bh-sl-current{
 				color: @textgray;
 				cursor: auto;
 				text-decoration: none;
@@ -242,7 +242,7 @@
 }
 
 /* Modal window */
-.bh-storelocator-overlay{
+.bh-sl-overlay{
 	position: fixed;
 	left: 0px;
 	top: 0px;
@@ -251,7 +251,7 @@
 	z-index: 10000;
 	background: url(../img/overlay-bg.png) repeat;
 
-    .bh-storelocator-modal-window{
+    .bh-sl-modal-window{
 			position: absolute;
 			left: 50%;
 			margin-left: -460px; /* width divided by 2 */
@@ -263,19 +263,19 @@
 			border-radius: 10px;
 			box-shadow: 0 0 10px #656565;
 
-				.bh-storelocator-modal-content{
+				.bh-sl-modal-content{
 					float: left;
 					padding: 0 22px; /* there's already a margin on the top of the map-container div */
 				}
 
-			.bh-storelocator-close-icon{
+			.bh-sl-close-icon{
 				top: -6px;
 				right: -6px;
 			}
 		}
 }
 
-.bh-storelocator-close-icon{
+.bh-sl-close-icon{
 	position: absolute;
 	width: 18px;
 	height: 18px;

@@ -26,8 +26,8 @@
 	// Create the defaults once. Do not change these settings in this file - settings should be overridden in the plugin call
 	var defaults = {
 		'mapDiv'                   : 'map',
-		'listDiv'                  : '.bh-storelocator-loc-list',
-		'formContainerDiv'         : 'bh-storelocator-form-container',
+		'listDiv'                  : 'bh-sl-loc-list',
+		'formContainerDiv'         : 'bh-sl-form-container',
 		'formID'                   : 'user-location',
 		'inputID'                  : 'address',
 		'regionID'                 : 'region',
@@ -50,10 +50,10 @@
 		'bounceMarker'             : true,
 		'slideMap'                 : true,
 		'modalWindow'              : false,
-		'overlayDiv'               : 'bh-storelocator-overlay',
-		'modalWindowDiv'           : 'bh-storelocator-modal-window',
-		'modalContentDiv'          : 'bh-storelocator-modal-content',
-		'closeIconDiv'             : 'bh-storelocator-close-icon',
+		'overlayDiv'               : 'bh-sl-overlay',
+		'modalWindowDiv'           : 'bh-sl-modal-window',
+		'modalContentDiv'          : 'bh-sl-modal-content',
+		'closeIconDiv'             : 'bh-sl-close-icon',
 		'defaultLoc'               : false,
 		'defaultLat'               : '',
 		'defaultLng'               : '',
@@ -63,11 +63,12 @@
 		'fullMapStart'             : false,
 		'noForm'                   : false,
 		'loading'                  : false, //TODO: Add loading back
-		'loadingDiv'               : 'bh-storelocator-loading',
+		'loadingDiv'               : 'bh-sl-loading',
 		'featuredLocations'        : false,
 		'pagination'               : false,
 		'locationsPerPage'         : 10,
 		'inlineDirections'         : false,
+		'nameSearch'               : false,
 		'infowindowTemplatePath'   : 'templates/infowindow-description.html',
 		'listTemplatePath'         : 'templates/location-list-description.html',
 		'KMLinfowindowTemplatePath': 'templates/kml-infowindow-description.html',
@@ -105,6 +106,17 @@
 	// Avoid Plugin.prototype conflicts
 	$.extend(Plugin.prototype, {
 		/**
+		 * Reset function
+		 */
+		reset: function () {
+			locationset = [];
+			featuredset = [];
+			normalset = [];
+			markers = [];
+			$(document).off('click', '.' + this.settings.listDiv + ' li');
+		},
+		
+		/**
 		 * Distance calculations
 		 */
 		geoCodeCalcToRadian: function (v) {
@@ -116,6 +128,7 @@
 		geoCodeCalcCalcDistance: function (lat1, lng1, lat2, lng2, radius) {
 			return radius * 2 * Math.asin(Math.min(1, Math.sqrt(( Math.pow(Math.sin((this.geoCodeCalcDiffRadian(lat1, lat2)) / 2.0), 2.0) + Math.cos(this.geoCodeCalcToRadian(lat1)) * Math.cos(this.geoCodeCalcToRadian(lat2)) * Math.pow(Math.sin((this.geoCodeCalcDiffRadian(lng1, lng2)) / 2.0), 2.0) ))));
 		},
+		
 		/**
 		 * Init function
 		 */
@@ -139,10 +152,10 @@
 			}
 			
 			// Set up the directionsService if it's true
-			if(this.settings.inlineDirections === true){
+			if(this.settings.inlineDirections === true) {
 				directionsDisplay = new google.maps.DirectionsRenderer();
 				directionsService = new google.maps.DirectionsService();
-				$(this.settings.listDiv).prepend('<div class="bh-storelocator-directions-panel"></div>');
+				$('.' + this.settings.listDiv).prepend('<div class="bh-sl-directions-panel"></div>');
 			}
 
 			// Save the original zoom setting so it can be retrieved if taxonomy filtering resets it
@@ -152,6 +165,10 @@
 			Handlebars.registerHelper('niceURL', function(url) {
 				return url.replace('https://', '').replace('http://', '');
 			});
+			
+			if(this.settings.nameSearch === true){
+				this.nameSearch();
+			}
 			
 			// Load the templates and continue from there
 			this.loadTemplates();
@@ -226,6 +243,13 @@
 		},
 
 		/**
+		 * Testing name search autocomplete - this is a separate search so adding separate AJAX request
+		 */
+		nameSearch: function() {
+			
+		},
+
+		/**
 		 * Primary locator function runs after the templates are loaded
 		 */
 		locator: function () {
@@ -249,17 +273,6 @@
 			this.start();
 			this.processFormInput();
 		},
-		
-		/**
-		 * Reset function
-		 */
-		reset: function () {
-			locationset = [];
-			featuredset = [];
-			normalset = [];
-			markers = [];
-			$(document).off('click', this.settings.listDiv + ' li');
-		},
 
 		/**
 		 * Handle form submission
@@ -277,7 +290,7 @@
 			}
 			else {
 				// Start the mapping
-				this.beginMapping();
+				this.beginMapping(null);
 			}
 		},
 
@@ -577,7 +590,7 @@
 		 */
 		paginationSetup: function (currentPage) {
 			// Only append the pagination number if they're not already appended
-			if ($('.bh-storelocator-pagination-container ol').length === 0) {
+			if ($('.bh-sl-pagination-container ol').length === 0) {
 				if (currentPage === undefined) {
 					currentPage = 0;
 				}
@@ -587,14 +600,14 @@
 					var n = p + 1;
 
 					if (p === currentPage) {
-						pagesOutput += '<li data-page="' + p + '" class="bh-storelocator-current">' + n + '</li>';
+						pagesOutput += '<li data-page="' + p + '" class="bh-sl-current">' + n + '</li>';
 					}
 					else {
 						pagesOutput += '<li data-page="' + p + '">' + n + '</li>';
 					}
 				}
 				//TODO: Target this better
-				$('.bh-storelocator-pagination-container').append('<ol class="bh-storelocator-pagination">' + pagesOutput + '</ol>');
+				$('.bh-sl-pagination-container').append('<ol class="bh-sl-pagination">' + pagesOutput + '</ol>');
 			}
 		},
 
@@ -703,7 +716,7 @@
 
 			// Set up the list template with the location data
 			var listHtml = listTemplate(locations);
-			$(this.settings.listDiv + ' ul').append(listHtml);
+			$('.' + this.settings.listDiv + ' ul').append(listHtml);
 		},
 
 		// Infowindows
@@ -726,13 +739,13 @@
 					infowindow.setContent(formattedAddress);
 					infowindow.open(marker.get('map'), marker);
 					// Focus on the list
-					$(_this.settings.listDiv + ' li').removeClass('list-focus');
+					$('.' + _this.settings.listDiv + ' li').removeClass('list-focus');
 					var markerId = marker.get('id');
-					$(_this.settings.listDiv + ' li[data-markerid=' + markerId + ']').addClass('list-focus');
+					$('.' + _this.settings.listDiv + ' li[data-markerid=' + markerId + ']').addClass('list-focus');
 
 					// Scroll list to selected marker
-					var container = $(_this.settings.listDiv), scrollTo = $(_this.settings.listDiv + ' li[data-markerid=' + markerId + ']');
-					$(_this.settings.listDiv).animate({
+					var container = $('.' + _this.settings.listDiv), scrollTo = $('.' + _this.settings.listDiv + ' li[data-markerid=' + markerId + ']');
+					$('.' + _this.settings.listDiv).animate({
 						scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
 					});
 				});
@@ -824,13 +837,13 @@
 
 			if(destination) {
 				// Hide the location list
-				$(this.settings.listDiv + ' ul').hide();
+				$('.' + this.settings.listDiv + ' ul').hide();
 				// Remove the markers
 				this.clearMarkers();
 
 				// Directions request
 				directionsDisplay.setMap(map);
-				directionsDisplay.setPanel($('.bh-storelocator-directions-panel').get(0));
+				directionsDisplay.setPanel($('.bh-sl-directions-panel').get(0));
 
 				var request = {
 					origin: origin,
@@ -843,10 +856,10 @@
 					}
 				});
 
-				$(this.settings.listDiv).prepend('<div class="bh-storelocator-close-directions-container"><div class="' + this.settings.closeIconDiv + '"></div></div>');
+				$('.' + this.settings.listDiv).prepend('<div class="bh-sl-close-directions-container"><div class="' + this.settings.closeIconDiv + '"></div></div>');
 			}
 
-			$(document).off('click', this.settings.listDiv + ' li .loc-directions a');
+			$(document).off('click', '.' + this.settings.listDiv + ' li .loc-directions a');
 		},
 
 		/**
@@ -854,9 +867,9 @@
 		 */
 		closeDirections: function() {
 			// Remove the close icon, remove the directions, add the list back
-			$('.bh-storelocator-close-directions-container').remove();
-			$(this.settings.listDiv + ' .adp').remove();
-			$(this.settings.listDiv + ' ul').fadeIn();
+			$('.bh-sl-close-directions-container').remove();
+			$('.' + this.settings.listDiv + ' .adp').remove();
+			$('.' + this.settings.listDiv + ' ul').fadeIn();
 			
 			this.reset();
 			
@@ -867,10 +880,10 @@
 				else {
 					this.settings.mapSettings.zoom = 0;
 				}
-				this.beginMapping();
+				this.beginMapping(null);
 			}
 
-			$(document).off('click', this.settings.listDiv + ' .bh-storelocator-close-icon');
+			$(document).off('click', '.' + this.settings.listDiv + ' .bh-sl-close-icon');
 		},
 
 		/**
@@ -954,14 +967,14 @@
 				}
 
 				// Set a variable for fullMapStart so we can detect the first run
-				if (_this.settings.fullMapStart === true && $('#' + _this.settings.mapDiv).hasClass('bh-storelocator-map-open') === false) {
+				if (_this.settings.fullMapStart === true && $('#' + _this.settings.mapDiv).hasClass('bh-sl-map-open') === false) {
 					firstRun = true;
 				}
 				else {
 					_this.reset();
 				}
 
-				$('#' + _this.settings.mapDiv).addClass('bh-storelocator-map-open');
+				$('#' + _this.settings.mapDiv).addClass('bh-sl-map-open');
 
 				// Process the location data depending on the data format type
 				if (_this.settings.dataType === 'json' || _this.settings.dataType === 'jsonp') {
@@ -983,7 +996,7 @@
 						}
 
 						// Create the array
-						if (_this.settings.maxDistance === true && firstRun !== true && maxDistance) {
+						if (_this.settings.maxDistance === true && firstRun !== true && maxDistance !== null) {
 							if (locationData.distance < maxDistance) {
 								locationset[i] = locationData;
 							}
@@ -1155,7 +1168,7 @@
 						_this.modalClose();
 					});
 					// Prevent clicks within the modal window from closing the entire thing
-					$(document).on('click', _this.settings.modalWindowDiv, function (e) {
+					$(document).on('click', '.' + _this.settings.modalWindowDiv, function (e) {
 						e.stopPropagation();
 					});
 					// Close modal when escape key is pressed
@@ -1228,12 +1241,12 @@
 				}
 
 				// Handle pagination
-				$(document).on('click', '.bh-storelocator-pagination li', function () {
+				$(document).on('click', '.bh-sl-pagination li', function () {
 					// Remove the current class
-					$('.bh-storelocator-pagination li').attr('class', '');
+					$('.bh-sl-pagination li').attr('class', '');
 
 					// Add the current class
-					$(this).addClass('bh-storelocator-current');
+					$(this).addClass('bh-sl-current');
 
 					// Run paginationChange
 					_this.paginationChange($(this).attr('data-page'));
@@ -1242,14 +1255,14 @@
 				// Inline directions
 				if(_this.settings.inlineDirections === true){
 					// Open directions
-					$(document).on('click', _this.settings.listDiv + ' li .loc-directions a', function (e) {
+					$(document).on('click', '.' + _this.settings.listDiv + ' li .loc-directions a', function (e) {
 						e.preventDefault();
 						var locID = $(this).closest('li').attr('data-markerid');
 						_this.directionsRequest(origin, locID, map);
 					});
 
 					// Close directions
-					$(document).on('click', _this.settings.listDiv + ' .bh-storelocator-close-icon', function () {
+					$(document).on('click', '.' + _this.settings.listDiv + ' .bh-sl-close-icon', function () {
 						_this.closeDirections();
 					});
 				}
@@ -1282,7 +1295,7 @@
 				}
 
 				// Create the links that focus on the related marker
-				$(_this.settings.listDiv + ' ul').empty();
+				$('.' + _this.settings.listDiv + ' ul').empty();
 				$(markers).each(function (x, marker) {
 					var letter = String.fromCharCode('A'.charCodeAt(0) + x);
 					var currentMarker = markers[x];
@@ -1290,14 +1303,14 @@
 				});
 
 				// Handle clicks from the list
-				$(document).on('click', _this.settings.listDiv + ' li', function () {
+				$(document).on('click', '.' + _this.settings.listDiv + ' li', function () {
 					var markerId = $(this).data('markerid');
 
 					var selectedMarker = markers[markerId];
 
 					// Focus on the list
-					$(_this.settings.listDiv + ' li').removeClass('list-focus');
-					$(_this.settings.listDiv + ' li[data-markerid=' + markerId + ']').addClass('list-focus');
+					$('.' + _this.settings.listDiv + ' li').removeClass('list-focus');
+					$('.' + _this.settings.listDiv + ' li[data-markerid=' + markerId + ']').addClass('list-focus');
 
 					map.panTo(selectedMarker.getPosition());
 					var listLoc = 'left';
@@ -1315,13 +1328,13 @@
 				});
 				
 				// Prevent bubbling from list content links
-				$(document).on('click', _this.settings.listDiv + ' li a', function (e) {
+				$(document).on('click', '.' + _this.settings.listDiv + ' li a', function (e) {
 					e.stopPropagation();
 				});
 
 				// Add the list li background colors
-				$(_this.settings.listDiv + ' ul li:even').css('background', '#' + _this.settings.listColor1);
-				$(_this.settings.listDiv + ' ul li:odd').css('background', '#' + _this.settings.listColor2);
+				$('.' + _this.settings.listDiv + ' ul li:even').css('background', '#' + _this.settings.listColor1);
+				$('.' + _this.settings.listDiv + ' ul li:odd').css('background', '#' + _this.settings.listColor2);
 				
 			});
 		},
@@ -1338,7 +1351,7 @@
 				});
 
 				// Handle filter updates
-				$('.bh-storelocator-filters-container').on('change', 'input, select', function (e) {
+				$('.bh-sl-filters-container').on('change', 'input, select', function (e) {
 						e.stopPropagation();
 
 						var filterId, filterContainer, filterKey;
@@ -1349,7 +1362,7 @@
 								_this.checkFilters();
 
 								filterId = $(this).val();
-								filterContainer = $(this).closest('.bh-storelocator-filters').attr('id');
+								filterContainer = $(this).closest('.bh-sl-filters').attr('id');
 								filterKey = _this.getFilterKey(filterContainer);
 
 								if (filterKey) {
@@ -1357,7 +1370,7 @@
 										if ($(this).prop('checked')) {
 												// Add ids to the filter arrays as they are checked
 												filters[filterKey].push(filterId);
-												if ($('#' + _this.settings.mapDiv).hasClass('bh-storelocator-map-open') === true) {
+												if ($('#' + _this.settings.mapDiv).hasClass('bh-sl-map-open') === true) {
 														_this.reset();
 														if ((olat) && (olng)) {
 																_this.settings.mapSettings.zoom = 0;
@@ -1373,7 +1386,7 @@
 												var filterIndex = filters[filterKey].indexOf(filterId);
 												if (filterIndex > -1) {
 														filters[filterKey].splice(filterIndex, 1);
-														if ($('#' + _this.settings.mapDiv).hasClass('bh-storelocator-map-open') === true) {
+														if ($('#' + _this.settings.mapDiv).hasClass('bh-sl-map-open') === true) {
 																_this.reset();
 																if ((olat) && (olng)) {
 																		if (_this.countFilters() === 0) {
@@ -1398,14 +1411,14 @@
 								_this.checkFilters();
 
 								filterId = $(this).val();
-								filterContainer = $(this).closest('.bh-storelocator-filters').attr('id');
+								filterContainer = $(this).closest('.bh-sl-filters').attr('id');
 								filterKey = _this.getFilterKey(filterContainer);
 
 								// Check for blank filter on select since default val could be empty
 								if (filterId) {
 										if (filterKey) {
 												filters[filterKey] = [filterId];
-												if ($('#' + _this.settings.mapDiv).hasClass('bh-storelocator-map-open') === true) {
+												if ($('#' + _this.settings.mapDiv).hasClass('bh-sl-map-open') === true) {
 														_this.reset();
 														if ((olat) && (olng)) {
 																_this.settings.mapSettings.zoom = 0;
