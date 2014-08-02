@@ -12,59 +12,56 @@
 @arialFont: Arial, Helvetica, sans-serif;
 
 /* #page-header it just included for the examples */
-#page-header{
+#page-header {
 	float: left;
 	display: block;
 }
 
 /* Infowindow Roboto font override */
-.gm-style div, .gm-style span, .gm-style label, .gm-style a{
+.gm-style div, .gm-style span, .gm-style label, .gm-style a {
 	font-family: @arialFont;
 }
 
-.bh-sl-container{
+.bh-sl-container {
 	float: left;
 	margin-left: 20px;
 	width: 875px;
 	font: normal 12px @arialFont;
 	color: @textgray;
 
-	.bh-sl-form-container{
+	.bh-sl-form-container {
 		clear: left;
 		float: left;
 		margin-top: 15px;
 		width: 100%;
 	}
 
-	#search-form{
+	#search-form {
 		clear: left;
 		float: left;
 		height: 60px;
 	}
 
-	.form-input{
+	.form-input {
 		float: left;
 		margin-top: 3px;
 
-		label{
+		label {
 			font-weight: bold;
 		}
 
-		input{
+		input {
+			margin: 0 15px 0 10px;
 			padding: 4px;
 			line-height: 16px;
 			border: 1px solid @gray;
 		}
 	}
 
-	#address{
-		margin: 0 0 0 10px;
-	}
-
-	button{
+	button {
 		float: left;
 		cursor: pointer;
-		margin: 3px 0 0 10px;
+		margin-top: 3px;
 		padding: 3px 6px;
 		background: @red;
 		border: 1px solid @darkred;
@@ -73,8 +70,7 @@
 		border-radius: 4px;
 	}
 
-	.bh-sl-loading
-	{
+	.bh-sl-loading {
 		float: left;
 		margin: 4px 0 0 10px;
 		width: 16px;
@@ -82,30 +78,30 @@
 		background: url(../img/ajax-loader.gif) no-repeat;
 	}
 
-	.bh-sl-filters-container{
+	.bh-sl-filters-container {
 		clear: both;
 		float: left;
 		width: 100%;
 		margin: 15px 0;
 
-		.bh-sl-filters{
+		.bh-sl-filters {
 			list-style: none;
 			float: left;
 			padding: 0;
 			margin: 0 100px 0 0;
 
-			li{
+			li {
 				display: block;
 				clear: left;
 				float: left;
 				width: 100%;
 				margin: 5px 0;
 
-				label{
+				label {
 					display: inline;
 				}
 
-				input{
+				input {
 					display: block;
 					float: left;
 					margin: 2px 8px 2px 0;
@@ -114,48 +110,63 @@
 		}
 	}
 
-	.bh-sl-map-container{
+	.bh-sl-noresults {
+		clear: left;
+		float: left;
+		width: 100%;
+		padding: 30px 0;
+		text-align: center;
+
+		.bh-sl-noresults-title {
+			font-size: 20px;
+			font-weight: bold;
+			color: @red;
+		}
+	}
+
+	.bh-sl-map-container {
 		clear: left;
 		float: left;
 		margin-top: 27px;
 		height: 530px;
 		width: 875px;
 
-		a{
+		a {
 			color: @orange;
 			text-decoration: none;
-			&:hover, &:active{
+			&:hover, &:active {
 				text-decoration: underline;
 			}
 		}
 	}
 
-	.bh-sl-loc-list{
-		float: left; 
-		width: 240px;
+	.bh-sl-loc-list {
+		float: left;
+		width: 30%;
 		height: 530px;
-		overflow: auto;
+		overflow-x: auto;
 
-		ul{
+		ul {
 			display: block;
 			clear: left;
 			float: left;
+			width: 100%;
 			list-style: none;
 			margin: 0;
 			padding: 0;
 
-			li{
+			li {
 				display: block;
 				clear: left;
 				float: left;
-				margin: 6px 10px;
+				margin: 3% 4%;
 				cursor: pointer;
-				width: 200px;
+				width: 92%;
 				border: 1px solid @white; /* Adding this to prevent moving li elements when adding the list-focus class*/
 			}
 		}
 
-		.list-label{
+		.list-label {
 			float: left;
 			margin: 10px 0 0 6px;
 			padding: 2px 3px;
@@ -166,64 +177,64 @@
 			font-weight: bold;
 		}
 
-		.list-details{
+		.list-details {
 			float: left;
 			margin-left: 6px;
 			width: 165px;
 
-			.list-content{
+			.list-content {
 				padding: 10px;
 			}
 
-			.loc-dist{
+			.loc-dist {
 				font-weight: bold;
 				font-style: italic;
 				color: @darkgray;
 			}
 		}
 
-		.list-focus{
-			border: 1px solid rgba(82,168,236,0.9);
-			-moz-box-shadow: 0 0 8px rgba(82,168,236,0.7);
-			-webkit-box-shadow: 0 0 8px rgba(82,168,236,0.7);
-			box-shadow: 0 0 8px rgba(82,168,236,0.7);
+		.list-focus {
+			border: 1px solid rgba(82, 168, 236, 0.9);
+			-moz-box-shadow: 0 0 8px rgba(82, 168, 236, 0.7);
+			-webkit-box-shadow: 0 0 8px rgba(82, 168, 236, 0.7);
+			box-shadow: 0 0 8px rgba(82, 168, 236, 0.7);
 			transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
 		}
 
-		.bh-sl-close-directions-container{
+		.bh-sl-close-directions-container {
 			width: 100%;
 			height: 20px;
 			position: relative;
 
-			.bh-sl-close-icon{
+			.bh-sl-close-icon {
 				top: 0;
 				right: 6px;
 			}
 		}
 	}
 
-	.loc-name{
+	.loc-name {
 		/* Picked up by both list and infowindows */
 		color: @red;
 		font-weight: bold;
 	}
 
-	.bh-sl-map{
-		float: left; 
-		width: 635px; 
-		height: 530px; 
+	.bh-sl-map {
+		float: left;
+		width: 70%;
+		height: 530px;
 	}
-	
-	.bh-sl-pagination-container{
+
+	.bh-sl-pagination-container {
 		clear: both;
-		
-		ol{
+
+		ol {
 			list-style-type: none;
 			text-align: center;
 			margin: 0;
 			padding: 10px 0;
-			
-			li{
+
+			li {
 				display: inline-block;
 				padding: 10px;
 				cursor: pointer;
@@ -231,8 +242,8 @@
 				color: @red;
 				text-decoration: underline;
 			}
-			
-			.bh-sl-current{
+
+			.bh-sl-current {
 				color: @textgray;
 				cursor: auto;
 				text-decoration: none;
@@ -242,40 +253,40 @@
 }
 
 /* Modal window */
-.bh-sl-overlay{
+.bh-sl-overlay {
 	position: fixed;
 	left: 0px;
 	top: 0px;
-	width:100%;
-	height:100%;
+	width: 100%;
+	height: 100%;
 	z-index: 10000;
 	background: url(../img/overlay-bg.png) repeat;
 
-    .bh-sl-modal-window{
-			position: absolute;
-			left: 50%;
-			margin-left: -460px; /* width divided by 2 */
-			margin-top: 60px;
-			width: 920px;
-			height: 590px;
-			z-index: 10010;
-			background: @white;
-			border-radius: 10px;
-			box-shadow: 0 0 10px #656565;
+	.bh-sl-modal-window {
+		position: absolute;
+		left: 50%;
+		margin-left: -460px; /* width divided by 2 */
+		margin-top: 60px;
+		width: 920px;
+		height: 590px;
+		z-index: 10010;
+		background: @white;
+		border-radius: 10px;
+		box-shadow: 0 0 10px #656565;
 
-				.bh-sl-modal-content{
-					float: left;
-					padding: 0 22px; /* there's already a margin on the top of the map-container div */
-				}
-
-			.bh-sl-close-icon{
-				top: -6px;
-				right: -6px;
-			}
+		.bh-sl-modal-content {
+			float: left;
+			padding: 0 22px; /* there's already a margin on the top of the map-container div */
 		}
+
+		.bh-sl-close-icon {
+			top: -6px;
+			right: -6px;
+		}
+	}
 }
 
-.bh-sl-close-icon{
+.bh-sl-close-icon {
 	position: absolute;
 	width: 18px;
 	height: 18px;

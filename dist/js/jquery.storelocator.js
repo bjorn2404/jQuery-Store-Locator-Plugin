@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-07-30
+/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-08-02
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2014 Bjorn Holine; Licensed MIT */
 
@@ -15,7 +15,7 @@
 	}
 
 	// Variables used across multiple functions		
-	var $this, listTemplate, infowindowTemplate, dataTypeRead, originalData, originalDataRequest, originalZoom, userInput, olat, olng, storeNum, directionsDisplay, directionsService;
+	var $this, listTemplate, infowindowTemplate, dataTypeRead, originalData, originalDataRequest, originalZoom, nameInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService;
 	var featuredset, locationset, normalset, markers = [];
 	var filters = {};
 	var locationData = {};
@@ -27,7 +27,8 @@
 		'listDiv'                  : 'bh-sl-loc-list',
 		'formContainerDiv'         : 'bh-sl-form-container',
 		'formID'                   : 'user-location',
-		'inputID'                  : 'address',
+		'addressID'                : 'address',
+		'nameID'                   : 'name',
 		'regionID'                 : 'region',
 		'mapSettings'              : {
 			zoom     : 12,
@@ -67,6 +68,7 @@
 		'locationsPerPage'         : 10,
 		'inlineDirections'         : false,
 		'nameSearch'               : false,
+		'nameAttribute'            : null,
 		'infowindowTemplatePath'   : 'templates/infowindow-description.html',
 		'listTemplatePath'         : 'templates/location-list-description.html',
 		'KMLinfowindowTemplatePath': 'templates/kml-infowindow-description.html',
@@ -164,10 +166,6 @@
 				return url.replace('https://', '').replace('http://', '');
 			});
 			
-			if(this.settings.nameSearch === true){
-				this.nameSearch();
-			}
-			
 			// Load the templates and continue from there
 			this.loadTemplates();
 		},
@@ -238,13 +236,6 @@
 
 				});
 			}
-		},
-
-		/**
-		 * Testing name search autocomplete - this is a separate search so adding separate AJAX request
-		 */
-		nameSearch: function() {
-			
 		},
 
 		/**
@@ -414,6 +405,7 @@
 		 */
 		start: function () {
 			var _this = this;
+			var mappingObj = {};
 			// If a default location is set
 			if (this.settings.defaultLoc === true) {
 				// The address needs to be determined for the directions link
@@ -422,7 +414,10 @@
 				r.geocode({'latLng': latlng}, function (data) {
 					if (data !== null) {
 						var originAddress = data.address;
-						_this.mapping(_this.settings.defaultLat, _this.settings.defaultLng, originAddress);
+						mappingObj.lat = _this.settings.defaultLat;
+						mappingObj.lng = _this.settings.defaultLng;
+						mappingObj.origin = originAddress;
+						_this.mapping(mappingObj);
 					} else {
 						// Unable to geocode
 						alert(_this.settings.addressErrorAlert);
@@ -453,6 +448,7 @@
 		 * Geocode function used to geocode the origin (entered location)
 		 */
 		googleGeocode: function () {
+			var _this = this;
 			var geocoder = new google.maps.Geocoder();
 			this.geocode = function (request, callbackFunction) {
 				geocoder.geocode(request, function (results, status) {
@@ -462,7 +458,7 @@
 						result.longitude = results[0].geometry.location.lng();
 						callbackFunction(result);
 					} else {
-						alert(this.settings.geocodeErrorAlert + status);
+						alert(_this.settings.geocodeErrorAlert + status);
 						callbackFunction(null);
 					}
 				});
@@ -473,6 +469,7 @@
 		 * Reverse geocode to get address for automatic options needed for directions link
 		 */
 		reverseGoogleGeocode: function () {
+			var _this = this;
 			var geocoder = new google.maps.Geocoder();
 			this.geocode = function (request, callbackFunction) {
 				geocoder.geocode(request, function (results, status) {
@@ -483,7 +480,7 @@
 							callbackFunction(result);
 						}
 					} else {
-						alert(this.settings.geocodeErrorAlert + status);
+						alert(_this.settings.geocodeErrorAlert + status);
 						callbackFunction(null);
 					}
 				});
@@ -589,7 +586,7 @@
 		paginationSetup: function (currentPage) {
 			// Only append the pagination number if they're not already appended
 			if ($('.bh-sl-pagination-container ol').length === 0) {
-				if (currentPage === undefined) {
+				if (typeof currentPage === 'undefined') {
 					currentPage = 0;
 				}
 				var pagesOutput = '';
@@ -696,7 +693,7 @@
 					'markerid': markerId,
 					'marker'  : indicator,
 					'length'  : distLength,
-					'origin'  : userInput
+					'origin'  : addressInput
 				})]
 			};
 		},
@@ -755,13 +752,17 @@
 		 */
 		autoGeocodeQuery: function (position) {
 			var _this = this;
+			var mappingObj = {};
 			// The address needs to be determined for the directions link
 			var r = new this.reverseGoogleGeocode();
 			var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 			r.geocode({'latLng': latlng}, function (data) {
 				if (data !== null) {
 					var originAddress = data.address;
-					_this.mapping(position.coords.latitude, position.coords.longitude, originAddress);
+					mappingObj.lat = position.coords.latitude;
+					mappingObj.lng = position.coords.longitude;
+					mappingObj.origin = originAddress;
+					_this.mapping(mappingObj);
 				} else {
 					// Unable to geocode
 					alert(this.settings.addressErrorAlert);
@@ -786,13 +787,20 @@
 		 */
 		paginationChange: function (newPage) {
 			var maxDistance;
+			var mappingObj = {};
 
 			if (this.settings.maxDistance === true) {
 				maxDistance = $('#' + this.settings.maxDistanceID).val();
 			}
 
 			this.reset();
-			this.mapping(olat, olng, userInput, maxDistance, newPage);
+			mappingObj.lat = olat;
+			mappingObj.lng = olng;
+			mappingObj.origin = addressInput;
+			mappingObj.name = nameInput;
+			mappingObj.distance = maxDistance;
+			mappingObj.page = newPage;
+			this.mapping(mappingObj);
 		},
 
 		/**
@@ -885,36 +893,46 @@
 		},
 
 		/**
-		 * Set up the normal mapping
+		 * Set up the normal mapping TODO rename this function and processforminput
 		 *
 		 * @param distance {number} optional maximum distance
 		 */
 		beginMapping: function (distance) {
 			var _this = this;
+			var mappingObj = {};
 			// Get the user input and use it
-			userInput = $('#' + this.settings.inputID).val();
+			addressInput = $('#' + this.settings.addressID).val();
+			nameInput = $('#' + this.settings.nameID).val();
 
 			// Get the region setting if set
 			var region = $('#' + this.settings.regionID).val();
 
-			if (userInput === '') {
+			if (addressInput === '' && nameInput === '') {
 				this.start();
 			}
-			else {
+			else if(addressInput !== '') {
 				var g = new this.googleGeocode();
-				var address = userInput;
-				g.geocode({'address': address, 'region': region}, function (data) {
+				g.geocode({'address': addressInput, 'region': region}, function (data) {
 					if (data !== null) {
 						olat = data.latitude;
 						olng = data.longitude;
 
 						// Run the mapping function
-						_this.mapping(olat, olng, userInput, distance);
+						mappingObj.lat = olat;
+						mappingObj.lng = olng;
+						mappingObj.origin = addressInput;
+						mappingObj.name = nameInput;
+						mappingObj.distance = distance;
+						_this.mapping(mappingObj);
 					} else {
 						// Unable to geocode
 						alert(this.settings.addressErrorAlert);
 					}
 				});
+			}
+			else if(nameInput !== '') {
+				mappingObj.name = nameInput;
+				_this.mapping(mappingObj);
 			}
 		},
 
@@ -927,23 +945,41 @@
 		 * @param origin {string} origin address
 		 * @param maxDistance {number} optional maximum distance
 		 */
-		mapping: function (orig_lat, orig_lng, origin, maxDistance, page) {
+		mapping: function (mappingObj) {
 			var _this = this;
 			var firstRun, marker, bounds, storeStart, storeNumToShow, myOptions;
 			var i = 0;
+			var orig_lat = mappingObj.lat;
+			var orig_lng = mappingObj.lng;
+			var origin = mappingObj.origin;
+			var name = mappingObj.name;
+			var maxDistance = mappingObj.dist;
+			var page = mappingObj.page;
+			
+			// Remove the no results message if it was previously displayed
+			if($('.bh-sl-noresults').length) {
+				$('.bh-sl-noresults').remove();
+			}
+			
 			// Enable the visual refresh https://developers.google.com/maps/documentation/javascript/basics#VisualRefresh
 			google.maps.visualRefresh = true;
 
-			// Setup the origin point
-			var originPoint = new google.maps.LatLng(orig_lat, orig_lng);
-
 			// Set the initial page to zero if not set
-			if (page === undefined) {
+			if (typeof page === 'undefined') {
 				page = 0;
 			}
 
-			// Do the initial data request - doing this here so the lat/lng and address can be passed over and used if needed
-			originalDataRequest = _this.getData(olat, olng, origin);
+			// Data request
+			if (typeof origin === 'undefined' && this.settings.nameSearch === true) {
+				originalDataRequest = _this.getData();
+			}
+			else {
+				// Setup the origin point
+				var originPoint = new google.maps.LatLng(orig_lat, orig_lng);
+				
+				// Do the initial data request - doing this in mapping so the lat/lng and address can be passed over and used if needed
+				originalDataRequest = _this.getData(olat, olng, origin);
+			}
 
 			// Save data separately so we can avoid multiple AJAX requests
 			originalDataRequest.done(function (data) {
@@ -989,8 +1025,10 @@
 							}
 						}
 
-						if (!locationData.distance) {
-							locationData.distance = _this.geoCodeCalcCalcDistance(orig_lat, orig_lng, locationData.lat, locationData.lng, GeoCodeCalc.EarthRadius);
+						if (typeof origin !== 'undefined') {
+							if (!locationData.distance) {
+								locationData.distance = _this.geoCodeCalcCalcDistance(orig_lat, orig_lng, locationData.lat, locationData.lng, GeoCodeCalc.EarthRadius);
+							}
 						}
 
 						// Create the array
@@ -1019,8 +1057,10 @@
 							'description': $(this).find('description').text()
 						};
 
-						if (!locationData.distance) {
-							locationData.distance = _this.geoCodeCalcCalcDistance(orig_lat, orig_lng, locationData.lat, locationData.lng, GeoCodeCalc.EarthRadius);
+						if (typeof origin !== 'undefined') {
+							if (!locationData.distance) {
+								locationData.distance = _this.geoCodeCalcCalcDistance(orig_lat, orig_lng, locationData.lat, locationData.lng, GeoCodeCalc.EarthRadius);
+							}
 						}
 
 						// Create the array
@@ -1048,8 +1088,10 @@
 							locationData[attrib.name] = attrib.value;
 						});
 
-						if (!locationData.distance) {
-							locationData.distance = _this.geoCodeCalcCalcDistance(orig_lat, orig_lng, locationData.lat, locationData.lng, GeoCodeCalc.EarthRadius);
+						if (typeof origin !== 'undefined') {
+							if (!locationData.distance) {
+								locationData.distance = _this.geoCodeCalcCalcDistance(orig_lat, orig_lng, locationData.lat, locationData.lng, GeoCodeCalc.EarthRadius);
+							}
 						}
 
 						// Create the array
@@ -1068,11 +1110,21 @@
 						i++;
 					});
 				}
+				
+				// Name search - using taxonomy filter to handle
+				if (_this.settings.nameSearch === true) {
+					if (_this.settings.nameAttribute !== null) {
+						filters[_this.settings.nameAttribute] = nameInput;
+					}
+					else {
+						filters.name = [nameInput];
+					}
+				}
 
 				// Taxonomy filtering setup
-				if (_this.settings.taxonomyFilters !== null) {
+				if (_this.settings.taxonomyFilters !== null || _this.settings.nameSearch === true) {
 					var taxFilters = {};
-
+					
 					$.each(filters, function (k, v) {
 						if (v.length > 0) {
 							// Let's use regex
@@ -1096,19 +1148,24 @@
 					}
 				}
 
-				//TODO: Need to come up with something different that reads the keys from the data
 				if (_this.isEmptyObject(locationset)) {
-					locationset[0] = {
-						'address' : _this.settings.noResultsDesc,
-						'address2': '',
-						'lat'     : '',
-						'lng'     : '',
-						'name'    : _this.settings.noResultsTitle
-					};
+					// Hide the map and locations if they're showing
+					if ($('#' + _this.settings.mapDiv).hasClass('bh-sl-map-open')) {
+						$this.hide();
+					}
+
+					// Append the no rsults message
+					var noResults = $('<div class="bh-sl-noresults"><div class="bh-sl-noresults-title">' + _this.settings.noResultsTitle +  '</div><br><div class="bh-sl-noresults-desc">' + _this.settings.noResultsDesc + '</div>').hide().fadeIn();
+					$('.' + _this.settings.formContainerDiv).append(noResults);
+					
+					// Stop the mapping function
+					return;
 				}
 
 				// Sort the multi-dimensional array by distance
-				_this.sortNumerically(locationset);
+				if (typeof origin !== 'undefined') {
+					_this.sortNumerically(locationset);
+				}
 
 				// Featured locations filtering
 				if (_this.settings.featuredLocations === true) {
@@ -1132,7 +1189,7 @@
 
 				// Check the closest marker
 				if (_this.settings.maxDistance === true && firstRun !== true && maxDistance) {
-					if (locationset[0] === undefined || locationset[0].distance > maxDistance) {
+					if (typeof locationset[0] === 'undefined' || locationset[0].distance > maxDistance) {
 						alert(_this.settings.distanceErrorAlert + maxDistance + ' ' + distUnit);
 						return;
 					}
@@ -1199,7 +1256,7 @@
 				}
 
 				// Google maps settings
-				if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0)) {
+				if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined')) {
 					myOptions = _this.settings.mapSettings;
 					bounds = new google.maps.LatLngBounds();
 				}
@@ -1225,7 +1282,7 @@
 				// Load the map
 				$this.data(_this.settings.mapDiv.replace('#'), map);
 
-				// Create one infowindow to fill later
+				// Initialize the infowondow
 				var infowindow = new google.maps.InfoWindow();
 
 				// Add origin marker if the setting is set
@@ -1280,7 +1337,7 @@
 					marker = _this.createMarker(point, locationset[y].name, locationset[y].address, letter, map);
 					marker.set('id', y);
 					markers[y] = marker;
-					if ((_this.settings.fullMapStart === true && firstRun === true) || _this.settings.mapSettings.zoom === 0) {
+					if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined')) {
 						bounds.extend(point);
 					}
 					// Pass variables to the pop-up infowindows
@@ -1288,7 +1345,7 @@
 				}
 
 				// Center and zoom if no origin or zoom was provided
-				if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0)) {
+				if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined')) {
 					map.fitBounds(bounds);
 				}
 

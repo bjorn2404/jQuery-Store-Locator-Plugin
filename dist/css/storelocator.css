@@ -36,17 +36,15 @@
   font-weight: bold;
 }
 .bh-sl-container .form-input input {
+  margin: 0 15px 0 10px;
   padding: 4px;
   line-height: 16px;
   border: 1px solid #cccccc;
 }
-.bh-sl-container #address {
-  margin: 0 0 0 10px;
-}
 .bh-sl-container button {
   float: left;
   cursor: pointer;
-  margin: 3px 0 0 10px;
+  margin-top: 3px;
   padding: 3px 6px;
   background: #ae2118;
   border: 1px solid #961f17;
@@ -88,6 +86,18 @@
   float: left;
   margin: 2px 8px 2px 0;
 }
+.bh-sl-container .bh-sl-noresults {
+  clear: left;
+  float: left;
+  width: 100%;
+  padding: 30px 0;
+  text-align: center;
+}
+.bh-sl-container .bh-sl-noresults .bh-sl-noresults-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ae2118;
+}
 .bh-sl-container .bh-sl-map-container {
   clear: left;
   float: left;
@@ -105,14 +115,15 @@
 }
 .bh-sl-container .bh-sl-loc-list {
   float: left;
-  width: 240px;
+  width: 30%;
   height: 530px;
-  overflow: auto;
+  overflow-x: auto;
 }
 .bh-sl-container .bh-sl-loc-list ul {
   display: block;
   clear: left;
   float: left;
+  width: 100%;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -121,9 +132,9 @@
   display: block;
   clear: left;
   float: left;
-  margin: 6px 10px;
+  margin: 3% 4%;
   cursor: pointer;
-  width: 200px;
+  width: 92%;
   border: 1px solid #ffffff;
   /* Adding this to prevent moving li elements when adding the list-focus class*/
 }
@@ -173,7 +184,7 @@
 }
 .bh-sl-container .bh-sl-map {
   float: left;
-  width: 635px;
+  width: 70%;
   height: 530px;
 }
 .bh-sl-container .bh-sl-pagination-container {
