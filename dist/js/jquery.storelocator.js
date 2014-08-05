@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-08-02
+/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-08-04
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2014 Bjorn Holine; Licensed MIT */
 
@@ -953,7 +953,7 @@
 			var orig_lng = mappingObj.lng;
 			var origin = mappingObj.origin;
 			var name = mappingObj.name;
-			var maxDistance = mappingObj.dist;
+			var maxDistance = mappingObj.distance;
 			var page = mappingObj.page;
 			
 			// Remove the no results message if it was previously displayed

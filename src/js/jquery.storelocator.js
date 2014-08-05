@@ -955,7 +955,7 @@
 			var orig_lng = mappingObj.lng;
 			var origin = mappingObj.origin;
 			var name = mappingObj.name;
-			var maxDistance = mappingObj.dist;
+			var maxDistance = mappingObj.distance;
 			var page = mappingObj.page;
 			
 			// Remove the no results message if it was previously displayed
