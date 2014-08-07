@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-08-04
+/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-08-07
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2014 Bjorn Holine; Licensed MIT */
 
@@ -16,10 +16,8 @@
 
 	// Variables used across multiple functions		
 	var $this, listTemplate, infowindowTemplate, dataTypeRead, originalData, originalDataRequest, originalZoom, nameInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService;
-	var featuredset, locationset, normalset, markers = [];
-	var filters = {};
-	var locationData = {};
-	var GeoCodeCalc = {};
+	var featuredset = [], locationset = [], normalset = [], markers = [];
+	var filters = {}, locationData = {}, GeoCodeCalc = {};
 
 	// Create the defaults once. Do not change these settings in this file - settings should be overridden in the plugin call
 	var defaults = {
@@ -165,6 +163,18 @@
 			Handlebars.registerHelper('niceURL', function(url) {
 				return url.replace('https://', '').replace('http://', '');
 			});
+
+			// Do taxonomy filtering if set
+			if (this.settings.taxonomyFilters !== null) {
+				this.taxonomyFiltering();
+			}
+
+			// Add modal window divs if set
+			if (this.settings.modalWindow === true) {
+				$this.wrap('<div class="' + this.settings.overlayDiv + '"><div class="' + this.settings.modalWindowDiv + '"><div class="' + this.settings.modalContentDiv + '">');
+				$('.' + this.settings.modalWindowDiv).prepend('<div class="' + this.settings.closeIconDiv + '"></div>');
+				$('.' + this.settings.overlayDiv).hide();
+			}
 			
 			// Load the templates and continue from there
 			this.loadTemplates();
@@ -242,18 +252,6 @@
 		 * Primary locator function runs after the templates are loaded
 		 */
 		locator: function () {
-			// Do taxonomy filtering if set
-			if (this.settings.taxonomyFilters !== null) {
-				this.taxonomyFiltering();
-			}
-
-			// Add modal window divs if set
-			if (this.settings.modalWindow === true) {
-				$this.wrap('<div class="' + this.settings.overlayDiv + '"><div class="' + this.settings.modalWindowDiv + '"><div class="' + this.settings.modalContentDiv + '">');
-				$('.' + this.settings.modalWindowDiv).prepend('<div class="' + this.settings.closeIconDiv + '"></div>');
-				$('.' + this.settings.overlayDiv).hide();
-			}
-
 			if (this.settings.slideMap === true) {
 				// Let's hide the map container to begin
 				$this.hide();
@@ -947,14 +945,16 @@
 		 */
 		mapping: function (mappingObj) {
 			var _this = this;
-			var firstRun, marker, bounds, storeStart, storeNumToShow, myOptions;
+			var orig_lat, orig_lng, origin, name, maxDistance, page, firstRun, marker, bounds, storeStart, storeNumToShow, myOptions;
 			var i = 0;
-			var orig_lat = mappingObj.lat;
-			var orig_lng = mappingObj.lng;
-			var origin = mappingObj.origin;
-			var name = mappingObj.name;
-			var maxDistance = mappingObj.distance;
-			var page = mappingObj.page;
+			if (!this.isEmptyObject(mappingObj)) {
+				orig_lat = mappingObj.lat;
+				orig_lng = mappingObj.lng;
+				origin = mappingObj.origin;
+				name = mappingObj.name;
+				maxDistance = mappingObj.distance;
+				page = mappingObj.page;
+			}
 			
 			// Remove the no results message if it was previously displayed
 			if($('.bh-sl-noresults').length) {
