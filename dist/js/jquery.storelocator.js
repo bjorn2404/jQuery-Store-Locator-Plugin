@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-08-07
+/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-08-11
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2014 Bjorn Holine; Licensed MIT */
 
@@ -74,6 +74,7 @@
 		'listTemplateID'           : null,
 		'infowindowTemplateID'     : null,
 		'taxonomyFilters'          : null,
+		'querystringParams'        : false,
 		'callbackBeforeSend'       : null,
 		'callbackSuccess'          : null,
 		'callbackModalOpen'        : null,
@@ -181,6 +182,19 @@
 		},
 
 		/**
+		 * Check for query string
+		 * 
+		 * @param param {string} query string parameter to test
+		 * @returns {string}
+		 */
+		getQueryString: function(param) {
+			param = param.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+			var regex = new RegExp('[\\?&]' + param + '=([^&#]*)'),
+					results = regex.exec(location.search);
+			return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+		},
+
+		/**
 		 * Load templates
 		 */
 		loadTemplates: function () {
@@ -258,7 +272,7 @@
 			}
 
 			this.start();
-			this.processFormInput();
+			this.formEventHandler();
 		},
 
 		/**
@@ -273,18 +287,18 @@
 			if (this.settings.maxDistance === true) {
 				var maxDistance = $('#' + this.settings.maxDistanceID).val();
 				// Start the mapping
-				this.beginMapping(maxDistance);
+				this.processForm(maxDistance);
 			}
 			else {
 				// Start the mapping
-				this.beginMapping(null);
+				this.processForm();
 			}
 		},
 
 		/**
-		 * Process the form input
+		 * Form event handler setup
 		 */
-		processFormInput: function () {
+		formEventHandler: function () {
 			var _this = this;
 			// ASP.net or regular submission?
 			if (this.settings.noForm === true) {
@@ -425,8 +439,12 @@
 
 			// If show full map option is true
 			if (this.settings.fullMapStart === true) {
-				// Just do the mapping without an origin
-				this.mapping();
+				if(this.settings.querystringParams === true && this.getQueryString(this.settings.addressID) || this.getQueryString(this.settings.nameID)) {
+					this.processForm();
+				}
+				else {
+					this.mapping();
+				}
 			}
 
 			// HTML5 geolocation API option
@@ -566,7 +584,7 @@
 			var filterTest = true;
 
 			for (var k in filters) {
-				if (!(new RegExp(filters[k].join("")).test(data[k]))) {
+				if (!(new RegExp(filters[k].join(''), 'i').test(data[k]))) {
 					filterTest = false;
 				}
 			}
@@ -884,23 +902,39 @@
 				else {
 					this.settings.mapSettings.zoom = 0;
 				}
-				this.beginMapping(null);
+				this.processForm(null);
 			}
 
 			$(document).off('click', '.' + this.settings.listDiv + ' .bh-sl-close-icon');
 		},
 
 		/**
-		 * Set up the normal mapping TODO rename this function and processforminput
+		 * Process the form values and/or query string
 		 *
 		 * @param distance {number} optional maximum distance
 		 */
-		beginMapping: function (distance) {
+		processForm: function (distance) {
 			var _this = this;
 			var mappingObj = {};
-			// Get the user input and use it
-			addressInput = $('#' + this.settings.addressID).val();
-			nameInput = $('#' + this.settings.nameID).val();
+
+			if(this.settings.querystringParams === true) {
+
+				// Check for query string parameters
+				if(this.getQueryString(this.settings.addressID) || this.getQueryString(this.settings.nameID)){
+					addressInput = this.getQueryString(this.settings.addressID);
+					nameInput = this.getQueryString(this.settings.nameID);
+				}
+				else{
+					// Get the user input and use it
+					addressInput = $('#' + this.settings.addressID).val();
+					nameInput = $('#' + this.settings.nameID).val();
+				}
+			}
+			else {
+				// Get the user input and use it
+				addressInput = $('#' + this.settings.addressID).val();
+				nameInput = $('#' + this.settings.nameID).val();
+			}
 
 			// Get the region setting if set
 			var region = $('#' + this.settings.regionID).val();
@@ -1113,11 +1147,13 @@
 				
 				// Name search - using taxonomy filter to handle
 				if (_this.settings.nameSearch === true) {
-					if (_this.settings.nameAttribute !== null) {
-						filters[_this.settings.nameAttribute] = nameInput;
-					}
-					else {
-						filters.name = [nameInput];
+					if(typeof nameInput !== 'undefined') {
+						if (_this.settings.nameAttribute !== null) {
+							filters[_this.settings.nameAttribute] = nameInput;
+						}
+						else {
+							filters.name = [nameInput];
+						}
 					}
 				}
 
@@ -1429,7 +1465,7 @@
 														_this.reset();
 														if ((olat) && (olng)) {
 																_this.settings.mapSettings.zoom = 0;
-																_this.beginMapping();
+																_this.processForm();
 														}
 														else {
 																_this.mapping();
@@ -1450,7 +1486,7 @@
 																		else {
 																				_this.settings.mapSettings.zoom = 0;
 																		}
-																		_this.beginMapping();
+																		_this.processForm();
 																}
 																else {
 																		_this.mapping();
@@ -1477,7 +1513,7 @@
 														_this.reset();
 														if ((olat) && (olng)) {
 																_this.settings.mapSettings.zoom = 0;
-																_this.beginMapping();
+																_this.processForm();
 														}
 														else {
 																_this.mapping();
@@ -1493,7 +1529,7 @@
 										_this.reset();
 										if ((olat) && (olng)) {
 												_this.settings.mapSettings.zoom = originalZoom;
-												_this.beginMapping();
+												_this.processForm();
 										}
 										else {
 												_this.mapping();
