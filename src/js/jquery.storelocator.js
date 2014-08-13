@@ -174,6 +174,12 @@
 
 			// Add modal window divs if set
 			if (this.settings.modalWindow === true) {
+				// Clone the filters if there are any so they can be used in the modal
+				if (this.settings.taxonomyFilters !== null) {
+					// Clone the filters
+					$('.bh-sl-filters-container').clone(true, true).prependTo($this);
+				}
+			
 				$this.wrap('<div class="' + this.settings.overlayDiv + '"><div class="' + this.settings.modalWindowDiv + '"><div class="' + this.settings.modalContentDiv + '">');
 				$('.' + this.settings.modalWindowDiv).prepend('<div class="' + this.settings.closeIconDiv + '"></div>');
 				$('.' + this.settings.overlayDiv).hide();
@@ -981,7 +987,7 @@
 		 */
 		mapping: function (mappingObj) {
 			var _this = this;
-			var orig_lat, orig_lng, origin, name, maxDistance, page, firstRun, marker, bounds, storeStart, storeNumToShow, myOptions;
+			var orig_lat, orig_lng, origin, name, maxDistance, page, firstRun, marker, bounds, storeStart, storeNumToShow, myOptions, noResults;
 			var i = 0;
 			if (!this.isEmptyObject(mappingObj)) {
 				orig_lat = mappingObj.lat;
@@ -990,11 +996,6 @@
 				name = mappingObj.name;
 				maxDistance = mappingObj.distance;
 				page = mappingObj.page;
-			}
-			
-			// Remove the no results message if it was previously displayed
-			if($('.bh-sl-noresults').length) {
-				$('.bh-sl-noresults').remove();
 			}
 			
 			// Enable the visual refresh https://developers.google.com/maps/documentation/javascript/basics#VisualRefresh
@@ -1193,11 +1194,14 @@
 					}
 
 					// Append the no rsults message
-					var noResults = $('<div class="bh-sl-noresults"><div class="bh-sl-noresults-title">' + _this.settings.noResultsTitle +  '</div><br><div class="bh-sl-noresults-desc">' + _this.settings.noResultsDesc + '</div>').hide().fadeIn();
-					$('.' + _this.settings.formContainerDiv).append(noResults);
+					noResults = $('<li><div class="bh-sl-noresults-title">' + _this.settings.noResultsTitle +  '</div><br><div class="bh-sl-noresults-desc">' + _this.settings.noResultsDesc + '</li>').hide().fadeIn();
 					
-					// Stop the mapping function
-					return;
+					// Setup a no results location
+					locationset[0] = {
+						'distance': 0,
+						'lat' : 0,
+						'lng': 0
+					};
 				}
 
 				// Sort the multi-dimensional array by distance
@@ -1389,11 +1393,17 @@
 
 				// Create the links that focus on the related marker
 				$('.' + _this.settings.listDiv + ' ul').empty();
-				$(markers).each(function (x, marker) {
-					var letter = String.fromCharCode('A'.charCodeAt(0) + x);
-					var currentMarker = markers[x];
-					_this.listSetup(currentMarker, storeStart, page);
-				});
+				// Check the locationset and continue with the list setup or show no results message
+				if(locationset[0].lat === 0 && locationset[0].lng === 0) {
+					$('.' + _this.settings.listDiv + ' ul').append(noResults);
+				}
+				else {
+					$(markers).each(function (x, marker) {
+						var letter = String.fromCharCode('A'.charCodeAt(0) + x);
+						var currentMarker = markers[x];
+						_this.listSetup(currentMarker, storeStart, page);
+					});
+				}
 
 				// Handle clicks from the list
 				$(document).on('click', '.' + _this.settings.listDiv + ' li', function () {

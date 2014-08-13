@@ -35,7 +35,8 @@
 .bh-sl-container .form-input label {
   font-weight: bold;
 }
-.bh-sl-container .form-input input {
+.bh-sl-container .form-input input,
+.bh-sl-container .form-input select {
   margin: 0 15px 0 10px;
   padding: 4px;
   line-height: 16px;
@@ -85,18 +86,6 @@
   display: block;
   float: left;
   margin: 2px 8px 2px 0;
-}
-.bh-sl-container .bh-sl-noresults {
-  clear: left;
-  float: left;
-  width: 100%;
-  padding: 30px 0;
-  text-align: center;
-}
-.bh-sl-container .bh-sl-noresults .bh-sl-noresults-title {
-  font-size: 20px;
-  font-weight: bold;
-  color: #ae2118;
 }
 .bh-sl-container .bh-sl-map-container {
   clear: left;
@@ -176,6 +165,10 @@
 .bh-sl-container .bh-sl-loc-list .bh-sl-close-directions-container .bh-sl-close-icon {
   top: 0;
   right: 6px;
+}
+.bh-sl-container .bh-sl-loc-list .bh-sl-noresults-title {
+  font-weight: bold;
+  color: #ae2118;
 }
 .bh-sl-container .loc-name {
   /* Picked up by both list and infowindows */

@@ -34,7 +34,8 @@ module.exports = function(grunt) {
       dist: {
 				files: {
 					'dist/js/jquery.<%= pkg.name %>.min.js' : '<%= concat.dist.dest %>',
-					'dist/js/handlebars.min.js' : 'libs/handlebars/*.js'
+					'dist/js/handlebars.min.js' : 'libs/handlebars/*.js',
+					'dist/js/geocode.min.js' : 'src/js/geocode.js'
 				}
       },
     },
