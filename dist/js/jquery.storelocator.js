@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-08-31
+/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-09-01
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2014 Bjorn Holine; Licensed MIT */
 
@@ -17,7 +17,7 @@
 	// Variables used across multiple functions		
 	var $this, listTemplate, infowindowTemplate, dataTypeRead, originalData, originalDataRequest, originalZoom, nameInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService;
 	var featuredset = [], locationset = [], normalset = [], markers = [];
-	var filters = {}, locationData = {}, GeoCodeCalc = {};
+	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {};
 
 	// Create the defaults once. Do not change these settings in this file - settings should be overridden in the plugin call
 	var defaults = {
@@ -282,26 +282,6 @@
 		},
 
 		/**
-		 * Handle form submission
-		 *
-		 * @param e {event}
-		 */
-		getFormValues: function (e) {
-			// Stop the form submission
-			e.preventDefault();
-
-			if (this.settings.maxDistance === true) {
-				var maxDistance = $('#' + this.settings.maxDistanceID).val();
-				// Start the mapping
-				this.processForm(maxDistance);
-			}
-			else {
-				// Start the mapping
-				this.processForm();
-			}
-		},
-
-		/**
 		 * Form event handler setup
 		 */
 		formEventHandler: function () {
@@ -309,17 +289,17 @@
 			// ASP.net or regular submission?
 			if (this.settings.noForm === true) {
 				$(document).on('click', '.' + this.settings.formContainerDiv + ' button', function (e) {
-					_this.getFormValues(e);
+					_this.processForm(e);
 				});
 				$(document).on('keyup', function (e) {
 					if (e.keyCode === 13 && $('#' + _this.settings.inputID).is(':focus')) {
-						_this.getFormValues(e);
+						_this.processForm(e);
 					}
 				});
 			}
 			else {
 				$(document).on('submit', '#' + this.settings.formID, function (e) {
-					_this.getFormValues(e);
+					_this.processForm(e);
 				});
 			}
 		},
@@ -423,7 +403,6 @@
 		 */
 		start: function () {
 			var _this = this;
-			var mappingObj = {};
 			// If a default location is set
 			if (this.settings.defaultLoc === true) {
 				// The address needs to be determined for the directions link
@@ -850,19 +829,7 @@
 		 * @param newPage
 		 */
 		paginationChange: function (newPage) {
-			var maxDistance;
-			var mappingObj = {};
 
-			if (this.settings.maxDistance === true) {
-				maxDistance = $('#' + this.settings.maxDistanceID).val();
-			}
-
-			this.reset();
-			mappingObj.lat = olat;
-			mappingObj.lng = olng;
-			mappingObj.origin = addressInput;
-			mappingObj.name = nameInput;
-			mappingObj.distance = maxDistance;
 			mappingObj.page = newPage;
 			this.mapping(mappingObj);
 		},
@@ -959,11 +926,21 @@
 		/**
 		 * Process the form values and/or query string
 		 *
-		 * @param distance {number} optional maximum distance
+		 * @param e {event}
 		 */
-		processForm: function (distance) {
+		processForm: function (e) {
 			var _this = this;
-			var mappingObj = {};
+			var distance = null;
+
+			// Stop the form submission
+			if(typeof e !== 'undefined') {
+				e.preventDefault();
+			}
+
+			// Get the distance if set
+			if (this.settings.maxDistance === true) {
+				distance = $('#' + this.settings.maxDistanceID).val();
+			}
 
 			if(this.settings.querystringParams === true) {
 
@@ -1025,17 +1002,17 @@
 		 * @param origin {string} origin address
 		 * @param maxDistance {number} optional maximum distance
 		 */
-		mapping: function (mappingObj) {
+		mapping: function (mappingObject) {
 			var _this = this;
 			var orig_lat, orig_lng, origin, name, maxDistance, page, firstRun, marker, bounds, storeStart, storeNumToShow, myOptions, noResults;
 			var i = 0;
-			if (!this.isEmptyObject(mappingObj)) {
-				orig_lat = mappingObj.lat;
-				orig_lng = mappingObj.lng;
-				origin = mappingObj.origin;
-				name = mappingObj.name;
-				maxDistance = mappingObj.distance;
-				page = mappingObj.page;
+			if (!this.isEmptyObject(mappingObject)) {
+				orig_lat = mappingObject.lat;
+				orig_lng = mappingObject.lng;
+				origin = mappingObject.origin;
+				name = mappingObject.name;
+				maxDistance = mappingObject.distance;
+				page = mappingObject.page;
 			}
 			
 			// Enable the visual refresh https://developers.google.com/maps/documentation/javascript/basics#VisualRefresh
@@ -1514,7 +1491,7 @@
 																_this.processForm();
 														}
 														else {
-																_this.mapping();
+																_this.mapping(mappingObj);
 														}
 												}
 										}
@@ -1535,7 +1512,7 @@
 																		_this.processForm();
 																}
 																else {
-																		_this.mapping();
+																		_this.mapping(mappingObj);
 																}
 														}
 												}
@@ -1562,7 +1539,7 @@
 																_this.processForm();
 														}
 														else {
-																_this.mapping();
+																_this.mapping(mappingObj);
 														}
 												}
 										}
@@ -1578,7 +1555,7 @@
 												_this.processForm();
 										}
 										else {
-												_this.mapping();
+												_this.mapping(mappingObj);
 										}
 								}
 						}

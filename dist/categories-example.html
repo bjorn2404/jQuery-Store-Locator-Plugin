@@ -20,6 +20,12 @@
 			<div class="form-input">
 				<label for="address">Enter Address or Zip Code:</label>
 				<input type="text" id="address" name="address" />
+				<select id="maxdistance" name="maxdistance">
+					<option value="10">10 Miles</option>
+					<option value="20">20 Miles</option>
+					<option value="30">30 Miles</option>
+					<option value="40">40 Miles</option>
+				</select>
 			</div>
 
 			<button id="bh-sl-submit" type="submit">Submit</button>
@@ -97,6 +103,9 @@
 					<li>
 						<input type="radio" name="postal" value="55402">55402
 					</li>
+					<li>
+						<input type="radio" name="postal" value="55317">55317
+					</li>
 				</ul>
 			</div>
 		</form>
@@ -118,11 +127,12 @@
 <script>
 	$(function() {
 		$('#map-container').storeLocator({
+			'maxDistance': true,
 			'taxonomyFilters' : {
 				'category' : 'category-filters-container1',
 				'features' : 'category-filters-container2',
 				'city' : 'city-filter',
-				'postal': 'postal-filter' 
+				'postal': 'postal-filter'
 			}
 		});
 	});
