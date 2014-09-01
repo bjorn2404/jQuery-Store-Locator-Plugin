@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-08-12
+/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-08-31
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2014 Bjorn Holine; Licensed MIT */
 
@@ -601,31 +601,73 @@
 		},
 
 		/**
+		 * Build pagination numbers and next/prev links
+		 *
+		 * @param currentPage {number}
+		 * @param totalPages {number}
+		 * @returns {string}
+		 */
+		paginationOutput: function(currentPage, totalPages) {
+			currentPage = parseFloat(currentPage);
+			var output = '';
+			var nextPage = currentPage + 1;
+			var prevPage = currentPage - 1;
+
+			// Previous page
+			if( currentPage > 0 ) {
+				output += '<li class="bh-sl-next-prev" data-page="' + prevPage + '">&laquo; Prev</li>';
+			}
+
+			// Add the numbers
+			for (var p = 0; p < totalPages; p++) {
+				var n = p + 1;
+
+				if (p === currentPage) {
+					output += '<li class="bh-sl-current" data-page="' + p + '">' + n + '</li>';
+				}
+				else {
+					output += '<li data-page="' + p + '">' + n + '</li>';
+				}
+			}
+
+			// Next page
+			if( nextPage < totalPages ) {
+				output += '<li class="bh-sl-next-prev" data-page="' + nextPage + '">Next &raquo;</li>';
+			}
+
+			return output;
+		},
+
+		/**
 		 * Set up the pagination pages
 		 *
-		 * @param currentPage (number) optional current page
+		 * @param currentPage {number} optional current page
 		 */
 		paginationSetup: function (currentPage) {
-			// Only append the pagination number if they're not already appended
-			if ($('.bh-sl-pagination-container ol').length === 0) {
-				if (typeof currentPage === 'undefined') {
-					currentPage = 0;
-				}
-				var pagesOutput = '';
+			var pagesOutput = '';
+			var totalPages = locationset.length / this.settings.locationsPerPage;
 
-				for (var p = 0; p < (locationset.length / this.settings.locationsPerPage); p++) {
-					var n = p + 1;
-
-					if (p === currentPage) {
-						pagesOutput += '<li data-page="' + p + '" class="bh-sl-current">' + n + '</li>';
-					}
-					else {
-						pagesOutput += '<li data-page="' + p + '">' + n + '</li>';
-					}
-				}
-				//TODO: Target this better
-				$('.bh-sl-pagination-container').append('<ol class="bh-sl-pagination">' + pagesOutput + '</ol>');
+			// Current page check
+			if (typeof currentPage === 'undefined') {
+				currentPage = 0;
 			}
+
+			// Initial pagination setup
+			if ($('.bh-sl-pagination-container .bh-sl-pagination').length === 0) {
+
+				pagesOutput = this.paginationOutput(currentPage, totalPages);
+			}
+			// Update pagination on page change
+			else {
+				// Remove the old pagination
+				$('.bh-sl-pagination-container .bh-sl-pagination').empty();
+
+				// Add the numbers
+				pagesOutput = this.paginationOutput(currentPage, totalPages);
+			}
+
+			//TODO: Target this better
+			$('.bh-sl-pagination-container .bh-sl-pagination').append(pagesOutput);
 		},
 
 		/**
@@ -1242,7 +1284,7 @@
 
 				// Output page numbers if pagination setting is true
 				if (_this.settings.pagination === true) {
-					_this.paginationSetup();
+					_this.paginationSetup(page);
 				}
 
 				// Slide in the map container
@@ -1337,12 +1379,6 @@
 
 				// Handle pagination
 				$(document).on('click', '.bh-sl-pagination li', function () {
-					// Remove the current class
-					$('.bh-sl-pagination li').attr('class', '');
-
-					// Add the current class
-					$(this).addClass('bh-sl-current');
-
 					// Run paginationChange
 					_this.paginationChange($(this).attr('data-page'));
 				});

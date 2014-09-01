@@ -14,7 +14,7 @@
   float: left;
   margin-left: 20px;
   width: 875px;
-  font: normal 12px Arial, Helvetica, sans-serif;
+  font: normal 14px/20px Arial, Helvetica, sans-serif;
   color: #333333;
 }
 .bh-sl-container .bh-sl-form-container {
@@ -38,18 +38,23 @@
 .bh-sl-container .form-input input,
 .bh-sl-container .form-input select {
   margin: 0 15px 0 10px;
-  padding: 4px;
+  padding: 6px 12px;
   line-height: 16px;
   border: 1px solid #cccccc;
+  font: normal 14px/18px Arial, Helvetica, sans-serif;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
 }
 .bh-sl-container button {
   float: left;
   cursor: pointer;
   margin-top: 3px;
-  padding: 3px 6px;
+  padding: 6px 12px;
   background: #ae2118;
   border: 1px solid #961f17;
+  font: normal 14px/18px Arial, Helvetica, sans-serif;
   color: #ffffff;
+  white-space: nowrap;
   -webkit-border-radius: 4px;
   border-radius: 4px;
 }
@@ -131,7 +136,7 @@
   float: left;
   margin: 10px 0 0 6px;
   padding: 2px 3px;
-  width: 17px;
+  width: 10%;
   text-align: center;
   background: #451400;
   color: #ffffff;
@@ -140,7 +145,7 @@
 .bh-sl-container .bh-sl-loc-list .list-details {
   float: left;
   margin-left: 6px;
-  width: 165px;
+  width: 80%;
 }
 .bh-sl-container .bh-sl-loc-list .list-details .list-content {
   padding: 10px;

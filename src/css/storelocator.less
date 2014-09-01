@@ -26,7 +26,7 @@
 	float: left;
 	margin-left: 20px;
 	width: 875px;
-	font: normal 12px @arialFont;
+  	font: normal 14px/20px @arialFont;
 	color: @textgray;
 
 	.bh-sl-form-container {
@@ -52,9 +52,12 @@
 
 		input,select {
 			margin: 0 15px 0 10px;
-			padding: 4px;
+			padding: 6px 12px;
 			line-height: 16px;
 			border: 1px solid @gray;
+		  	font: normal 14px/18px @arialFont;
+			-webkit-border-radius: 4px;
+			border-radius: 4px;
 		}
 	}
 
@@ -62,10 +65,12 @@
 		float: left;
 		cursor: pointer;
 		margin-top: 3px;
-		padding: 3px 6px;
+		padding: 6px 12px;
 		background: @red;
 		border: 1px solid @darkred;
+	  	font: normal 14px/18px @arialFont;
 		color: @white;
+	  	white-space: nowrap;
 		-webkit-border-radius: 4px;
 		border-radius: 4px;
 	}
@@ -156,7 +161,7 @@
 			float: left;
 			margin: 10px 0 0 6px;
 			padding: 2px 3px;
-			width: 17px;
+			width: 10%;
 			text-align: center;
 			background: @maroon;
 			color: @white;
@@ -166,7 +171,7 @@
 		.list-details {
 			float: left;
 			margin-left: 6px;
-			width: 165px;
+			width: 80%;
 
 			.list-content {
 				padding: 10px;
