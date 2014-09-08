@@ -1,7 +1,5 @@
 # [jQuery Google Maps Store Locator Plugin](http://www.bjornblog.com/web/jquery-store-locator-plugin)
 
-[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
-
 ### [Please see my blog for more information and examples](http://www.bjornblog.com/web/jquery-store-locator-plugin).
 
 This jQuery plugin takes advantage of Google Maps API version 3 to create an easy to implement store locator. No back-end programming is required, you just need to feed it KML, XML, or JSON data with all the location information. How you create the data file is up to you. I originally created this for a company that didn’t have many locations, so I just used a static XML file. I also decided to geocode all the locations beforehand, to make sure it was quick and to avoid any potential geocoding errors. However, if you’re familiar with JavaScript you could easily make a modification to geocode everything on the fly (I may add this as an option at some point). 

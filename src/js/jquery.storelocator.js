@@ -17,58 +17,59 @@
 	}
 
 	// Variables used across multiple functions		
-	var $this, listTemplate, infowindowTemplate, dataTypeRead, originalData, originalDataRequest, originalZoom, nameInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService;
+	var $this, listTemplate, infowindowTemplate, dataTypeRead, originalData, originalDataRequest, originalZoom, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService;
 	var featuredset = [], locationset = [], normalset = [], markers = [];
 	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {};
 
 	// Create the defaults once. Do not change these settings in this file - settings should be overridden in the plugin call
 	var defaults = {
-		'mapDiv'                   : 'map',
-		'listDiv'                  : 'bh-sl-loc-list',
-		'formContainerDiv'         : 'bh-sl-form-container',
-		'formID'                   : 'user-location',
-		'addressID'                : 'address',
-		'nameID'                   : 'name',
-		'regionID'                 : 'region',
+		'mapID'                    : 'bh-sl-map',
+		'locationList'             : 'bh-sl-loc-list',
+		'formContainer'            : 'bh-sl-form-container',
+		'formID'                   : 'bh-sl-user-location',
+		'addressID'                : 'bh-sl-address',
+		'regionID'                 : 'bh-sl-region',
 		'mapSettings'              : {
 			zoom     : 12,
 			mapTypeId: google.maps.MapTypeId.ROADMAP
 		},
-		'pinColor'                 : 'fe7569', //TODO: New marker settings
-		'pinTextColor'             : '000000',
+		'markerImg'                : null,
+		'markerDim'                : null,
 		'lengthUnit'               : 'm',
 		'storeLimit'               : 26,
 		'distanceAlert'            : 60,
 		'dataType'                 : 'xml',
 		'dataLocation'             : 'data/locations.xml',
 		'xmlElement'               : 'marker',
-		'listColor1'               : 'ffffff',
-		'listColor2'               : 'eeeeee',
+		'listColor1'               : '#ffffff',
+		'listColor2'               : '#eeeeee',
 		'originMarker'             : false,
-		'originpinColor'           : 'blue',
+		'originMarkerImg'          : null,
+		'originMarkerDim'          : null,
 		'bounceMarker'             : true,
 		'slideMap'                 : true,
-		'modalWindow'              : false,
-		'overlayDiv'               : 'bh-sl-overlay',
-		'modalWindowDiv'           : 'bh-sl-modal-window',
-		'modalContentDiv'          : 'bh-sl-modal-content',
-		'closeIconDiv'             : 'bh-sl-close-icon',
+		'modal'                    : false,
+		'overlay'                  : 'bh-sl-overlay',
+		'modalWindow'              : 'bh-sl-modal-window',
+		'modalContent'             : 'bh-sl-modal-content',
+		'closeIcon'                : 'bh-sl-close-icon',
 		'defaultLoc'               : false,
-		'defaultLat'               : '',
-		'defaultLng'               : '',
+		'defaultLat'               : null,
+		'defaultLng'               : null,
 		'autoGeocode'              : false,
 		'maxDistance'              : false,
-		'maxDistanceID'            : 'maxdistance',
+		'maxDistanceID'            : 'bh-sl-maxdistance',
 		'fullMapStart'             : false,
 		'noForm'                   : false,
 		'loading'                  : false, //TODO: Add loading back
-		'loadingDiv'               : 'bh-sl-loading',
+		'loadingContainer'         : 'bh-sl-loading',
 		'featuredLocations'        : false,
 		'pagination'               : false,
 		'locationsPerPage'         : 10,
 		'inlineDirections'         : false,
 		'nameSearch'               : false,
-		'nameAttribute'            : null,
+		'searchID'                 : 'bh-sl-search',
+		'nameAttribute'            : 'name',
 		'infowindowTemplatePath'   : 'templates/infowindow-description.html',
 		'listTemplatePath'         : 'templates/location-list-description.html',
 		'KMLinfowindowTemplatePath': 'templates/kml-infowindow-description.html',
@@ -114,7 +115,7 @@
 			featuredset = [];
 			normalset = [];
 			markers = [];
-			$(document).off('click', '.' + this.settings.listDiv + ' li');
+			$(document).off('click', '.' + this.settings.locationList + ' li');
 		},
 		
 		/**
@@ -156,7 +157,7 @@
 			if(this.settings.inlineDirections === true) {
 				directionsDisplay = new google.maps.DirectionsRenderer();
 				directionsService = new google.maps.DirectionsService();
-				$('.' + this.settings.listDiv).prepend('<div class="bh-sl-directions-panel"></div>');
+				$('.' + this.settings.locationList).prepend('<div class="bh-sl-directions-panel"></div>');
 			}
 
 			// Save the original zoom setting so it can be retrieved if taxonomy filtering resets it
@@ -164,7 +165,9 @@
 			
 			// Add Handlebars helper for handling URL output
 			Handlebars.registerHelper('niceURL', function(url) {
-				return url.replace('https://', '').replace('http://', '');
+				if(url){
+					return url.replace('https://', '').replace('http://', '');
+				}
 			});
 
 			// Do taxonomy filtering if set
@@ -173,16 +176,16 @@
 			}
 
 			// Add modal window divs if set
-			if (this.settings.modalWindow === true) {
+			if (this.settings.modal === true) {
 				// Clone the filters if there are any so they can be used in the modal
 				if (this.settings.taxonomyFilters !== null) {
 					// Clone the filters
 					$('.bh-sl-filters-container').clone(true, true).prependTo($this);
 				}
 			
-				$this.wrap('<div class="' + this.settings.overlayDiv + '"><div class="' + this.settings.modalWindowDiv + '"><div class="' + this.settings.modalContentDiv + '">');
-				$('.' + this.settings.modalWindowDiv).prepend('<div class="' + this.settings.closeIconDiv + '"></div>');
-				$('.' + this.settings.overlayDiv).hide();
+				$this.wrap('<div class="' + this.settings.overlay + '"><div class="' + this.settings.modalWindow + '"><div class="' + this.settings.modalContent + '">');
+				$('.' + this.settings.modalWindow).prepend('<div class="' + this.settings.closeIcon + '"></div>');
+				$('.' + this.settings.overlay).hide();
 			}
 			
 			// Load the templates and continue from there
@@ -290,7 +293,7 @@
 			var _this = this;
 			// ASP.net or regular submission?
 			if (this.settings.noForm === true) {
-				$(document).on('click', '.' + this.settings.formContainerDiv + ' button', function (e) {
+				$(document).on('click', '.' + this.settings.formContainer + ' button', function (e) {
 					_this.processForm(e);
 				});
 				$(document).on('keyup', function (e) {
@@ -426,7 +429,7 @@
 
 			// If show full map option is true
 			if (this.settings.fullMapStart === true) {
-				if(this.settings.querystringParams === true && this.getQueryString(this.settings.addressID) || this.getQueryString(this.settings.nameID)) {
+				if(this.settings.querystringParams === true && this.getQueryString(this.settings.addressID) || this.getQueryString(this.settings.searchID)) {
 					this.processForm();
 				}
 				else {
@@ -524,8 +527,16 @@
 			if (this.settings.callbackModalOpen) {
 				this.settings.callbackModalOpen.call(this);
 			}
+			
+			// Reset the filters
+			filters = {};
+			
+			// Undo category selections
+			$('.' + this.settings.overlay + ' select').prop('selectedIndex', 0);
+			$('.' + this.settings.overlay + ' input').prop('checked', false);
 
-			$('.' + this.settings.overlayDiv).hide();
+			// Hide the modal
+			$('.' + this.settings.overlay).hide();
 		},
 
 		/**
@@ -661,25 +672,35 @@
 		 * @returns {google.maps.Marker}
 		 */
 		createMarker: function (point, name, address, letter, map) {
-			var marker;
+			var marker, markerImg, letterMarkerImg;
 
-			// Letter markers image
-			var pinImage = new google.maps.MarkerImage('http://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-waypoint-b.png&text=' + letter + '&psize=16&font=fonts/Roboto-Regular.ttf&color=ff333333&ax=44&ay=48');
+			if(this.settings.markerImg !== null) {
+				if(this.settings.markerDim !== null) {
+					markerImg = new google.maps.MarkerImage(this.settings.markerImg, null, null, null, new google.maps.Size(this.settings.markerDim.width,this.settings.markerDim.height));
+				}
+				else {
+					markerImg = new google.maps.MarkerImage(this.settings.markerImg, null, null, null, new google.maps.Size(32,32));
+				}
+			}
 
-			// Create the markers
+			// Create the default markers
 			if (this.settings.storeLimit === -1 || this.settings.storeLimit > 26) {
 				marker = new google.maps.Marker({
 					position : point,
 					map      : map,
-					draggable: false
+					draggable: false,
+					icon: markerImg // Reverts to default marker if nothing is passed
 				});
 			}
 			else {
-				// Default dot marker
+				// Letter markers image
+				letterMarkerImg = new google.maps.MarkerImage('https://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-waypoint-b.png&text=' + letter + '&psize=16&font=fonts/Roboto-Regular.ttf&color=ff333333&ax=44&ay=48');
+				
+				// Letter markers
 				marker = new google.maps.Marker({
 					position : point,
 					map      : map,
-					icon     : pinImage,
+					icon     : letterMarkerImg,
 					draggable: false
 				});
 			}
@@ -756,7 +777,7 @@
 
 			// Set up the list template with the location data
 			var listHtml = listTemplate(locations);
-			$('.' + this.settings.listDiv + ' ul').append(listHtml);
+			$('.' + this.settings.locationList + ' ul').append(listHtml);
 		},
 
 		// Infowindows
@@ -779,13 +800,13 @@
 					infowindow.setContent(formattedAddress);
 					infowindow.open(marker.get('map'), marker);
 					// Focus on the list
-					$('.' + _this.settings.listDiv + ' li').removeClass('list-focus');
+					$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
 					var markerId = marker.get('id');
-					$('.' + _this.settings.listDiv + ' li[data-markerid=' + markerId + ']').addClass('list-focus');
+					$('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']').addClass('list-focus');
 
 					// Scroll list to selected marker
-					var container = $('.' + _this.settings.listDiv), scrollTo = $('.' + _this.settings.listDiv + ' li[data-markerid=' + markerId + ']');
-					$('.' + _this.settings.listDiv).animate({
+					var container = $('.' + _this.settings.locationList), scrollTo = $('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']');
+					$('.' + _this.settings.locationList).animate({
 						scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
 					});
 				});
@@ -876,7 +897,7 @@
 
 			if(destination) {
 				// Hide the location list
-				$('.' + this.settings.listDiv + ' ul').hide();
+				$('.' + this.settings.locationList + ' ul').hide();
 				// Remove the markers
 				this.clearMarkers();
 
@@ -895,10 +916,10 @@
 					}
 				});
 
-				$('.' + this.settings.listDiv).prepend('<div class="bh-sl-close-directions-container"><div class="' + this.settings.closeIconDiv + '"></div></div>');
+				$('.' + this.settings.locationList).prepend('<div class="bh-sl-close-directions-container"><div class="' + this.settings.closeIcon + '"></div></div>');
 			}
 
-			$(document).off('click', '.' + this.settings.listDiv + ' li .loc-directions a');
+			$(document).off('click', '.' + this.settings.locationList + ' li .loc-directions a');
 		},
 
 		/**
@@ -907,8 +928,8 @@
 		closeDirections: function() {
 			// Remove the close icon, remove the directions, add the list back
 			$('.bh-sl-close-directions-container').remove();
-			$('.' + this.settings.listDiv + ' .adp').remove();
-			$('.' + this.settings.listDiv + ' ul').fadeIn();
+			$('.' + this.settings.locationList + ' .adp').remove();
+			$('.' + this.settings.locationList + ' ul').fadeIn();
 			
 			this.reset();
 			
@@ -922,7 +943,7 @@
 				this.processForm(null);
 			}
 
-			$(document).off('click', '.' + this.settings.listDiv + ' .bh-sl-close-icon');
+			$(document).off('click', '.' + this.settings.locationList + ' .bh-sl-close-icon');
 		},
 
 		/**
@@ -947,26 +968,26 @@
 			if(this.settings.querystringParams === true) {
 
 				// Check for query string parameters
-				if(this.getQueryString(this.settings.addressID) || this.getQueryString(this.settings.nameID)){
+				if(this.getQueryString(this.settings.addressID) || this.getQueryString(this.settings.searchID)){
 					addressInput = this.getQueryString(this.settings.addressID);
-					nameInput = this.getQueryString(this.settings.nameID);
+					searchInput = this.getQueryString(this.settings.searchID);
 				}
 				else{
 					// Get the user input and use it
 					addressInput = $('#' + this.settings.addressID).val();
-					nameInput = $('#' + this.settings.nameID).val();
+					searchInput = $('#' + this.settings.searchID).val();
 				}
 			}
 			else {
 				// Get the user input and use it
 				addressInput = $('#' + this.settings.addressID).val();
-				nameInput = $('#' + this.settings.nameID).val();
+				searchInput = $('#' + this.settings.searchID).val();
 			}
 
 			// Get the region setting if set
 			var region = $('#' + this.settings.regionID).val();
 
-			if (addressInput === '' && nameInput === '') {
+			if (addressInput === '' && searchInput === '') {
 				this.start();
 			}
 			else if(addressInput !== '') {
@@ -980,7 +1001,7 @@
 						mappingObj.lat = olat;
 						mappingObj.lng = olng;
 						mappingObj.origin = addressInput;
-						mappingObj.name = nameInput;
+						mappingObj.name = searchInput;
 						mappingObj.distance = distance;
 						_this.mapping(mappingObj);
 					} else {
@@ -989,8 +1010,8 @@
 					}
 				});
 			}
-			else if(nameInput !== '') {
-				mappingObj.name = nameInput;
+			else if(searchInput !== '') {
+				mappingObj.name = searchInput;
 				_this.mapping(mappingObj);
 			}
 		},
@@ -1057,14 +1078,14 @@
 				}
 
 				// Set a variable for fullMapStart so we can detect the first run
-				if (_this.settings.fullMapStart === true && $('#' + _this.settings.mapDiv).hasClass('bh-sl-map-open') === false) {
+				if (_this.settings.fullMapStart === true && $('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === false) {
 					firstRun = true;
 				}
 				else {
 					_this.reset();
 				}
 
-				$('#' + _this.settings.mapDiv).addClass('bh-sl-map-open');
+				$('#' + _this.settings.mapID).addClass('bh-sl-map-open');
 
 				// Process the location data depending on the data format type
 				if (_this.settings.dataType === 'json' || _this.settings.dataType === 'jsonp') {
@@ -1169,13 +1190,8 @@
 				
 				// Name search - using taxonomy filter to handle
 				if (_this.settings.nameSearch === true) {
-					if(typeof nameInput !== 'undefined') {
-						if (_this.settings.nameAttribute !== null) {
-							filters[_this.settings.nameAttribute] = nameInput;
-						}
-						else {
-							filters.name = [nameInput];
-						}
+					if(typeof searchInput !== 'undefined') {
+							filters[_this.settings.nameAttribute] = [searchInput];
 					}
 				}
 
@@ -1208,7 +1224,7 @@
 
 				if (_this.isEmptyObject(locationset)) {
 					// Hide the map and locations if they're showing
-					if ($('#' + _this.settings.mapDiv).hasClass('bh-sl-map-open')) {
+					if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open')) {
 						$this.hide();
 					}
 
@@ -1271,20 +1287,20 @@
 					$this.slideDown();
 				}
 				// Set up the modal window
-				if (_this.settings.modalWindow === true) {
+				if (_this.settings.modal === true) {
 					// Callback
 					if (_this.settings.callbackModalOpen) {
 						_this.settings.callbackModalOpen.call(this);
 					}
 
 					// Pop up the modal window
-					$('.' + _this.settings.overlayDiv).fadeIn();
+					$('.' + _this.settings.overlay).fadeIn();
 					// Close modal when close icon is clicked and when background overlay is clicked
-					$(document).on('click', '.' + _this.settings.closeIconDiv + ', .' + _this.settings.overlayDiv, function () {
+					$(document).on('click', '.' + _this.settings.closeIcon + ', .' + _this.settings.overlay, function () {
 						_this.modalClose();
 					});
 					// Prevent clicks within the modal window from closing the entire thing
-					$(document).on('click', '.' + _this.settings.modalWindowDiv, function (e) {
+					$(document).on('click', '.' + _this.settings.modalWindow, function (e) {
 						e.stopPropagation();
 					});
 					// Close modal when escape key is pressed
@@ -1339,21 +1355,41 @@
 					myOptions = _this.settings.mapSettings;
 				}
 
-				var map = new google.maps.Map(document.getElementById(_this.settings.mapDiv), myOptions);
+				var map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
 				// Load the map
-				$this.data(_this.settings.mapDiv.replace('#'), map);
+				$this.data(_this.settings.mapID.replace('#'), map);
 
 				// Initialize the infowondow
 				var infowindow = new google.maps.InfoWindow();
 
 				// Add origin marker if the setting is set
-				if (_this.settings.originMarker === true && _this.settings.fullMapStart === false) {
-					marker = new google.maps.Marker({
-						position : originPoint,
-						map      : map,
-						icon     : 'https://maps.google.com/mapfiles/ms/icons/' + _this.settings.originpinColor + '-dot.png',
-						draggable: false
-					});
+				if (_this.settings.originMarker === true) {
+					var originImg = '';
+					
+					// If fullMapStart is on and it's the first run there is no origin
+					if(_this.settings.fullMapStart === false && firstRun === true) {
+						return;
+					}
+					else{
+						if(_this.settings.originMarkerImg !== null) {
+							if(_this.settings.originMarkerDim !== null) {
+								originImg = new google.maps.MarkerImage(_this.settings.originMarkerImg, null, null, null, new google.maps.Size(_this.settings.originMarkerDim.width,_this.settings.originMarkerDim.height));
+							}
+							else {
+								originImg = new google.maps.MarkerImage(_this.settings.originMarkerImg);
+							}
+						}
+						else {
+							originImg = new google.maps.MarkerImage('https://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-waypoint-a.png');
+						}
+
+						marker = new google.maps.Marker({
+							position : originPoint,
+							map      : map,
+							icon     : originImg,
+							draggable: false
+						});
+					}
 				}
 
 				// Handle pagination
@@ -1365,14 +1401,14 @@
 				// Inline directions
 				if(_this.settings.inlineDirections === true){
 					// Open directions
-					$(document).on('click', '.' + _this.settings.listDiv + ' li .loc-directions a', function (e) {
+					$(document).on('click', '.' + _this.settings.locationList + ' li .loc-directions a', function (e) {
 						e.preventDefault();
 						var locID = $(this).closest('li').attr('data-markerid');
 						_this.directionsRequest(origin, locID, map);
 					});
 
 					// Close directions
-					$(document).on('click', '.' + _this.settings.listDiv + ' .bh-sl-close-icon', function () {
+					$(document).on('click', '.' + _this.settings.locationList + ' .bh-sl-close-icon', function () {
 						_this.closeDirections();
 					});
 				}
@@ -1405,10 +1441,10 @@
 				}
 
 				// Create the links that focus on the related marker
-				$('.' + _this.settings.listDiv + ' ul').empty();
+				$('.' + _this.settings.locationList + ' ul').empty();
 				// Check the locationset and continue with the list setup or show no results message
 				if(locationset[0].lat === 0 && locationset[0].lng === 0) {
-					$('.' + _this.settings.listDiv + ' ul').append(noResults);
+					$('.' + _this.settings.locationList + ' ul').append(noResults);
 				}
 				else {
 					$(markers).each(function (x, marker) {
@@ -1419,14 +1455,14 @@
 				}
 
 				// Handle clicks from the list
-				$(document).on('click', '.' + _this.settings.listDiv + ' li', function () {
+				$(document).on('click', '.' + _this.settings.locationList + ' li', function () {
 					var markerId = $(this).data('markerid');
 
 					var selectedMarker = markers[markerId];
 
 					// Focus on the list
-					$('.' + _this.settings.listDiv + ' li').removeClass('list-focus');
-					$('.' + _this.settings.listDiv + ' li[data-markerid=' + markerId + ']').addClass('list-focus');
+					$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
+					$('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']').addClass('list-focus');
 
 					map.panTo(selectedMarker.getPosition());
 					var listLoc = 'left';
@@ -1444,13 +1480,13 @@
 				});
 				
 				// Prevent bubbling from list content links
-				$(document).on('click', '.' + _this.settings.listDiv + ' li a', function (e) {
+				$(document).on('click', '.' + _this.settings.locationList + ' li a', function (e) {
 					e.stopPropagation();
 				});
 
-				// Add the list li background colors
-				$('.' + _this.settings.listDiv + ' ul li:even').css('background', '#' + _this.settings.listColor1);
-				$('.' + _this.settings.listDiv + ' ul li:odd').css('background', '#' + _this.settings.listColor2);
+				// Add the list li background colors - this wil be dropped in a future version in favor of CSS
+				$('.' + _this.settings.locationList + ' ul li:even').css('background', _this.settings.listColor1);
+				$('.' + _this.settings.locationList + ' ul li:odd').css('background', _this.settings.listColor2);
 				
 			});
 		},
@@ -1486,7 +1522,7 @@
 										if ($(this).prop('checked')) {
 												// Add ids to the filter arrays as they are checked
 												filters[filterKey].push(filterId);
-												if ($('#' + _this.settings.mapDiv).hasClass('bh-sl-map-open') === true) {
+												if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
 														_this.reset();
 														if ((olat) && (olng)) {
 																_this.settings.mapSettings.zoom = 0;
@@ -1502,7 +1538,7 @@
 												var filterIndex = filters[filterKey].indexOf(filterId);
 												if (filterIndex > -1) {
 														filters[filterKey].splice(filterIndex, 1);
-														if ($('#' + _this.settings.mapDiv).hasClass('bh-sl-map-open') === true) {
+														if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
 																_this.reset();
 																if ((olat) && (olng)) {
 																		if (_this.countFilters() === 0) {
@@ -1534,7 +1570,7 @@
 								if (filterId) {
 										if (filterKey) {
 												filters[filterKey] = [filterId];
-												if ($('#' + _this.settings.mapDiv).hasClass('bh-sl-map-open') === true) {
+												if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
 														_this.reset();
 														if ((olat) && (olng)) {
 																_this.settings.mapSettings.zoom = 0;
