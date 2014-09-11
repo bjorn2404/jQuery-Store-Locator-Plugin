@@ -297,7 +297,7 @@
 					_this.processForm(e);
 				});
 				$(document).on('keyup', function (e) {
-					if (e.keyCode === 13 && $('#' + _this.settings.inputID).is(':focus')) {
+					if (e.keyCode === 13 && $('#' + _this.settings.addressID).is(':focus')) {
 						_this.processForm(e);
 					}
 				});
