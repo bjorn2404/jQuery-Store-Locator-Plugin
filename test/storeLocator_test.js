@@ -33,13 +33,36 @@
     strictEqual(this.elems.storeLocator(), this.elems, 'Should be chainable');
   });
 
-  module('jQuery.storeLocator');
-
-  module(':storeLocator selector', {
+	/**
+	 * Distance calculations
+	 */
+	module('Distance calculations', {
     // This will run before each test in this module.
     setup: function() {
-      this.elems = $('#qunit-fixture').children();
-    }
+      $('#map-container').storeLocator();
+    },
+
+		teardown: function() {
+			$('#map-container').data('plugin_storeLocator').destroy();
+		}
   });
+	
+	test('geoCodeCalcToRadian()', function() {
+		var $this = $('#map-container').data('plugin_storeLocator');
+		var radiansPerDegree = Math.PI / 180;
+
+		deepEqual($this.geoCodeCalcToRadian(0), 0, "Zero test");
+		deepEqual($this.geoCodeCalcToRadian(10), 10 * radiansPerDegree, "Integer test");
+		deepEqual($this.geoCodeCalcToRadian(10.10), 10.10 * radiansPerDegree, "Float test");
+	});
+
+	test('geoCodeCalcDiffRadian()', function() {
+		var $this = $('#map-container').data('plugin_storeLocator');
+		
+		deepEqual($this.geoCodeCalcDiffRadian(10, 5), ($this.geoCodeCalcToRadian(5) - $this.geoCodeCalcToRadian(10)), "Integer test");
+		deepEqual($this.geoCodeCalcDiffRadian(10.10, 5.5), ($this.geoCodeCalcToRadian(5.5) - $this.geoCodeCalcToRadian(10.10)), "Float test");
+	});
+
+	
 
 }(jQuery));

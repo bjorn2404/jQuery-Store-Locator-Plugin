@@ -115,7 +115,7 @@
 			featuredset = [];
 			normalset = [];
 			markers = [];
-			$(document).off('click', '.' + this.settings.locationList + ' li');
+			$(document).off('click.'+pluginName, '.' + this.settings.locationList + ' li');
 		},
 		
 		/**
@@ -190,6 +190,45 @@
 			
 			// Load the templates and continue from there
 			this.loadTemplates();
+		},
+
+		/**
+		 * Destroy
+		 */
+		destroy: function () {
+			// Reset
+			this.reset();
+
+			// Remove marker event listeners
+			if(markers.length) {
+				for(var i = 0; i <= markers.length; i++) {
+					google.maps.event.removeListener(markers[i]);
+				}
+			}
+			
+			// Remove markup
+			$('.' + this.settings.locationList + ' ul').empty();
+			if($('#' + this.settings.mapID).hasClass('bh-sl-map-open')) {
+				$('#' + this.settings.mapID).empty();
+				$('#' + this.settings.mapID).removeClass('bh-sl-map-open');
+			}
+			
+			// Remove modal markup
+			if (this.settings.modal === true) {
+				$('. ' + this.settings.overlay).remove();
+			}
+			
+			// Remove map style from cotnainer
+			$('#' + this.settings.mapID).attr('style', '');
+			
+			// Hide map container
+			$this.hide();
+			// Remove data
+			$.removeData($this.get(0));
+			// Remove namespached events
+			$(document).off(pluginName);
+			// Unbind plugin
+			$this.unbind();
 		},
 
 		/**
@@ -293,17 +332,17 @@
 			var _this = this;
 			// ASP.net or regular submission?
 			if (this.settings.noForm === true) {
-				$(document).on('click', '.' + this.settings.formContainer + ' button', function (e) {
+				$(document).on('click.'+pluginName, '.' + this.settings.formContainer + ' button', function (e) {
 					_this.processForm(e);
 				});
-				$(document).on('keyup', function (e) {
+				$(document).on('keyup.'+pluginName, function (e) {
 					if (e.keyCode === 13 && $('#' + _this.settings.addressID).is(':focus')) {
 						_this.processForm(e);
 					}
 				});
 			}
 			else {
-				$(document).on('submit', '#' + this.settings.formID, function (e) {
+				$(document).on('submit.'+pluginName, '#' + this.settings.formID, function (e) {
 					_this.processForm(e);
 				});
 			}
@@ -943,7 +982,7 @@
 				this.processForm(null);
 			}
 
-			$(document).off('click', '.' + this.settings.locationList + ' .bh-sl-close-icon');
+			$(document).off('click.'+pluginName, '.' + this.settings.locationList + ' .bh-sl-close-icon');
 		},
 
 		/**
@@ -1296,15 +1335,15 @@
 					// Pop up the modal window
 					$('.' + _this.settings.overlay).fadeIn();
 					// Close modal when close icon is clicked and when background overlay is clicked
-					$(document).on('click', '.' + _this.settings.closeIcon + ', .' + _this.settings.overlay, function () {
+					$(document).on('click.'+pluginName, '.' + _this.settings.closeIcon + ', .' + _this.settings.overlay, function () {
 						_this.modalClose();
 					});
 					// Prevent clicks within the modal window from closing the entire thing
-					$(document).on('click', '.' + _this.settings.modalWindow, function (e) {
+					$(document).on('click.'+pluginName, '.' + _this.settings.modalWindow, function (e) {
 						e.stopPropagation();
 					});
 					// Close modal when escape key is pressed
-					$(document).on('keyup', function (e) {
+					$(document).on('keyup.'+pluginName, function (e) {
 						if (e.keyCode === 27) {
 							_this.modalClose();
 						}
@@ -1393,7 +1432,7 @@
 				}
 
 				// Handle pagination
-				$(document).on('click', '.bh-sl-pagination li', function () {
+				$(document).on('click.'+pluginName, '.bh-sl-pagination li', function () {
 					// Run paginationChange
 					_this.paginationChange($(this).attr('data-page'));
 				});
@@ -1401,14 +1440,14 @@
 				// Inline directions
 				if(_this.settings.inlineDirections === true){
 					// Open directions
-					$(document).on('click', '.' + _this.settings.locationList + ' li .loc-directions a', function (e) {
+					$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li .loc-directions a', function (e) {
 						e.preventDefault();
 						var locID = $(this).closest('li').attr('data-markerid');
 						_this.directionsRequest(origin, locID, map);
 					});
 
 					// Close directions
-					$(document).on('click', '.' + _this.settings.locationList + ' .bh-sl-close-icon', function () {
+					$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' .bh-sl-close-icon', function () {
 						_this.closeDirections();
 					});
 				}
@@ -1455,7 +1494,7 @@
 				}
 
 				// Handle clicks from the list
-				$(document).on('click', '.' + _this.settings.locationList + ' li', function () {
+				$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li', function () {
 					var markerId = $(this).data('markerid');
 
 					var selectedMarker = markers[markerId];
@@ -1480,7 +1519,7 @@
 				});
 				
 				// Prevent bubbling from list content links
-				$(document).on('click', '.' + _this.settings.locationList + ' li a', function (e) {
+				$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li a', function (e) {
 					e.stopPropagation();
 				});
 
@@ -1503,7 +1542,7 @@
 				});
 
 				// Handle filter updates
-				$('.bh-sl-filters-container').on('change', 'input, select', function (e) {
+				$('.bh-sl-filters-container').on('change.'+pluginName, 'input, select', function (e) {
 						e.stopPropagation();
 
 						var filterId, filterContainer, filterKey;
