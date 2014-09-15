@@ -20,7 +20,7 @@
       throws(block, [expected], [message])
   */
 
-  module('jQuery#storeLocator', {
+  module('storeLocator', {
     // This will run before each test in this module.
     setup: function() {
       this.elems = $('#qunit-fixture').children();
@@ -33,10 +33,8 @@
     strictEqual(this.elems.storeLocator(), this.elems, 'Should be chainable');
   });
 
-	/**
-	 * Distance calculations
-	 */
-	module('Distance calculations', {
+
+	module('Independent methods', {
     // This will run before each test in this module.
     setup: function() {
       $('#map-container').storeLocator();
@@ -46,7 +44,10 @@
 			$('#map-container').data('plugin_storeLocator').destroy();
 		}
   });
-	
+
+	/**
+	 * Distance calculations
+	 */
 	test('geoCodeCalcToRadian()', function() {
 		var $this = $('#map-container').data('plugin_storeLocator');
 		var radiansPerDegree = Math.PI / 180;
@@ -63,6 +64,16 @@
 		deepEqual($this.geoCodeCalcDiffRadian(10.10, 5.5), ($this.geoCodeCalcToRadian(5.5) - $this.geoCodeCalcToRadian(10.10)), "Float test");
 	});
 
-	
+	/**
+	 * Query string
+	 *
+	 * URL needs to be set to /test/storeLocator.html?bh-sl-address=test for this to pass
+	 */
+	test('getQueryString()', function() {
+		var $this = $('#map-container').data('plugin_storeLocator');
+
+		deepEqual($this.getQueryString(), undefined, "Empty test");
+		deepEqual($this.getQueryString('bh-sl-address'), 'test', "String test");
+	});
 
 }(jQuery));

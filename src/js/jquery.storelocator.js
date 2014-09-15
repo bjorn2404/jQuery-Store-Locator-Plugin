@@ -235,13 +235,15 @@
 		 * Check for query string
 		 * 
 		 * @param param {string} query string parameter to test
-		 * @returns {string}
+		 * @returns {string} query string value
 		 */
 		getQueryString: function(param) {
-			param = param.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-			var regex = new RegExp('[\\?&]' + param + '=([^&#]*)'),
+			if(param) {
+				param = param.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+				var regex = new RegExp('[\\?&]' + param + '=([^&#]*)'),
 					results = regex.exec(location.search);
-			return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+				return (results === null) ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+			}
 		},
 
 		/**
@@ -271,8 +273,8 @@
 					_this.locator();
 
 				}, function () {
-					// KML templates not loaded - you can add a console.log here to see if your templates are failing
-
+					// KML templates not loaded
+					alert('Error: could not load plugin templates');
 				});
 			}
 			// Handle script tag template method
@@ -306,8 +308,8 @@
 					_this.locator();
 
 				}, function () {
-					// JSON/XML templates not loaded - you can add a console.log here to see if your templates are failing
-
+					// JSON/XML templates not loaded
+					alert('Error: could not load plugin templates');
 				});
 			}
 		},
