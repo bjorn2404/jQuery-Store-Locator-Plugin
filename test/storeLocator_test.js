@@ -27,17 +27,22 @@
     }
   });
 
-  test('is chainable', function() {
-    expect(1);
+  test('is chainable', 1, function() {
     // Not a bad test to run on collection methods.
-    strictEqual(this.elems.storeLocator(), this.elems, 'Should be chainable');
+    strictEqual(this.elems.storeLocator({
+			'infowindowTemplatePath': '../dist/templates/infowindow-description.html',
+			'listTemplatePath': '../dist/templates/location-list-description.html'
+		}), this.elems, 'Should be chainable');
   });
 
 
 	module('Independent methods', {
     // This will run before each test in this module.
     setup: function() {
-      $('#map-container').storeLocator();
+      $('#map-container').storeLocator({
+				'infowindowTemplatePath': '../dist/templates/infowindow-description.html',
+				'listTemplatePath': '../dist/templates/location-list-description.html'
+			});
     },
 
 		teardown: function() {
@@ -48,7 +53,7 @@
 	/**
 	 * Distance calculations
 	 */
-	test('geoCodeCalcToRadian()', function() {
+	test('geoCodeCalcToRadian()', 3, function() {
 		var $this = $('#map-container').data('plugin_storeLocator');
 		var radiansPerDegree = Math.PI / 180;
 
@@ -57,7 +62,7 @@
 		deepEqual($this.geoCodeCalcToRadian(10.10), 10.10 * radiansPerDegree, "Float test");
 	});
 
-	test('geoCodeCalcDiffRadian()', function() {
+	test('geoCodeCalcDiffRadian()', 2, function() {
 		var $this = $('#map-container').data('plugin_storeLocator');
 		
 		deepEqual($this.geoCodeCalcDiffRadian(10, 5), ($this.geoCodeCalcToRadian(5) - $this.geoCodeCalcToRadian(10)), "Integer test");
@@ -69,11 +74,24 @@
 	 *
 	 * URL needs to be set to /test/storeLocator.html?bh-sl-address=test for this to pass
 	 */
-	test('getQueryString()', function() {
+	test('getQueryString()', 2, function() {
 		var $this = $('#map-container').data('plugin_storeLocator');
 
 		deepEqual($this.getQueryString(), undefined, "Empty test");
 		deepEqual($this.getQueryString('bh-sl-address'), 'test', "String test");
+	});
+
+	/**
+	 * Get data
+	 */
+	asyncTest('getData', 1, function() {
+		var $this = $('#map-container').data('plugin_storeLocator');
+		var dataRequest = $this.getData('44.8896866', '-93.34994890000002', 'Edina,MN');
+
+		setTimeout(function() {
+			ok(dataRequest.done(), 'Data was called successfully');
+			start();
+		}, 1000);
 	});
 
 }(jQuery));

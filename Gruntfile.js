@@ -15,8 +15,10 @@ module.exports = function (grunt) {
 		},
 		less     : {
 			dist: {
-				src : 'src/css/storelocator.less',
-				dest: 'dist/css/storelocator.css'
+				files: {
+					'dist/css/storelocator.css' : 'src/css/storelocator.less',
+					'dist/css/bootstrap-example.css' : 'src/css/bootstrap-example.less'
+				}
 			}
 		},
 		concat   : {
@@ -79,7 +81,8 @@ module.exports = function (grunt) {
 		cssmin   : {
 			dist: {
 				files: {
-					'dist/css/storelocator.min.css': 'dist/css/storelocator.css'
+					'dist/css/storelocator.min.css': 'dist/css/storelocator.css',
+					'dist/css/bootstrap-example.min.css': 'dist/css/bootstrap-example.css'
 				}
 			}
 		},

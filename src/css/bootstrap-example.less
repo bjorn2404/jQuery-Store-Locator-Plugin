@@ -11,12 +11,6 @@
 @maroon: #451400;
 @arialFont: Arial, Helvetica, sans-serif;
 
-/* #page-header it just included for the examples */
-#page-header {
-	float: left;
-	display: block;
-}
-
 /* Infowindow Roboto font override */
 .gm-style div, .gm-style span, .gm-style label, .gm-style a {
 	font-family: @arialFont;
@@ -32,50 +26,16 @@
 }
 
 .bh-sl-container {
-	float: left;
-	margin-left: 20px;
-	width: 875px;
-  	font: normal 14px/20px @arialFont;
 	color: @textgray;
 
-	.bh-sl-form-container {
-		clear: left;
-		float: left;
-		margin-top: 15px;
-		width: 100%;
+	.jumbotron{
+		padding-top: 30px;
 	}
 
 	.form-input {
-		float: left;
-		margin-top: 3px;
-
-		label {
-			font-weight: bold;
+		input,select,label {
+			margin-right: 10px;
 		}
-
-		input,select {
-			margin: 0 15px 0 10px;
-			padding: 6px 12px;
-			line-height: 16px;
-			border: 1px solid @gray;
-		  	font: normal 14px/18px @arialFont;
-			-webkit-border-radius: 4px;
-			border-radius: 4px;
-		}
-	}
-
-	button {
-		float: left;
-		cursor: pointer;
-		margin-top: 3px;
-		padding: 6px 12px;
-		background: @red;
-		border: 1px solid @darkred;
-	  	font: normal 14px/18px @arialFont;
-		color: @white;
-	  	white-space: nowrap;
-		-webkit-border-radius: 4px;
-		border-radius: 4px;
 	}
 
 	.bh-sl-loading {
@@ -88,7 +48,6 @@
 
 	.bh-sl-filters-container {
 		clear: both;
-		float: left;
 		width: 100%;
 		margin: 15px 0;
 
@@ -119,11 +78,7 @@
 	}
 
 	.bh-sl-map-container {
-		clear: left;
-		float: left;
 		margin-top: 27px;
-		height: 530px;
-		width: 875px;
 
 		a {
 			color: @orange;
@@ -135,8 +90,6 @@
 	}
 
 	.bh-sl-loc-list {
-		float: left;
-		width: 30%;
 		height: 530px;
 		overflow-x: auto;
 
@@ -220,8 +173,6 @@
 	}
 
 	.bh-sl-map {
-		float: left;
-		width: 70%;
 		height: 530px;
 	}
 

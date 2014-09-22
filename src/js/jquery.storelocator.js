@@ -194,6 +194,8 @@
 
 		/**
 		 * Destroy
+		 * 
+		 * Note: The Google map is not destroyed here because Google recommends using a single instance and reusing it (it's not really supported)
 		 */
 		destroy: function () {
 			// Reset
@@ -247,7 +249,7 @@
 		},
 
 		/**
-		 * Load templates
+		 * Load templates via Handlebars templates in /templates or inline via IDs
 		 */
 		loadTemplates: function () {
 			var source;
@@ -274,7 +276,8 @@
 
 				}, function () {
 					// KML templates not loaded
-					alert('Error: could not load plugin templates');
+					$('.' + _this.settings.formContainer).append('<div class="bh-sl-error">Error: Could not load plugin templates. Check the paths and ensure they have been uploaded.</div>');
+					throw new Error('Could not load plugin templates');
 				});
 			}
 			// Handle script tag template method
@@ -309,7 +312,8 @@
 
 				}, function () {
 					// JSON/XML templates not loaded
-					alert('Error: could not load plugin templates');
+					$('.' + _this.settings.formContainer).append('<div class="bh-sl-error">Error: Could not load plugin templates. Check the paths and ensure they have been uploaded.</div>');
+					throw new Error('Could not load plugin templates');
 				});
 			}
 		},
@@ -1397,8 +1401,16 @@
 				}
 
 				var map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
+
+				// Re-center the map when the browser is resized
+				google.maps.event.addDomListener(window, 'resize', function() {
+					var center = map.getCenter();
+					google.maps.event.trigger(map, 'resize');
+					map.setCenter(center);
+				});
+				
 				// Load the map
-				$this.data(_this.settings.mapID.replace('#'), map);
+				$this.data(_this.settings.mapID.replace('#', ''), map);
 
 				// Initialize the infowondow
 				var infowindow = new google.maps.InfoWindow();
@@ -1488,8 +1500,7 @@
 					$('.' + _this.settings.locationList + ' ul').append(noResults);
 				}
 				else {
-					$(markers).each(function (x, marker) {
-						var letter = String.fromCharCode('A'.charCodeAt(0) + x);
+					$(markers).each(function (x) {
 						var currentMarker = markers[x];
 						_this.listSetup(currentMarker, storeStart, page);
 					});
