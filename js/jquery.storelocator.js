@@ -62,7 +62,8 @@ $.fn.storeLocator = function(options) {
       'mileLang': 'mile',
       'milesLang': 'miles',
       'kilometerLang': 'kilometer',
-      'kilometersLang': 'kilometers'
+      'kilometersLang': 'kilometers',
+      'alert': function (msg) { alert(msg);}
   }, options);
 
   return this.each(function() {
@@ -170,7 +171,7 @@ $.fn.storeLocator = function(options) {
             mapping(settings.defaultLat, settings.defaultLng, originAddress);
           } else {
             //Unable to geocode
-            alert(settings.addressErrorAlert);
+            settings.alert(settings.addressErrorAlert);
           }
         });
     }
@@ -200,7 +201,7 @@ $.fn.storeLocator = function(options) {
             result.longitude = results[0].geometry.location.lng();
             callbackFunction(result);
           } else {
-            alert(settings.geocodeErrorAlert + status);
+            settings.alert(settings.geocodeErrorAlert + status);
             callbackFunction(null);
           }
         });
@@ -219,7 +220,7 @@ $.fn.storeLocator = function(options) {
                 callbackFunction(result);
             }
           } else {
-            alert(settings.geocodeErrorAlert + status);
+            settings.alert(settings.geocodeErrorAlert + status);
             callbackFunction(null);
           }
         });
@@ -242,14 +243,14 @@ $.fn.storeLocator = function(options) {
           mapping(position.coords.latitude, position.coords.longitude, originAddress);
         } else {
           //Unable to geocode
-          alert(settings.addressErrorAlert);
+          settings.alert(settings.addressErrorAlert);
         }
       });
   }
 
   function autoGeocode_error(error){
     //If automatic detection doesn't work show an error
-    alert(settings.autoGeocodeErrorAlert);
+    settings.alert(settings.autoGeocodeErrorAlert);
   }
 
   //Set up the normal mapping
@@ -270,7 +271,7 @@ $.fn.storeLocator = function(options) {
           mapping(olat, olng, userinput, distance);
         } else {
           //Unable to geocode
-          alert(settings.addressErrorAlert);
+          settings.alert(settings.addressErrorAlert);
         }
       });
     }
@@ -520,13 +521,13 @@ $.fn.storeLocator = function(options) {
           //Check the closest marker
           if(settings.maxDistance === true && firstRun !== true && maxDistance){
             if(locationset[0] === undefined  || locationset[0]['distance'] > maxDistance){
-              alert(settings.distanceErrorAlert + maxDistance + " " + distUnit);
+              settings.alert(settings.distanceErrorAlert + maxDistance + " " + distUnit);
               return;
             }
           }
           else{
             if(settings.distanceAlert !== -1 && locationset[0]['distance'] > settings.distanceAlert){
-              alert(settings.distanceErrorAlert + settings.distanceAlert + " " + distUnit);
+              settings.alert(settings.distanceErrorAlert + settings.distanceAlert + " " + distUnit);
             }
           }
           
