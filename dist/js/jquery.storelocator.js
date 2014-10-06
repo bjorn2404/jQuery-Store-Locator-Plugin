@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-09-21
+/*! jQuery Google Maps Store Locator - v1.4.9 - 2014-10-05
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2014 Bjorn Holine; Licensed MIT */
 
@@ -19,7 +19,7 @@
 	var featuredset = [], locationset = [], normalset = [], markers = [];
 	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {};
 
-	// Create the defaults once. Do not change these settings in this file - settings should be overridden in the plugin call
+	// Create the defaults once. DO NOT change these settings in this file - settings should be overridden in the plugin call
 	var defaults = {
 		'mapID'                    : 'bh-sl-map',
 		'locationList'             : 'bh-sl-loc-list',
@@ -33,6 +33,7 @@
 		},
 		'markerImg'                : null,
 		'markerDim'                : null,
+		'catMarkers'               : null,
 		'lengthUnit'               : 'm',
 		'storeLimit'               : 26,
 		'distanceAlert'            : 60,
@@ -59,7 +60,7 @@
 		'maxDistanceID'            : 'bh-sl-maxdistance',
 		'fullMapStart'             : false,
 		'noForm'                   : false,
-		'loading'                  : false, //TODO: Add loading back
+		'loading'                  : false,
 		'loadingContainer'         : 'bh-sl-loading',
 		'featuredLocations'        : false,
 		'pagination'               : false,
@@ -354,13 +355,24 @@
 
 		/**
 		 * AJAX data request
+		 * 
+		 * @param lat (number)
+		 * @param lng (number)
+		 * @param address (string)
+		 * @returns {*}
 		 */
 		getData: function (lat, lng, address) {
+			var _this = this;
 			var d = $.Deferred();
 			
 			// Before send callback
 			if (this.settings.callbackBeforeSend) {
 				this.settings.callbackBeforeSend.call(this);
+			}
+
+			//Loading
+			if(this.settings.loading === true){
+				$('.' + this.settings.formContainer).append('<div class="' + this.settings.loadingContainer +'"><\/div>');
 			}
 
 			// AJAX request
@@ -377,6 +389,11 @@
 				jsonpCallback: (this.settings.dataType === 'jsonp' ? this.settings.jsonpCallback : null)
 			}).done(function (p) {
 				d.resolve(p);
+
+				//Loading remove
+				if(_this.settings.loading === true){
+					$('.' + _this.settings.formContainer + ' .' + _this.settings.loadingContainer).remove();
+				}
 			}).fail(d.reject);
 			return d.promise();
 		},
@@ -706,28 +723,81 @@
 		},
 
 		/**
+		 * Marker image setup
+		 * 
+		 * @param markerUrl (string) path to marker image
+		 * @param markerWidth (number} width of mearker
+		 * @param markerHeight (number) height of marker
+		 * @returns {object} Google Maps icon object
+		 */
+		markerImage: function (markerUrl, markerWidth, markerHeight) {
+			var markerImg;
+			
+			// User defined marker dimensions
+			if(typeof markerWidth !== 'undefined' && typeof markerHeight !== 'undefined') {
+				markerImg = {
+					url: markerUrl,
+					size: new google.maps.Size(markerWidth, markerHeight)
+				};
+			}
+			// Default marker dimensions: 32px x 32px
+			else {
+				markerImg = {
+					url: markerUrl,
+					size: new google.maps.Size(32, 32)
+				};
+			}
+			
+			return markerImg;
+		},
+
+		/**
 		 * Map marker setup
 		 *
-		 * @param point
-		 * @param name
-		 * @param address
-		 * @param letter
+		 * @param point {object} LatLng of current location
+		 * @param name (string) location name
+		 * @param address (string) location address
+		 * @param letter (string) optional letter used for front-end identification and correlation between list and points
+		 * @param category (string) location category/categories
 		 * @returns {google.maps.Marker}
 		 */
-		createMarker: function (point, name, address, letter, map) {
+		createMarker: function (point, name, address, letter, map, category) {
 			var marker, markerImg, letterMarkerImg;
-
-			if(this.settings.markerImg !== null) {
-				if(this.settings.markerDim !== null) {
-					markerImg = new google.maps.MarkerImage(this.settings.markerImg, null, null, null, new google.maps.Size(this.settings.markerDim.width,this.settings.markerDim.height));
+			var categories = [];
+			
+			// Remove any spaces from category value
+			if(category.length) {
+				category = category.replace(/\s+/g, '');
+			}
+			
+			// Custom multi-marker image override (different markers for different categories
+			if(this.settings.catMarkers !== null) {
+				// Multiple categories
+				if(category.indexOf(',') !== -1) {
+					// Break the category variable into an array if there are multiple categories for the location
+					categories = category.split(',');
+					// With multiple categories the color will be determined by the last matched category in the data
+					for(var i = 0; i < categories.length; i++) {
+						if(categories[i] in this.settings.catMarkers) {
+							markerImg = this.markerImage(this.settings.catMarkers[categories[i]][0], this.settings.catMarkers[categories[i]][1], this.settings.catMarkers[categories[i]][2]);
+						}
+					}
 				}
+				// Single category
 				else {
-					markerImg = new google.maps.MarkerImage(this.settings.markerImg, null, null, null, new google.maps.Size(32,32));
+					if(category in this.settings.catMarkers) {
+						markerImg = this.markerImage(this.settings.catMarkers[category][0], this.settings.catMarkers[category][1], this.settings.catMarkers[category][2]);
+					}
 				}
+			}
+			
+			// Custom single marker image override
+			if(this.settings.markerImg !== null) {
+					markerImg = this.markerImage(this.settings.markerImg, this.settings.markerDim.width, this.settings.markerDim.height);
 			}
 
 			// Create the default markers
-			if (this.settings.storeLimit === -1 || this.settings.storeLimit > 26) {
+			if (this.settings.storeLimit === -1 || this.settings.storeLimit > 26 || this.settings.catMarkers !== null) {
 				marker = new google.maps.Marker({
 					position : point,
 					map      : map,
@@ -737,7 +807,9 @@
 			}
 			else {
 				// Letter markers image
-				letterMarkerImg = new google.maps.MarkerImage('https://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-waypoint-b.png&text=' + letter + '&psize=16&font=fonts/Roboto-Regular.ttf&color=ff333333&ax=44&ay=48');
+				letterMarkerImg = {
+					url: 'https://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-waypoint-b.png&text=' + letter + '&psize=16&font=fonts/Roboto-Regular.ttf&color=ff333333&ax=44&ay=48'
+				};
 				
 				// Letter markers
 				marker = new google.maps.Marker({
@@ -755,8 +827,8 @@
 		 * Define the location data for the templates
 		 *
 		 * @param currentMarker {object} Google Maps marker
-		 * @param storeStart {number} optional first location on the current page
-		 * @param page {number} optional current page
+		 * @param storeStart (number) optional first location on the current page
+		 * @param page (number) optional current page
 		 * @returns {{location: *[]}}
 		 */
 		defineLocationData: function (currentMarker, storeStart, page) {
@@ -1423,15 +1495,12 @@
 					}
 					else{
 						if(_this.settings.originMarkerImg !== null) {
-							if(_this.settings.originMarkerDim !== null) {
-								originImg = new google.maps.MarkerImage(_this.settings.originMarkerImg, null, null, null, new google.maps.Size(_this.settings.originMarkerDim.width,_this.settings.originMarkerDim.height));
-							}
-							else {
-								originImg = new google.maps.MarkerImage(_this.settings.originMarkerImg);
-							}
+							originImg = this.markerImage(_this.settings.originMarkerImg, _this.settings.originMarkerDim.width, _this.settings.originMarkerDim.height);
 						}
 						else {
-							originImg = new google.maps.MarkerImage('https://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-waypoint-a.png');
+							originImg = {
+								url: 'https://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-waypoint-a.png'
+							};
 						}
 
 						marker = new google.maps.Marker({
@@ -1475,8 +1544,9 @@
 						letter = String.fromCharCode('A'.charCodeAt(0) + y);
 					}
 
+					
 					var point = new google.maps.LatLng(locationset[y].lat, locationset[y].lng);
-					marker = _this.createMarker(point, locationset[y].name, locationset[y].address, letter, map);
+					marker = _this.createMarker(point, locationset[y].name, locationset[y].address, letter, map, locationset[y].category);
 					marker.set('id', y);
 					markers[y] = marker;
 					if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined')) {
