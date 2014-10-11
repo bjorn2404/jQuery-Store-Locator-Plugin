@@ -201,6 +201,7 @@
 		destroy: function () {
 			// Reset
 			this.reset();
+			var mapContainer = $('#' + this.settings.mapID);
 
 			// Remove marker event listeners
 			if(markers.length) {
@@ -211,9 +212,8 @@
 			
 			// Remove markup
 			$('.' + this.settings.locationList + ' ul').empty();
-			if($('#' + this.settings.mapID).hasClass('bh-sl-map-open')) {
-				$('#' + this.settings.mapID).empty();
-				$('#' + this.settings.mapID).removeClass('bh-sl-map-open');
+			if(mapContainer.hasClass('bh-sl-map-open')) {
+				mapContainer.empty().removeClass('bh-sl-map-open');
 			}
 			
 			// Remove modal markup
@@ -222,7 +222,7 @@
 			}
 			
 			// Remove map style from cotnainer
-			$('#' + this.settings.mapID).attr('style', '');
+			mapContainer.attr('style', '');
 			
 			// Hide map container
 			$this.hide();
@@ -358,9 +358,9 @@
 		/**
 		 * AJAX data request
 		 * 
-		 * @param lat (number)
-		 * @param lng (number)
-		 * @param address (string)
+		 * @param lat {number}
+		 * @param lng {number}
+		 * @param address {string}
 		 * @returns {*}
 		 */
 		getData: function (lat, lng, address) {
@@ -492,10 +492,10 @@
 			// If show full map option is true
 			if (this.settings.fullMapStart === true) {
 				if(this.settings.querystringParams === true && this.getQueryString(this.settings.addressID) || this.getQueryString(this.settings.searchID)) {
-					this.processForm();
+					this.processForm(null);
 				}
 				else {
-					this.mapping();
+					this.mapping(null);
 				}
 			}
 
@@ -569,7 +569,7 @@
 		/**
 		 * Checks to see if the object is empty. Using this instead of $.isEmptyObject for legacy browser support
 		 *
-		 * @param obj {object} the object to check
+		 * @param obj {Object} the object to check
 		 * @returns {boolean}
 		 */
 		isEmptyObject: function (obj) {
@@ -644,8 +644,10 @@
 			var filterTest = true;
 
 			for (var k in filters) {
-				if (!(new RegExp(filters[k].join(''), 'i').test(data[k]))) {
-					filterTest = false;
+				if (filters.hasOwnProperty(k)) {
+					if (!(new RegExp(filters[k].join(''), 'i').test(data[k]))) {
+						filterTest = false;
+					}
 				}
 			}
 
@@ -727,10 +729,10 @@
 		/**
 		 * Marker image setup
 		 * 
-		 * @param markerUrl (string) path to marker image
-		 * @param markerWidth (number} width of mearker
-		 * @param markerHeight (number) height of marker
-		 * @returns {object} Google Maps icon object
+		 * @param markerUrl {string} path to marker image
+		 * @param markerWidth {number} width of mearker
+		 * @param markerHeight {number} height of marker
+		 * @returns {Object} Google Maps icon object
 		 */
 		markerImage: function (markerUrl, markerWidth, markerHeight) {
 			var markerImg;
@@ -756,11 +758,12 @@
 		/**
 		 * Map marker setup
 		 *
-		 * @param point {object} LatLng of current location
-		 * @param name (string) location name
-		 * @param address (string) location address
-		 * @param letter (string) optional letter used for front-end identification and correlation between list and points
-		 * @param category (string) location category/categories
+		 * @param point {Object} LatLng of current location
+		 * @param name {string} location name
+		 * @param address {string} location address
+		 * @param letter {string} optional letter used for front-end identification and correlation between list and points
+		 * @param map {Object} the Google Map
+		 * @param category {string} location category/categories
 		 * @returns {google.maps.Marker}
 		 */
 		createMarker: function (point, name, address, letter, map, category) {
@@ -828,9 +831,9 @@
 		/**
 		 * Define the location data for the templates
 		 *
-		 * @param currentMarker {object} Google Maps marker
-		 * @param storeStart (number) optional first location on the current page
-		 * @param page (number) optional current page
+		 * @param currentMarker {Object} Google Maps marker
+		 * @param storeStart {number} optional first location on the current page
+		 * @param page {number} optional current page
 		 * @returns {{location: *[]}}
 		 */
 		defineLocationData: function (currentMarker, storeStart, page) {
@@ -884,7 +887,7 @@
 		/**
 		 * Set up the list templates
 		 *
-		 * @param marker {object} Google Maps marker
+		 * @param marker {Object} Google Maps marker
 		 * @param storeStart {number} optional first location on the current page
 		 * @param page {number} optional current page
 		 */
@@ -897,7 +900,15 @@
 			$('.' + this.settings.locationList + ' ul').append(listHtml);
 		},
 
-		// Infowindows
+		/**
+		 * Create the infowindow
+		 * 
+		 * @param marker {Object} Google Maps marker object
+		 * @param location {string} indicates if the list or a map marker was clicked
+		 * @param infowindow Google Maps InfoWindow constructor
+		 * @param storeStart {number}
+		 * @param page {number}
+		 */
 		createInfowindow: function (marker, location, infowindow, storeStart, page) {
 			var _this = this;
 			// Define the location data
@@ -919,12 +930,13 @@
 					// Focus on the list
 					$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
 					var markerId = marker.get('id');
-					$('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']').addClass('list-focus');
+					var selectedLocation = $('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']');
+					selectedLocation.addClass('list-focus');
 
 					// Scroll list to selected marker
-					var container = $('.' + _this.settings.locationList), scrollTo = $('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']');
-					$('.' + _this.settings.locationList).animate({
-						scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
+					var container = $('.' + _this.settings.locationList);
+					container.animate({
+						scrollTop: selectedLocation.offset().top - container.offset().top + container.scrollTop()
 					});
 				});
 			}
@@ -932,6 +944,8 @@
 
 		/**
 		 * HTML5 geocoding function for automatic location detection
+		 * 
+		 * @param position
 		 */
 		autoGeocodeQuery: function (position) {
 			var _this = this;
@@ -948,7 +962,7 @@
 					_this.mapping(mappingObj);
 				} else {
 					// Unable to geocode
-					alert(this.settings.addressErrorAlert);
+					alert(_this.settings.addressErrorAlert);
 				}
 			});
 		},
@@ -956,9 +970,8 @@
 		/**
 		 * Handle autoGeocode failure
 		 *
-		 * @param error
 		 */
-		autoGeocodeError: function (error) {
+		autoGeocodeError: function () {
 			// If automatic detection doesn't work show an error
 			alert(this.settings.autoGeocodeErrorAlert);
 		},
@@ -1123,7 +1136,7 @@
 						_this.mapping(mappingObj);
 					} else {
 						// Unable to geocode
-						alert(this.settings.addressErrorAlert);
+						alert(_this.settings.addressErrorAlert);
 					}
 				});
 			}
@@ -1135,12 +1148,8 @@
 
 		/**
 		 * The primary mapping function that runs everything
-		 *
-		 * @param data {kml,xml,or json} all location data
-		 * @param orig_lat {number} origin latitude
-		 * @param orig_lng {number} origin longitude
-		 * @param origin {string} origin address
-		 * @param maxDistance {number} optional maximum distance
+		 * 
+		 * @param mappingObject {Object} all the mapping properties - latitude, longitude, origin, name, max distance, page
 		 */
 		mapping: function (mappingObject) {
 			var _this = this;
@@ -1189,20 +1198,22 @@
 			 * Process the location data
 			 */
 			originalDataRequest.then(function (data) {
+				var mapContainer = $('#' + _this.settings.mapID);
+				
 				// Callback
 				if (_this.settings.callbackSuccess) {
 					_this.settings.callbackSuccess.call(this);
 				}
 
 				// Set a variable for fullMapStart so we can detect the first run
-				if (_this.settings.fullMapStart === true && $('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === false) {
+				if (_this.settings.fullMapStart === true && mapContainer.hasClass('bh-sl-map-open') === false) {
 					firstRun = true;
 				}
 				else {
 					_this.reset();
 				}
 
-				$('#' + _this.settings.mapID).addClass('bh-sl-map-open');
+				mapContainer.addClass('bh-sl-map-open');
 
 				// Process the location data depending on the data format type
 				if (_this.settings.dataType === 'json' || _this.settings.dataType === 'jsonp') {
@@ -1331,17 +1342,15 @@
 
 					// Filter the data
 					if (!_this.isEmptyObject(taxFilters)) {
-						var filteredset = $.grep(locationset, function (val, i) {
+						locationset = $.grep(locationset, function (val) {
 							return _this.filterData(val, taxFilters);
 						});
-
-						locationset = filteredset;
 					}
 				}
 
 				if (_this.isEmptyObject(locationset)) {
 					// Hide the map and locations if they're showing
-					if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open')) {
+					if (mapContainer.hasClass('bh-sl-map-open')) {
 						$this.hide();
 					}
 
@@ -1369,7 +1378,7 @@
 					});
 
 					// Create array for normal locations
-					normalset = $.grep(locationset, function (val, i) {
+					normalset = $.grep(locationset, function (val) {
 						return val.featured !== 'true';
 					});
 
@@ -1564,10 +1573,11 @@
 				}
 
 				// Create the links that focus on the related marker
-				$('.' + _this.settings.locationList + ' ul').empty();
+				var locList =  $('.' + _this.settings.locationList + ' ul');
+				locList.empty();
 				// Check the locationset and continue with the list setup or show no results message
 				if(locationset[0].lat === 0 && locationset[0].lng === 0) {
-					$('.' + _this.settings.locationList + ' ul').append(noResults);
+					locList.append(noResults);
 				}
 				else {
 					$(markers).each(function (x) {
