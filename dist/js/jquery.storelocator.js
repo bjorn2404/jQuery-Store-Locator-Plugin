@@ -83,6 +83,7 @@
 		'callbackModalOpen'        : null,
 		'callbackModalClose'       : null,
 		'jsonpCallback'            : null,
+		'alert'                    : function (msg) { alert(msg); },
 		// Language options
 		'geocodeErrorAlert'        : 'Geocode was not successful for the following reason: ',
 		'addressErrorAlert'        : 'Unable to find address',
@@ -1735,16 +1736,45 @@
 	});
 
 	// A really lightweight plugin wrapper around the constructor,
-	// preventing against multiple instantiations
+	// preventing against multiple instantiations and allowing any
+	// public function (ie. a function whose name doesn't start
+	// with an underscore) to be called via the jQuery plugin,
+	// e.g. $(element).defaultPluginName('functionName', arg1, arg2)
 	$.fn[ pluginName ] = function (options) {
-		this.each(function () {
-			if (!$.data(this, "plugin_" + pluginName)) {
-				$.data(this, "plugin_" + pluginName, new Plugin(this, options));
-			}
-		});
+		var args = arguments;
+		// Is the first parameter an object (options), or was omitted, instantiate a new instance of the plugin
+		if (options === undefined || typeof options === 'object') {
+			return this.each(function () {
+				// Only allow the plugin to be instantiated once, so we check that the element has no plugin instantiation yet
+				if (!$.data(this, 'plugin_' + pluginName)) {
+					// If it has no instance, create a new one, pass options to our plugin constructor, and store the plugin instance in the elements jQuery data object.
+					$.data(this, 'plugin_' + pluginName, new Plugin( this, options ));
+				}
+			});
+			// Treat this as a call to a public method
+		} else if (typeof options === 'string' && options[0] !== '_' && options !== 'init') {
+			// Cache the method call to make it possible to return a value
+			var returns;
 
-		// chain jQuery functions
-		return this;
+			this.each(function () {
+				var instance = $.data(this, 'plugin_' + pluginName);
+
+				// Tests that there's already a plugin-instance and checks that the requested public method exists
+				if (instance instanceof Plugin && typeof instance[options] === 'function') {
+
+					// Call the method of our plugin instance, and pass it the supplied arguments.
+					returns = instance[options].apply( instance, Array.prototype.slice.call( args, 1 ) );
+				}
+
+				// Allow instances to be destroyed via the 'destroy' method
+				if (options === 'destroy') {
+					$.data(this, 'plugin_' + pluginName, null);
+				}
+			});
+
+			// If the earlier cached method gives a value back return the value, otherwise return this to preserve chainability.
+			return returns !== undefined ? returns : this;
+		}
 	};
 
 
