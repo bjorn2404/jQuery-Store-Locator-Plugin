@@ -9,7 +9,7 @@
 ;(function ($, window, document, undefined) {
 	'use strict';
 
-	var pluginName = "storeLocator";
+	var pluginName = 'storeLocator';
 
 	// Only allow for one instantiation of this script
 	if (typeof $.fn[pluginName] !== 'undefined') {
@@ -78,6 +78,7 @@
 		'listTemplateID'           : null,
 		'infowindowTemplateID'     : null,
 		'taxonomyFilters'          : null,
+		'taxonomyFiltersContainer' : 'bh-sl-filters-container',
 		'querystringParams'        : false,
 		'callbackBeforeSend'       : null,
 		'callbackSuccess'          : null,
@@ -99,6 +100,7 @@
 
 	// Plugin constructor
 	function Plugin(element, options) {
+		$this = $(element);
 		this.element = element;
 		this.settings = $.extend({}, defaults, options);
 		this._defaults = defaults;
@@ -108,6 +110,108 @@
 
 	// Avoid Plugin.prototype conflicts
 	$.extend(Plugin.prototype, {
+		/**
+		 * Init function
+		 */
+		init: function () {
+			// Calculate geocode distance functions
+			if (this.settings.lengthUnit === 'km') {
+				//Kilometers
+				GeoCodeCalc.EarthRadius = 6367.0;
+			}
+			else {
+				// Default is miles
+				GeoCodeCalc.EarthRadius = 3956.0;
+			}
+
+			// KML is read as XML
+			if (this.settings.dataType === 'kml') {
+				dataTypeRead = 'xml';
+			}
+			else {
+				dataTypeRead = this.settings.dataType;
+			}
+
+			// Set up the directionsService if it's true
+			if(this.settings.inlineDirections === true) {
+				directionsDisplay = new google.maps.DirectionsRenderer();
+				directionsService = new google.maps.DirectionsService();
+				$('.' + this.settings.locationList).prepend('<div class="bh-sl-directions-panel"></div>');
+			}
+
+			// Save the original zoom setting so it can be retrieved if taxonomy filtering resets it
+			originalZoom = this.settings.mapSettings.zoom;
+
+			// Add Handlebars helper for handling URL output
+			Handlebars.registerHelper('niceURL', function(url) {
+				if(url){
+					return url.replace('https://', '').replace('http://', '');
+				}
+			});
+
+			// Do taxonomy filtering if set
+			if (this.settings.taxonomyFilters !== null) {
+				this.taxonomyFiltering();
+			}
+
+			// Add modal window divs if set
+			if (this.settings.modal === true) {
+				// Clone the filters if there are any so they can be used in the modal
+				if (this.settings.taxonomyFilters !== null) {
+					// Clone the filters
+					$('.' + this.settings.taxonomyFiltersContainer).clone(true, true).prependTo($this);
+				}
+
+				$this.wrap('<div class="' + this.settings.overlay + '"><div class="' + this.settings.modalWindow + '"><div class="' + this.settings.modalContent + '">');
+				$('.' + this.settings.modalWindow).prepend('<div class="' + this.settings.closeIcon + '"></div>');
+				$('.' + this.settings.overlay).hide();
+			}
+
+			// Load the templates and continue from there
+			this.loadTemplates();
+		},
+
+		/**
+		 * Destroy
+		 *
+		 * Note: The Google map is not destroyed here because Google recommends using a single instance and reusing it (it's not really supported)
+		 */
+		destroy: function () {
+			// Reset
+			this.reset();
+			var $mapDiv = $('#' + this.settings.mapID);
+
+			// Remove marker event listeners
+			if(markers.length) {
+				for(var i = 0; i <= markers.length; i++) {
+					google.maps.event.removeListener(markers[i]);
+				}
+			}
+
+			// Remove markup
+			$('.' + this.settings.locationList + ' ul').empty();
+			if($mapDiv.hasClass('bh-sl-map-open')) {
+				$mapDiv.empty().removeClass('bh-sl-map-open');
+			}
+
+			// Remove modal markup
+			if (this.settings.modal === true) {
+				$('. ' + this.settings.overlay).remove();
+			}
+
+			// Remove map style from cotnainer
+			$mapDiv.attr('style', '');
+
+			// Hide map container
+			$this.hide();
+			// Remove data
+			$.removeData($this.get(0));
+			// Remove namespached events
+			$(document).off(pluginName);
+			// Unbind plugin
+			$this.unbind();
+		},
+		
 		/**
 		 * Reset function
 		 */
@@ -130,108 +234,6 @@
 		},
 		geoCodeCalcCalcDistance: function (lat1, lng1, lat2, lng2, radius) {
 			return radius * 2 * Math.asin(Math.min(1, Math.sqrt(( Math.pow(Math.sin((this.geoCodeCalcDiffRadian(lat1, lat2)) / 2.0), 2.0) + Math.cos(this.geoCodeCalcToRadian(lat1)) * Math.cos(this.geoCodeCalcToRadian(lat2)) * Math.pow(Math.sin((this.geoCodeCalcDiffRadian(lng1, lng2)) / 2.0), 2.0) ))));
-		},
-		
-		/**
-		 * Init function
-		 */
-		init: function () {
-			// Calculate geocode distance functions
-			if (this.settings.lengthUnit === 'km') {
-				//Kilometers
-				GeoCodeCalc.EarthRadius = 6367.0;
-			}
-			else {
-				// Default is miles
-				GeoCodeCalc.EarthRadius = 3956.0;
-			}
-
-			// KML is read as XML
-			if (this.settings.dataType === 'kml') {
-				dataTypeRead = 'xml';
-			}
-			else {
-				dataTypeRead = this.settings.dataType;
-			}
-			
-			// Set up the directionsService if it's true
-			if(this.settings.inlineDirections === true) {
-				directionsDisplay = new google.maps.DirectionsRenderer();
-				directionsService = new google.maps.DirectionsService();
-				$('.' + this.settings.locationList).prepend('<div class="bh-sl-directions-panel"></div>');
-			}
-
-			// Save the original zoom setting so it can be retrieved if taxonomy filtering resets it
-			originalZoom = this.settings.mapSettings.zoom;
-			
-			// Add Handlebars helper for handling URL output
-			Handlebars.registerHelper('niceURL', function(url) {
-				if(url){
-					return url.replace('https://', '').replace('http://', '');
-				}
-			});
-
-			// Do taxonomy filtering if set
-			if (this.settings.taxonomyFilters !== null) {
-				this.taxonomyFiltering();
-			}
-
-			// Add modal window divs if set
-			if (this.settings.modal === true) {
-				// Clone the filters if there are any so they can be used in the modal
-				if (this.settings.taxonomyFilters !== null) {
-					// Clone the filters
-					$('.bh-sl-filters-container').clone(true, true).prependTo($this);
-				}
-			
-				$this.wrap('<div class="' + this.settings.overlay + '"><div class="' + this.settings.modalWindow + '"><div class="' + this.settings.modalContent + '">');
-				$('.' + this.settings.modalWindow).prepend('<div class="' + this.settings.closeIcon + '"></div>');
-				$('.' + this.settings.overlay).hide();
-			}
-			
-			// Load the templates and continue from there
-			this.loadTemplates();
-		},
-
-		/**
-		 * Destroy
-		 * 
-		 * Note: The Google map is not destroyed here because Google recommends using a single instance and reusing it (it's not really supported)
-		 */
-		destroy: function () {
-			// Reset
-			this.reset();
-			var mapContainer = $('#' + this.settings.mapID);
-
-			// Remove marker event listeners
-			if(markers.length) {
-				for(var i = 0; i <= markers.length; i++) {
-					google.maps.event.removeListener(markers[i]);
-				}
-			}
-			
-			// Remove markup
-			$('.' + this.settings.locationList + ' ul').empty();
-			if(mapContainer.hasClass('bh-sl-map-open')) {
-				mapContainer.empty().removeClass('bh-sl-map-open');
-			}
-			
-			// Remove modal markup
-			if (this.settings.modal === true) {
-				$('. ' + this.settings.overlay).remove();
-			}
-			
-			// Remove map style from cotnainer
-			mapContainer.attr('style', '');
-			
-			// Hide map container
-			$this.hide();
-			// Remove data
-			$.removeData($this.get(0));
-			// Remove namespached events
-			$(document).off(pluginName);
-			// Unbind plugin
-			$this.unbind();
 		},
 
 		/**
@@ -702,6 +704,7 @@
 		paginationSetup: function (currentPage) {
 			var pagesOutput = '';
 			var totalPages = locationset.length / this.settings.locationsPerPage;
+			var $paginationList = $('.bh-sl-pagination-container .bh-sl-pagination');
 
 			// Current page check
 			if (typeof currentPage === 'undefined') {
@@ -709,21 +712,20 @@
 			}
 
 			// Initial pagination setup
-			if ($('.bh-sl-pagination-container .bh-sl-pagination').length === 0) {
+			if ($paginationList.length === 0) {
 
 				pagesOutput = this.paginationOutput(currentPage, totalPages);
 			}
 			// Update pagination on page change
 			else {
 				// Remove the old pagination
-				$('.bh-sl-pagination-container .bh-sl-pagination').empty();
+				$paginationList.empty();
 
 				// Add the numbers
 				pagesOutput = this.paginationOutput(currentPage, totalPages);
 			}
 
-			//TODO: Target this better
-			$('.bh-sl-pagination-container .bh-sl-pagination').append(pagesOutput);
+			$paginationList.append(pagesOutput);
 		},
 
 		/**
@@ -930,13 +932,13 @@
 					// Focus on the list
 					$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
 					var markerId = marker.get('id');
-					var selectedLocation = $('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']');
-					selectedLocation.addClass('list-focus');
+					var $selectedLocation = $('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']');
+					$selectedLocation.addClass('list-focus');
 
 					// Scroll list to selected marker
-					var container = $('.' + _this.settings.locationList);
-					container.animate({
-						scrollTop: selectedLocation.offset().top - container.offset().top + container.scrollTop()
+					var $container = $('.' + _this.settings.locationList);
+					$container.animate({
+						scrollTop: $selectedLocation.offset().top - $container.offset().top + $container.scrollTop()
 					});
 				});
 			}
@@ -1079,7 +1081,7 @@
 		/**
 		 * Process the form values and/or query string
 		 *
-		 * @param e {event}
+		 * @param e {Object} event
 		 */
 		processForm: function (e) {
 			var _this = this;
@@ -1198,7 +1200,9 @@
 			 * Process the location data
 			 */
 			originalDataRequest.then(function (data) {
-				var mapContainer = $('#' + _this.settings.mapID);
+				var $mapDiv = $('#' + _this.settings.mapID);
+				// Get the length unit
+				var distUnit = (_this.settings.lengthUnit === 'km') ? _this.settings.kilometersLang : _this.settings.milesLang;
 				
 				// Callback
 				if (_this.settings.callbackSuccess) {
@@ -1206,14 +1210,14 @@
 				}
 
 				// Set a variable for fullMapStart so we can detect the first run
-				if (_this.settings.fullMapStart === true && mapContainer.hasClass('bh-sl-map-open') === false) {
+				if (_this.settings.fullMapStart === true && $mapDiv.hasClass('bh-sl-map-open') === false) {
 					firstRun = true;
 				}
 				else {
 					_this.reset();
 				}
 
-				mapContainer.addClass('bh-sl-map-open');
+				$mapDiv.addClass('bh-sl-map-open');
 
 				// Process the location data depending on the data format type
 				if (_this.settings.dataType === 'json' || _this.settings.dataType === 'jsonp') {
@@ -1350,7 +1354,7 @@
 
 				if (_this.isEmptyObject(locationset)) {
 					// Hide the map and locations if they're showing
-					if (mapContainer.hasClass('bh-sl-map-open')) {
+					if ($mapDiv.hasClass('bh-sl-map-open')) {
 						$this.hide();
 					}
 
@@ -1373,7 +1377,7 @@
 				// Featured locations filtering
 				if (_this.settings.featuredLocations === true) {
 					// Create array for featured locations
-					featuredset = $.grep(locationset, function (val, i) {
+					featuredset = $.grep(locationset, function (val) {
 						return val.featured === 'true';
 					});
 
@@ -1386,9 +1390,6 @@
 					locationset = [];
 					locationset = featuredset.concat(normalset);
 				}
-
-				// Get the length unit
-				var distUnit = (_this.settings.lengthUnit === 'km') ? _this.settings.kilometersLang : _this.settings.milesLang;
 
 				// Check the closest marker
 				if (_this.settings.maxDistance === true && firstRun !== true && maxDistance) {
@@ -1481,6 +1482,7 @@
 					myOptions = _this.settings.mapSettings;
 				}
 
+				// Create the map
 				var map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
 
 				// Re-center the map when the browser is resized
@@ -1635,7 +1637,7 @@
 				});
 
 				// Handle filter updates
-				$('.bh-sl-filters-container').on('change.'+pluginName, 'input, select', function (e) {
+				$('.' + this.settings.taxonomyFiltersContainer).on('change.'+pluginName, 'input, select', function (e) {
 						e.stopPropagation();
 
 						var filterId, filterContainer, filterKey;
@@ -1738,7 +1740,6 @@
 	// preventing against multiple instantiations
 	$.fn[ pluginName ] = function (options) {
 		this.each(function () {
-			$this = $(this);
 			if (!$.data(this, "plugin_" + pluginName)) {
 				$.data(this, "plugin_" + pluginName, new Plugin(this, options));
 			}

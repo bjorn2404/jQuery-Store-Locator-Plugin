@@ -52,6 +52,7 @@
 | listTemplateID | null | ID of list template if using inline Handlebar templates instead of separate files. |
 | infowindowTemplateID | null | ID of infowindow template if using inline Handlebar templates instead of separate files. |
 | taxonomyFilters | null | Filtering object that can be used to set up live filtering (see categories example). |
+| taxonomyFiltersContainer | 'bh-sl-filters-container' | Class of the container around the filters. |
 | querystringParams | false | Set to true to enable query string support for passing input variables from page to page. |
 | callbackBeforeSend | null | Callback |
 | callbackSuccess | null | Callback |
