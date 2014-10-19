@@ -69,3 +69,5 @@
 | kilometersLang | 'kilometers' | Language setting |
 | noResultsTitle | 'No results' | Language setting |
 | noResultsDesc | 'No locations were found with the given criteria. Please modify your selections or input.' | Language setting |
+| nextPage | 'Next &raquo;' | Language setting |
+| prevPage | '&laquo; Prev' | Language setting |

@@ -20,6 +20,10 @@
       throws(block, [expected], [message])
   */
 
+	/**
+	 * This file contains very minimal testing. I may or may not do more extensive tests
+	 */
+
   module('storeLocator', {
     // This will run before each test in this module.
     setup: function() {
@@ -41,7 +45,13 @@
     setup: function() {
       $('#map-container').storeLocator({
 				'infowindowTemplatePath': '../dist/templates/infowindow-description.html',
-				'listTemplatePath': '../dist/templates/location-list-description.html'
+				'listTemplatePath': '../dist/templates/location-list-description.html',
+				'taxonomyFilters': {
+					'category' : 'category-filters-container1',
+					'features' : 'category-filters-container2',
+					'city' : 'city-filter',
+					'postal': 'postal-filter'
+				}
 			});
     },
 
@@ -57,16 +67,16 @@
 		var $this = $('#map-container').data('plugin_storeLocator');
 		var radiansPerDegree = Math.PI / 180;
 
-		deepEqual($this.geoCodeCalcToRadian(0), 0, "Zero test");
-		deepEqual($this.geoCodeCalcToRadian(10), 10 * radiansPerDegree, "Integer test");
-		deepEqual($this.geoCodeCalcToRadian(10.10), 10.10 * radiansPerDegree, "Float test");
+		deepEqual($this.geoCodeCalcToRadian(0), 0, 'Zero test');
+		deepEqual($this.geoCodeCalcToRadian(10), 10 * radiansPerDegree, 'Integer test');
+		deepEqual($this.geoCodeCalcToRadian(10.10), 10.10 * radiansPerDegree, 'Float test');
 	});
 
 	test('geoCodeCalcDiffRadian()', 2, function() {
 		var $this = $('#map-container').data('plugin_storeLocator');
 		
-		deepEqual($this.geoCodeCalcDiffRadian(10, 5), ($this.geoCodeCalcToRadian(5) - $this.geoCodeCalcToRadian(10)), "Integer test");
-		deepEqual($this.geoCodeCalcDiffRadian(10.10, 5.5), ($this.geoCodeCalcToRadian(5.5) - $this.geoCodeCalcToRadian(10.10)), "Float test");
+		deepEqual($this.geoCodeCalcDiffRadian(10, 5), ($this.geoCodeCalcToRadian(5) - $this.geoCodeCalcToRadian(10)), 'Integer test');
+		deepEqual($this.geoCodeCalcDiffRadian(10.10, 5.5), ($this.geoCodeCalcToRadian(5.5) - $this.geoCodeCalcToRadian(10.10)), 'Float test');
 	});
 
 	/**
@@ -77,8 +87,8 @@
 	test('getQueryString()', 2, function() {
 		var $this = $('#map-container').data('plugin_storeLocator');
 
-		deepEqual($this.getQueryString(), undefined, "Empty test");
-		deepEqual($this.getQueryString('bh-sl-address'), 'test', "String test");
+		deepEqual($this.getQueryString(), undefined, 'Empty test');
+		deepEqual($this.getQueryString('bh-sl-address'), 'test', 'String test');
 	});
 
 	/**
@@ -86,7 +96,7 @@
 	 */
 	asyncTest('getData', 1, function() {
 		var $this = $('#map-container').data('plugin_storeLocator');
-		var dataRequest = $this.getData('44.8896866', '-93.34994890000002', 'Edina,MN');
+		var dataRequest = $this._getData('44.8896866', '-93.34994890000002', 'Edina,MN');
 
 		setTimeout(function() {
 			ok(dataRequest.done(), 'Data was called successfully');
@@ -94,4 +104,18 @@
 		}, 1000);
 	});
 
+	/**
+	 * Empty object test
+	 */
+	test('isEmptyObject()', 2, function() {
+		var $this = $('#map-container').data('plugin_storeLocator');
+		var emptyObj = {};
+		var nonEmptyObj = {
+			'test': 'testing'
+		};
+
+		deepEqual($this.isEmptyObject(emptyObj), true, 'Empty object test');
+		deepEqual($this.isEmptyObject(nonEmptyObj), false, 'Empty object fail test');
+	});
+	
 }(jQuery));

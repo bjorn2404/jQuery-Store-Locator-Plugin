@@ -85,7 +85,6 @@
 		'callbackModalOpen'        : null,
 		'callbackModalClose'       : null,
 		'jsonpCallback'            : null,
-		'alert'                    : function (msg) { alert(msg); },
 		// Language options
 		'geocodeErrorAlert'        : 'Geocode was not successful for the following reason: ',
 		'addressErrorAlert'        : 'Unable to find address',
@@ -96,7 +95,9 @@
 		'kilometerLang'            : 'kilometer',
 		'kilometersLang'           : 'kilometers',
 		'noResultsTitle'           : 'No results',
-		'noResultsDesc'            : 'No locations were found with the given criteria. Please modify your selections or input.'
+		'noResultsDesc'            : 'No locations were found with the given criteria. Please modify your selections or input.',
+		'nextPage'                 : 'Next &raquo;',
+		'prevPage'                 : '&laquo; Prev'
 	};
 
 	// Plugin constructor
@@ -111,13 +112,14 @@
 
 	// Avoid Plugin.prototype conflicts
 	$.extend(Plugin.prototype, {
+		
 		/**
 		 * Init function
 		 */
 		init: function () {
 			// Calculate geocode distance functions
 			if (this.settings.lengthUnit === 'km') {
-				//Kilometers
+				// Kilometers
 				GeoCodeCalc.EarthRadius = 6367.0;
 			}
 			else {
@@ -174,7 +176,6 @@
 
 		/**
 		 * Destroy
-		 *
 		 * Note: The Google map is not destroyed here because Google recommends using a single instance and reusing it (it's not really supported)
 		 */
 		destroy: function () {
@@ -223,6 +224,16 @@
 			markers = [];
 			$(document).off('click.'+pluginName, '.' + this.settings.locationList + ' li');
 		},
+
+		/**
+		 * Notifications
+		 * Some errors use alert by default. This overrrideable method allows these notifications to be handled in other ways
+		 * 
+		 * @param notifyText {string} the notification message
+		 */
+		notify: function (notifyText) {
+			alert(notifyText);
+		},
 		
 		/**
 		 * Distance calculations
@@ -258,6 +269,7 @@
 		loadTemplates: function () {
 			var source;
 			var _this = this;
+			var templateError = '<div class="bh-sl-error">Error: Could not load plugin templates. Check the paths and ensure they have been uploaded. Paths will be wrong if you do not run this from a web server.</div>';
 			// Get the KML templates
 			if (this.settings.dataType === 'kml' && this.settings.listTemplateID === null && this.settings.infowindowTemplateID === null) {
 
@@ -280,8 +292,8 @@
 
 				}, function () {
 					// KML templates not loaded
-					$('.' + _this.settings.formContainer).append('<div class="bh-sl-error">Error: Could not load plugin templates. Check the paths and ensure they have been uploaded.</div>');
-					throw new Error('Could not load plugin templates');
+					$('.' + _this.settings.formContainer).append(templateError);
+					throw new Error('Could not load storeLocator plugin templates');
 				});
 			}
 			// Handle script tag template method
@@ -316,8 +328,8 @@
 
 				}, function () {
 					// JSON/XML templates not loaded
-					$('.' + _this.settings.formContainer).append('<div class="bh-sl-error">Error: Could not load plugin templates. Check the paths and ensure they have been uploaded.</div>');
-					throw new Error('Could not load plugin templates');
+					$('.' + _this.settings.formContainer).append(templateError);
+					throw new Error('Could not load storeLocator plugin templates');
 				});
 			}
 		},
@@ -359,14 +371,14 @@
 		},
 
 		/**
-		 * AJAX data request
+		 * AJAX data request - private
 		 * 
-		 * @param lat {number}
-		 * @param lng {number}
-		 * @param address {string}
-		 * @returns {*}
+		 * @param lat {number} latitude
+		 * @param lng {number} longitude
+		 * @param address {string} street address
+		 * @returns {Object} deferred object
 		 */
-		getData: function (lat, lng, address) {
+		_getData: function (lat, lng, address) {
 			var _this = this;
 			var d = $.Deferred();
 			
@@ -375,7 +387,7 @@
 				this.settings.callbackBeforeSend.call(this);
 			}
 
-			//Loading
+			// Loading
 			if(this.settings.loading === true){
 				$('.' + this.settings.formContainer).append('<div class="' + this.settings.loadingContainer +'"><\/div>');
 			}
@@ -395,7 +407,7 @@
 			}).done(function (p) {
 				d.resolve(p);
 
-				//Loading remove
+				// Loading remove
 				if(_this.settings.loading === true){
 					$('.' + _this.settings.formContainer + ' .' + _this.settings.loadingContainer).remove();
 				}
@@ -487,7 +499,7 @@
 						_this.mapping(mappingObj);
 					} else {
 						// Unable to geocode
-						alert(_this.settings.addressErrorAlert);
+						_this.notify(_this.settings.addressErrorAlert);
 					}
 				});
 			}
@@ -529,7 +541,7 @@
 						result.longitude = results[0].geometry.location.lng();
 						callbackFunction(result);
 					} else {
-						alert(_this.settings.geocodeErrorAlert + status);
+						_this.notify(_this.settings.geocodeErrorAlert + status);
 						callbackFunction(null);
 					}
 				});
@@ -551,7 +563,7 @@
 							callbackFunction(result);
 						}
 					} else {
-						alert(_this.settings.geocodeErrorAlert + status);
+						_this.notify(_this.settings.geocodeErrorAlert + status);
 						callbackFunction(null);
 					}
 				});
@@ -639,8 +651,8 @@
 		/**
 		 * Filter the data with Regex
 		 *
-		 * @param data
-		 * @param filters
+		 * @param data {array} data array to check for filter values
+		 * @param filters {Object} taxonomy filters object
 		 * @returns {boolean}
 		 */
 		filterData: function (data, filters) {
@@ -674,7 +686,7 @@
 
 			// Previous page
 			if( currentPage > 0 ) {
-				output += '<li class="bh-sl-next-prev" data-page="' + prevPage + '">&laquo; Prev</li>';
+				output += '<li class="bh-sl-next-prev" data-page="' + prevPage + '">' + this.settings.prevPage + '</li>';
 			}
 
 			// Add the numbers
@@ -691,7 +703,7 @@
 
 			// Next page
 			if( nextPage < totalPages ) {
-				output += '<li class="bh-sl-next-prev" data-page="' + nextPage + '">Next &raquo;</li>';
+				output += '<li class="bh-sl-next-prev" data-page="' + nextPage + '">' + this.settings.nextPage + '</li>';
 			}
 
 			return output;
@@ -767,14 +779,14 @@
 		 * @param letter {string} optional letter used for front-end identification and correlation between list and points
 		 * @param map {Object} the Google Map
 		 * @param category {string} location category/categories
-		 * @returns {google.maps.Marker}
+		 * @returns {Object} Google Maps marker
 		 */
 		createMarker: function (point, name, address, letter, map, category) {
 			var marker, markerImg, letterMarkerImg;
 			var categories = [];
 			
 			// Remove any spaces from category value
-			if(category.length) {
+			if(typeof category !== 'undefined' && category.length) {
 				category = category.replace(/\s+/g, '');
 			}
 			
@@ -837,10 +849,10 @@
 		 * @param currentMarker {Object} Google Maps marker
 		 * @param storeStart {number} optional first location on the current page
 		 * @param page {number} optional current page
-		 * @returns {{location: *[]}}
+		 * @returns {Object} extendded location data object
 		 */
 		defineLocationData: function (currentMarker, storeStart, page) {
-			var indicator = "";
+			var indicator = '';
 			this.createLocationVariables(currentMarker.get('id'));
 
 			var distLength;
@@ -948,7 +960,7 @@
 		/**
 		 * HTML5 geocoding function for automatic location detection
 		 * 
-		 * @param position
+		 * @param position {Object} coordinates
 		 */
 		autoGeocodeQuery: function (position) {
 			var _this = this;
@@ -965,7 +977,7 @@
 					_this.mapping(mappingObj);
 				} else {
 					// Unable to geocode
-					alert(_this.settings.addressErrorAlert);
+					_this.notify(_this.settings.addressErrorAlert);
 				}
 			});
 		},
@@ -976,13 +988,13 @@
 		 */
 		autoGeocodeError: function () {
 			// If automatic detection doesn't work show an error
-			alert(this.settings.autoGeocodeErrorAlert);
+			this.notify(this.settings.autoGeocodeErrorAlert);
 		},
 
 		/**
 		 * Change the page
 		 *
-		 * @param newPage
+		 * @param newPage {number} page to change to
 		 */
 		paginationChange: function (newPage) {
 
@@ -994,7 +1006,7 @@
 		 * Get the address by marker ID
 		 * 
 		 * @param markerID {number} location ID
-		 * @returns {string} Formatted address
+		 * @returns {string} formatted address
 		 */
 		getAddressByMarker: function(markerID) {
 			var formattedAddress = null;
@@ -1023,7 +1035,7 @@
 		 * 
 		 * @param origin {string} origin address
 		 * @param locID {number} location ID
-		 * @param map
+		 * @param map {Object} Google Map
 		 */
 		directionsRequest: function(origin, locID, map) {
 			var destination = this.getAddressByMarker(locID);
@@ -1089,7 +1101,7 @@
 			var distance = null;
 
 			// Stop the form submission
-			if(typeof e !== 'undefined') {
+			if(typeof e !== 'undefined' && e !== null) {
 				e.preventDefault();
 			}
 
@@ -1139,7 +1151,7 @@
 						_this.mapping(mappingObj);
 					} else {
 						// Unable to geocode
-						alert(_this.settings.addressErrorAlert);
+						_this.notify(_this.settings.addressErrorAlert);
 					}
 				});
 			}
@@ -1152,7 +1164,7 @@
 		/**
 		 * The primary mapping function that runs everything
 		 * 
-		 * @param mappingObject {Object} all the mapping properties - latitude, longitude, origin, name, max distance, page
+		 * @param mappingObject {Object} all the potential mapping properties - latitude, longitude, origin, name, max distance, page
 		 */
 		mapping: function (mappingObject) {
 			var _this = this;
@@ -1177,39 +1189,32 @@
 
 			// Data request
 			if (typeof origin === 'undefined' && this.settings.nameSearch === true) {
-				originalDataRequest = _this.getData();
+				originalDataRequest = _this._getData();
 			}
 			else {
 				// Setup the origin point
 				var originPoint = new google.maps.LatLng(orig_lat, orig_lng);
 				
 				// Do the initial data request - doing this in mapping so the lat/lng and address can be passed over and used if needed
-				originalDataRequest = _this.getData(olat, olng, origin);
+				originalDataRequest = _this._getData(olat, olng, origin);
 			}
-
-			// Save data separately so we can avoid multiple AJAX requests
-			originalDataRequest.done(function (data) {
-				// Success callback
-				if (_this.settings.callbackSuccess) {
-					_this.settings.callbackSuccess.call(this);
-				}
-
-				originalData = data;
-			});
 
 			/**
 			 * Process the location data
 			 */
-			originalDataRequest.then(function (data) {
+			originalDataRequest.done(function (data) {
 				var $mapDiv = $('#' + _this.settings.mapID);
 				// Get the length unit
 				var distUnit = (_this.settings.lengthUnit === 'km') ? _this.settings.kilometersLang : _this.settings.milesLang;
+
+				// Save data separately so we can avoid multiple AJAX requests
+				originalData = data;
 				
 				// Callback
 				if (_this.settings.callbackSuccess) {
 					_this.settings.callbackSuccess.call(this);
 				}
-
+				
 				// Set a variable for fullMapStart so we can detect the first run
 				if (_this.settings.fullMapStart === true && $mapDiv.hasClass('bh-sl-map-open') === false) {
 					firstRun = true;
@@ -1353,6 +1358,7 @@
 					}
 				}
 
+				// Handle no results
 				if (_this.isEmptyObject(locationset)) {
 					// Hide the map and locations if they're showing
 					if ($mapDiv.hasClass('bh-sl-map-open')) {
@@ -1395,13 +1401,13 @@
 				// Check the closest marker
 				if (_this.settings.maxDistance === true && firstRun !== true && maxDistance) {
 					if (typeof locationset[0] === 'undefined' || locationset[0].distance > maxDistance) {
-						alert(_this.settings.distanceErrorAlert + maxDistance + ' ' + distUnit);
+						_this.notify(_this.settings.distanceErrorAlert + maxDistance + ' ' + distUnit);
 						return;
 					}
 				}
 				else {
 					if (_this.settings.distanceAlert !== -1 && locationset[0].distance > _this.settings.distanceAlert) {
-						alert(_this.settings.distanceErrorAlert + _this.settings.distanceAlert + ' ' + distUnit);
+						_this.notify(_this.settings.distanceErrorAlert + _this.settings.distanceAlert + ' ' + distUnit);
 					}
 				}
 
@@ -1549,7 +1555,7 @@
 
 				// Add markers and infowindows loop
 				for (var y = 0; y <= storeNumToShow - 1; y++) {
-					var letter = "";
+					var letter = '';
 
 					if (page > 0) {
 						letter = String.fromCharCode('A'.charCodeAt(0) + (storeStart + y));
@@ -1557,7 +1563,6 @@
 					else {
 						letter = String.fromCharCode('A'.charCodeAt(0) + y);
 					}
-
 					
 					var point = new google.maps.LatLng(locationset[y].lat, locationset[y].lng);
 					marker = _this.createMarker(point, locationset[y].name, locationset[y].address, letter, map, locationset[y].category);
