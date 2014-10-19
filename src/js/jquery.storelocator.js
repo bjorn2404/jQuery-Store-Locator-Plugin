@@ -171,7 +171,7 @@
 			}
 
 			// Load the templates and continue from there
-			this.loadTemplates();
+			this._loadTemplates();
 		},
 
 		/**
@@ -266,7 +266,7 @@
 		/**
 		 * Load templates via Handlebars templates in /templates or inline via IDs
 		 */
-		loadTemplates: function () {
+		_loadTemplates: function () {
 			var source;
 			var _this = this;
 			var templateError = '<div class="bh-sl-error">Error: Could not load plugin templates. Check the paths and ensure they have been uploaded. Paths will be wrong if you do not run this from a web server.</div>';

@@ -1,14 +1,52 @@
 # [jQuery Google Maps Store Locator Plugin](http://www.bjornblog.com/web/jquery-store-locator-plugin)
 
+### The files you're looking for are in the dist/ directory
 ### [Please see my blog for more information and examples](http://www.bjornblog.com/web/jquery-store-locator-plugin).
 
-This jQuery plugin takes advantage of Google Maps API version 3 to create an easy to implement store locator. No back-end programming is required, you just need to feed it KML, XML, or JSON data with all the location information. How you create the data file is up to you. I originally created this for a company that didn’t have many locations, so I just used a static XML file. I also decided to geocode all the locations beforehand, to make sure it was quick and to avoid any potential geocoding errors. However, if you’re familiar with JavaScript you could easily make a modification to geocode everything on the fly (I may add this as an option at some point). 
+This jQuery plugin takes advantage of Google Maps API version 3 to create an easy to implement store locator. No 
+back-end programming is required, you just need to feed it KML, XML, or JSON data with all the location information. 
+How you create the data file is up to you. I originally created this for a company that didn’t have many locations, so I 
+just used a static XML file. You will need to geocode your locations beforehand or use a geocoding API service if
+you want to try to do it on the fly. The reason for this is that all free geocoding APIs have strict limits that would
+easily be exceeded. In the end, you're much better off storing the coordinates versus having to look them up for each
+location on each request.
 
-A note on the distance calculation: this plugin currently uses a distance function that was originally programmed by [Chris Pietschmann](http://pietschsoft.com/post/2008/02/01/Calculate-Distance-Between-Geocodes-in-C-and-JavaScript.aspx). Google Maps API version 3 does include a distance calculation service ([Google Distance Matrix API](http://code.google.com/apis/maps/documentation/distancematrix/)) but I decided not to use it because of the current request limits, which seem somewhat low. In addition, because the plugin currently calculates each location’s distance one by one, it appeared that I would have to re-structure some things to make all the distance calculations at once (or risk making many request for one location lookup). So, the distance calculation is “as the crow flies” instead of a road distance.
+A note on the distance calculation: this plugin currently uses a distance function that I found on the blog of 
+[Chris Pietschmann](http://pietschsoft.com/post/2008/02/01/Calculate-Distance-Between-Geocodes-in-C-and-JavaScript.aspx). 
+Google Maps API version 3 does include a distance calculation service 
+([Google Distance Matrix API](http://code.google.com/apis/maps/documentation/distancematrix/)) but I decided not to use 
+it because of the current request limits, which seem somewhat low. For v2 I also tried experimenting with the Directions API to request distances but also found the limits to be too restrictive. So, the distance calculation is “as the crow flies” instead of a 
+road distance calculation. However, if you use the inline directions option that does provide the distance that's returned via the directions request.
 
-Handlebars is now required: It’s very important to note that the plugin now requires the Handlebars template engine. I made this change so that the data that’s displayed in the location list and the infowindows can be easily customized. I also wanted to separate the bulk of the layout additions from the main plugin file. Handlebars pretty slick, will read Mustache templates, and the built-in helpers can really come in handy. Depending on what your data source is, 2 of the 4 total templates will be used (KML vs XML or JSON) and there are options to set the paths of each template if you don’t want them in the default location. If you’re developing something for mobile devices the templates can be pre-compiled for even faster loading.
+Last, it’s very important to note that the plugin requires the Handlebars template engine. This separates the markup of the 
+infowindows and location list elements so that they can easily be restructred. Handlebars pretty slick, will read 
+Mustache templates, and the built-in helpers really come in handy. Depending on what your data source is, 2 of the 
+4 total templates will be used (KML vs XML or JSON) and there are options to set the paths of each template if you don’t 
+want them in the default location. If you’re developing something for mobile devices the templates can be pre-compiled 
+for even faster loading.
 
 ## Changelog
+
+### Version 2.0.0
+
+Version 2 is a complete rewrite of the plugin based on the "basic" plugin pattern of the 
+[jQuery Boilerplate](http://jqueryboilerplate.com/). The overall file structure has changed, several of the [plugin 
+settings](options.md) have changed and all of the CSS is now prefixed to avoid potential collisions. In other words, 
+you're not going to be able to simply replace the main plugin file to upgrade to the latest version. I've been working
+on this update off and on for the past six months, so a lot has changed. I've also added many new features based on the most common requests I've received.
+
+* [Grunt](http://gruntjs.com/) is now utilized to minify and compile the plugin and CSS. You only need to worry about running this if you're doing extensive modifications or are interested in submitting a pull request.
+* Plugin file structure and programming pattern have been reworked to follow the [basic jQuery Boilerplate pattern](https://github.com/jquery-boilerplate/jquery-patterns/blob/master/patterns/jquery.basic.plugin-boilerplate.js)
+* Almost all of the methods are public and can be overwritten
+* Google Maps settings are now exposed as a setting. Instead of trying to modify the plugin to make Google Maps settings changes simply use the mapSettings option to override.
+* Added inline directions option
+* Added multi-group live filtering via regex for quick category, etc. filtering.
+* Added option to search locations by name
+* Added option to set custom markers by category
+* Added option for paginating results
+* Added responsive Bootstrap example
+* Added region biasing setting to handle region/country select field
+* Added coordinates and address (user input) to primary AJAX GET request for better back-end integration
 
 ### Version 1.4.9
 
