@@ -16,7 +16,7 @@
 		return;
 	}
 
-	// Variables used across multiple functions		
+	// Variables used across multiple methods		
 	var $this, listTemplate, infowindowTemplate, dataTypeRead, originalData, originalDataRequest, originalZoom, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService;
 	var featuredset = [], locationset = [], normalset = [], markers = [];
 	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {};
@@ -71,10 +71,10 @@
 		'nameSearch'               : false,
 		'searchID'                 : 'bh-sl-search',
 		'nameAttribute'            : 'name',
-		'infowindowTemplatePath'   : 'templates/infowindow-description.html',
-		'listTemplatePath'         : 'templates/location-list-description.html',
-		'KMLinfowindowTemplatePath': 'templates/kml-infowindow-description.html',
-		'KMLlistTemplatePath'      : 'templates/kml-location-list-description.html',
+		'infowindowTemplatePath'   : 'assets/js/plugins/storeLocator/templates/infowindow-description.html',
+		'listTemplatePath'         : 'assets/js/plugins/storeLocator/templates/location-list-description.html',
+		'KMLinfowindowTemplatePath': 'assets/js/plugins/storeLocator/templates/kml-infowindow-description.html',
+		'KMLlistTemplatePath'      : 'assets/js/plugins/storeLocator/templates/kml-location-list-description.html',
 		'listTemplateID'           : null,
 		'infowindowTemplateID'     : null,
 		'taxonomyFilters'          : null,

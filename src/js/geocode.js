@@ -18,11 +18,11 @@ function GoogleGeocode() {
 
 //Process form input
 $(function() {
-  $('#user-location').on('submit', function(e){
+  $('#bh-sl-user-location').on('submit', function(e){
     //Stop the form submission
     e.preventDefault();
     //Get the user input and use it
-    var userinput = $('form #address').val();
+    var userinput = $('form #bh-sl-address').val();
 
     if (userinput === "")
       {
@@ -33,9 +33,9 @@ $(function() {
       var address = userinput;
 
       g.geocode(address, function(data) {
-        if(data != null) {
-          olat = data.latitude;
-          olng = data.longitude;
+        if(data !== null) {
+          var olat = data.latitude;
+          var olng = data.longitude;
           
           $('#geocode-result').append("Latitude: " + olat + "<br />" + "Longitude: " + olng + "<br /><br />");
 

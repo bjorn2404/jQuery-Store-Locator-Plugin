@@ -16,8 +16,8 @@ module.exports = function (grunt) {
 		less     : {
 			dist: {
 				files: {
-					'dist/css/storelocator.css' : 'src/css/storelocator.less',
-					'dist/css/bootstrap-example.css' : 'src/css/bootstrap-example.less'
+					'dist/assets/css/storelocator.css' : 'src/css/storelocator.less',
+					'dist/assets/css/bootstrap-example.css' : 'src/css/bootstrap-example.less'
 				}
 			}
 		},
@@ -27,15 +27,15 @@ module.exports = function (grunt) {
 			},
 			dist   : {
 				src : ['src/js/jquery.<%= pkg.name %>.js'],
-				dest: 'dist/js/jquery.<%= pkg.name %>.js'
+				dest: 'dist/assets/js/plugins/storeLocator/jquery.<%= pkg.name %>.js'
 			}
 		},
 		uglify   : {
 			dist: {
 				files: {
-					'dist/js/jquery.<%= pkg.name %>.min.js': '<%= concat.dist.dest %>',
-					'dist/js/handlebars.min.js'            : 'libs/handlebars/*.js',
-					'dist/js/geocode.min.js'               : 'src/js/geocode.js'
+					'dist/assets/js/plugins/storeLocator/jquery.<%= pkg.name %>.min.js': '<%= concat.dist.dest %>',
+					'dist/assets/js/libs/handlebars.min.js'            : 'libs/handlebars/*.js',
+					'dist/assets/js/geocode.min.js'               : 'src/js/geocode.js'
 				}
 			}
 		},
@@ -73,16 +73,16 @@ module.exports = function (grunt) {
 					banner  : '<%= banner %>'
 				},
 				files  : {
-					'dist/js/jquery.<%= pkg.name %>.js'    : 'dist/js/jquery.<%= pkg.name %>.js',
-					'dist/js/jquery.<%= pkg.name %>.min.js': 'dist/js/jquery.<%= pkg.name %>.min.js'
+					'dist/assets/js/plugins/storeLocator/jquery.<%= pkg.name %>.js'    : 'dist/assets/js/plugins/storeLocator/jquery.<%= pkg.name %>.js',
+					'dist/assets/js/plugins/storeLocator/jquery.<%= pkg.name %>.min.js': 'dist/assets/js/plugins/storeLocator/jquery.<%= pkg.name %>.min.js'
 				}
 			}
 		},
 		cssmin   : {
 			dist: {
 				files: {
-					'dist/css/storelocator.min.css': 'dist/css/storelocator.css',
-					'dist/css/bootstrap-example.min.css': 'dist/css/bootstrap-example.css'
+					'dist/assets/css/storelocator.min.css': 'dist/assets/css/storelocator.css',
+					'dist/assets/css/bootstrap-example.min.css': 'dist/assets/css/bootstrap-example.css'
 				}
 			}
 		},
@@ -118,7 +118,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 
 	// Default task.
-	grunt.registerTask('default', ['jshint', 'qunit', 'less', 'concat', 'uglify', 'usebanner', 'cssmin']);
+	//grunt.registerTask('default', ['jshint', 'qunit', 'less', 'concat', 'uglify', 'usebanner', 'cssmin']);
 	// Build
 	grunt.registerTask('build', ['less', 'concat', 'uglify', 'usebanner', 'cssmin']);
 	//Watch src build
