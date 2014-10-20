@@ -33,7 +33,7 @@ Version 2 is a complete rewrite of the plugin based on the "basic" plugin patter
 [jQuery Boilerplate](http://jqueryboilerplate.com/). The overall file structure has changed, several of the [plugin 
 settings](options.md) have changed and all of the CSS is now prefixed to avoid potential collisions. In other words, 
 you're not going to be able to simply replace the main plugin file to upgrade to the latest version. I've been working
-on this update off and on for the past six months, so a lot has changed. I've also added many new features based on the most common requests I've received.
+on this update off and on for the past six months, so a lot has changed. I've also added many new features based on the most common requests I've received. The following list doesn't cover everything that's new but all of the important items to note:
 
 * [Grunt](http://gruntjs.com/) is now utilized to minify and compile the plugin and CSS. You only need to worry about running this if you're doing extensive modifications or are interested in submitting a pull request.
 * Plugin file structure and programming pattern have been reworked to follow the [basic jQuery Boilerplate pattern](https://github.com/jquery-boilerplate/jquery-patterns/blob/master/patterns/jquery.basic.plugin-boilerplate.js)

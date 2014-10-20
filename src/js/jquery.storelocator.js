@@ -17,7 +17,7 @@
 	}
 
 	// Variables used across multiple methods		
-	var $this, listTemplate, infowindowTemplate, dataTypeRead, originalData, originalDataRequest, originalZoom, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService;
+	var $this, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalDataRequest, originalZoom, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService;
 	var featuredset = [], locationset = [], normalset = [], markers = [];
 	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {};
 
@@ -264,7 +264,7 @@
 		},
 
 		/**
-		 * Load templates via Handlebars templates in /templates or inline via IDs
+		 * Load templates via Handlebars templates in /templates or inline via IDs - private
 		 */
 		_loadTemplates: function () {
 			var source;
@@ -436,6 +436,7 @@
 
 		/**
 		 * Check for existing filter selections
+		 * 
 		 */
 		checkFilters: function () {
 			$.each(this.settings.taxonomyFilters, function (k, v) {
@@ -1195,8 +1196,15 @@
 				// Setup the origin point
 				var originPoint = new google.maps.LatLng(orig_lat, orig_lng);
 				
-				// Do the initial data request - doing this in mapping so the lat/lng and address can be passed over and used if needed
-				originalDataRequest = _this._getData(olat, olng, origin);
+				// If the origin hasn't changed use the existing data so we aren't making unneeded AJAX requests
+				if((typeof originalOrigin !== 'undefined') && (origin === originalOrigin) && (typeof originalData !== 'undefined')) {
+					origin = originalOrigin;
+					originalDataRequest = originalData;
+				}
+				else {
+					// Do the data request - doing this in mapping so the lat/lng and address can be passed over and used if needed
+					originalDataRequest = _this._getData(olat, olng, origin);
+				}
 			}
 
 			/**
@@ -1207,8 +1215,9 @@
 				// Get the length unit
 				var distUnit = (_this.settings.lengthUnit === 'km') ? _this.settings.kilometersLang : _this.settings.milesLang;
 
-				// Save data separately so we can avoid multiple AJAX requests
-				originalData = data;
+				// Save data and origin separately so we can potentially avoid multiple AJAX requests
+				originalData = originalDataRequest;
+				originalOrigin = origin;
 				
 				// Callback
 				if (_this.settings.callbackSuccess) {
@@ -1663,7 +1672,6 @@
 												// Add ids to the filter arrays as they are checked
 												filters[filterKey].push(filterId);
 												if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
-														_this.reset();
 														if ((olat) && (olng)) {
 																_this.settings.mapSettings.zoom = 0;
 																_this.processForm();
@@ -1679,7 +1687,6 @@
 												if (filterIndex > -1) {
 														filters[filterKey].splice(filterIndex, 1);
 														if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
-																_this.reset();
 																if ((olat) && (olng)) {
 																		if (_this.countFilters() === 0) {
 																				_this.settings.mapSettings.zoom = originalZoom;
@@ -1711,7 +1718,6 @@
 										if (filterKey) {
 												filters[filterKey] = [filterId];
 												if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
-														_this.reset();
 														if ((olat) && (olng)) {
 																_this.settings.mapSettings.zoom = 0;
 																_this.processForm();
