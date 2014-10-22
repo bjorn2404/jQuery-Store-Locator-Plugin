@@ -21,7 +21,8 @@
   */
 
 	/**
-	 * This file contains very minimal testing. I may or may not do more extensive tests
+	 * This file contains very minimal testing. I may or may not do more extensive tests -
+	 * more or lesss playing around with it for the frist time
 	 */
 
   module('storeLocator', {
@@ -34,8 +35,8 @@
   test('is chainable', 1, function() {
     // Not a bad test to run on collection methods.
     strictEqual(this.elems.storeLocator({
-			'infowindowTemplatePath': '../dist/templates/infowindow-description.html',
-			'listTemplatePath': '../dist/templates/location-list-description.html'
+			'infowindowTemplatePath': '../dist/assets/js/plugins/storeLocator/templates/infowindow-description.html',
+			'listTemplatePath': '../dist/assets/js/plugins/storeLocator/templates/location-list-description.html'
 		}), this.elems, 'Should be chainable');
   });
 
@@ -44,8 +45,8 @@
     // This will run before each test in this module.
     setup: function() {
       $('#map-container').storeLocator({
-				'infowindowTemplatePath': '../dist/templates/infowindow-description.html',
-				'listTemplatePath': '../dist/templates/location-list-description.html',
+				'infowindowTemplatePath': '../dist/assets/js/plugins/storeLocator/templates/infowindow-description.html',
+				'listTemplatePath': '../dist/assets/js/plugins/storeLocator/templates/location-list-description.html',
 				'taxonomyFilters': {
 					'category' : 'category-filters-container1',
 					'features' : 'category-filters-container2',
