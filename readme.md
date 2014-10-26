@@ -19,7 +19,7 @@ it because of the current request limits, which seem somewhat low. For v2 I also
 road distance calculation. However, if you use the inline directions option that does provide the distance that's returned via the directions request.
 
 Last, it’s very important to note that the plugin requires the Handlebars template engine. This separates the markup of the 
-infowindows and location list elements so that they can easily be restructred. Handlebars pretty slick, will read 
+infowindows and location list elements so that they can easily be restructured. Handlebars pretty slick, will read 
 Mustache templates, and the built-in helpers really come in handy. Depending on what your data source is, 2 of the 
 4 total templates will be used (KML vs XML or JSON) and there are options to set the paths of each template if you don’t 
 want them in the default location. If you’re developing something for mobile devices the templates can be pre-compiled 
@@ -47,6 +47,7 @@ on this update off and on for the past six months, so a lot has changed. I've al
 * Added responsive Bootstrap example
 * Added region biasing setting to handle region/country select field
 * Added coordinates and address (user input) to primary AJAX GET request for better back-end integration
+* Added option to check for query string parameters
 
 ### Version 1.4.9
 

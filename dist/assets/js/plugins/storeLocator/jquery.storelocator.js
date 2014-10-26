@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.0.0 - 2014-10-21
+/*! jQuery Google Maps Store Locator - v2.0.0 - 2014-10-26
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2014 Bjorn Holine; Licensed MIT */
 
@@ -1181,6 +1181,38 @@
 		},
 
 		/**
+		 * Checks distance of each location and setups up the locationset array
+		 * 
+		 * @param data {Object} location data object
+		 * @param l {number} iterator from the loop processing the data in the mapping function below
+		 * @param lat {number} origin latitude
+		 * @param lng {number} origin longitude
+		 * @param firstRun {boolean} inital load check
+		 * @param origin {string} origin address
+		 * @param maxDistance {number} maximum distance if set
+		 */
+		locationsSetup: function (data, l, lat, lng, firstRun, origin, maxDistance) {
+			if (typeof origin !== 'undefined') {
+				if (!data.distance) {
+					data.distance = this.geoCodeCalcCalcDistance(lat, lng, data.lat, data.lng, GeoCodeCalc.EarthRadius);
+				}
+			}
+
+			// Create the array
+			if (this.settings.maxDistance === true && firstRun !== true && maxDistance !== null) {
+				if (data.distance < maxDistance) {
+					locationset[l] = data;
+				}
+				else {
+					return;
+				}
+			}
+			else {
+				locationset[l] = data;
+			}
+		},
+
+		/**
 		 * The primary mapping function that runs everything
 		 * 
 		 * @param mappingObject {Object} all the potential mapping properties - latitude, longitude, origin, name, max distance, page
@@ -1254,40 +1286,23 @@
 
 				// Process the location data depending on the data format type
 				if (_this.settings.dataType === 'json' || _this.settings.dataType === 'jsonp') {
+					
 					// Process JSON
-					$.each(data, function () {
-						var key, value, locationData = {};
+					for(var x = 0; i < data.length; x++){
+						var obj = data[x];
+						var locationData = {};
 
 						// Parse each data variable
-						for (key in this) {
-							if (this.hasOwnProperty(key)) {
-								value = this[key];
-
-								locationData[key] = value;
+						for (var key in obj) {
+							if (obj.hasOwnProperty(key)) {
+								locationData[key] = obj[key];
 							}
 						}
 
-						if (typeof origin !== 'undefined') {
-							if (!locationData.distance) {
-								locationData.distance = _this.geoCodeCalcCalcDistance(orig_lat, orig_lng, locationData.lat, locationData.lng, GeoCodeCalc.EarthRadius);
-							}
-						}
-
-						// Create the array
-						if (_this.settings.maxDistance === true && firstRun !== true && maxDistance !== null) {
-							if (locationData.distance < maxDistance) {
-								locationset[i] = locationData;
-							}
-							else {
-								return;
-							}
-						}
-						else {
-							locationset[i] = locationData;
-						}
+						_this.locationsSetup(locationData, i, orig_lat, orig_lng, firstRun, origin, maxDistance);
 
 						i++;
-					});
+					}
 				}
 				else if (_this.settings.dataType === 'kml') {
 					// Process KML
@@ -1299,24 +1314,7 @@
 							'description': $(this).find('description').text()
 						};
 
-						if (typeof origin !== 'undefined') {
-							if (!locationData.distance) {
-								locationData.distance = _this.geoCodeCalcCalcDistance(orig_lat, orig_lng, locationData.lat, locationData.lng, GeoCodeCalc.EarthRadius);
-							}
-						}
-
-						// Create the array
-						if (_this.settings.maxDistance === true && firstRun !== true && maxDistance) {
-							if (locationData.distance < maxDistance) {
-								locationset[i] = locationData;
-							}
-							else {
-								return;
-							}
-						}
-						else {
-							locationset[i] = locationData;
-						}
+						_this.locationsSetup(locationData, i, orig_lat, orig_lng, firstRun, origin, maxDistance);
 
 						i++;
 					});
@@ -1325,29 +1323,14 @@
 					// Process XML
 					$(data).find(_this.settings.xmlElement).each(function () {
 						var locationData = {};
-						
-						$.each(this.attributes, function (i, attrib) {
-							locationData[attrib.name] = attrib.value;
-						});
 
-						if (typeof origin !== 'undefined') {
-							if (!locationData.distance) {
-								locationData.distance = _this.geoCodeCalcCalcDistance(orig_lat, orig_lng, locationData.lat, locationData.lng, GeoCodeCalc.EarthRadius);
+						for (var key in this.attributes) {
+							if (this.attributes.hasOwnProperty(key)) {
+								locationData[this.attributes[key].name] = this.attributes[key].value;
 							}
 						}
 
-						// Create the array
-						if (_this.settings.maxDistance === true && firstRun !== true && maxDistance) {
-							if (locationData.distance < maxDistance) {
-								locationset[i] = locationData;
-							}
-							else {
-								return;
-							}
-						}
-						else {
-							locationset[i] = locationData;
-						}
+						_this.locationsSetup(locationData, i, orig_lat, orig_lng, firstRun, origin, maxDistance);
 
 						i++;
 					});
