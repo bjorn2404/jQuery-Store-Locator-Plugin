@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.0.0 - 2014-10-26
+/*! jQuery Google Maps Store Locator - v2.0.0 - 2014-10-28
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2014 Bjorn Holine; Licensed MIT */
 
@@ -414,92 +414,6 @@
 		},
 
 		/**
-		 * Count the selected filters
-		 *
-		 * @returns {number}
-		 */
-		countFilters: function () {
-			var filterCount = 0;
-
-			if (!this.isEmptyObject(filters)) {
-				for (var key in filters) {
-					if (filters.hasOwnProperty(key)) {
-						filterCount += filters[key].length;
-					}
-				}
-			}
-
-			return filterCount;
-		},
-
-		/**
-		 * Find the existing checked boxes for each checkbox filter
-		 *
-		 * @param key {string} object key
-		 */
-		existingCheckedFilters: function(key) {
-			$(this.settings.taxonomyFilters[key] + ' input[type=checkbox]').each(function () {
-				if ($(this).prop('checked')) {
-					var filterVal = $(this).attr('id');
-
-					// Only add the taxonomy id if it doesn't already exist
-					if (filters[key].indexOf(filterVal) === -1) {
-						filters[key].push(filterVal);
-					}
-				}
-			});
-		},
-
-		/**
-		 * Find the existing selected value for each select filter
-		 *
-		 * @param key {string} object key
-		 */
-		existingSelectedFilters: function(key) {
-			$(this.settings.taxonomyFilters[key] + ' select').each(function () {
-				var filterVal = $(this).attr('id');
-
-				// Only add the taxonomy id if it doesn't already exist
-				if (filters[key].indexOf(filterVal) === -1) {
-					filters[key].push(filterVal);
-				}
-			});
-		},
-
-		/**
-		 * Check for existing filter selections
-		 * 
-		 */
-		checkFilters: function () {
-			for(var key in this.settings.taxonomyFilters) {
-				if(this.settings.taxonomyFilters.hasOwnProperty(key)) {
-					// Find the existing checked boxes for each checkbox filter
-					this.existingCheckedFilters(key);
-
-					// Find the existing selected value for each select filter
-					this.existingSelectedFilters(key);
-				}
-			}
-		},
-
-		/**
-		 * Get the filter key from the taxonomyFilter setting
-		 *
-		 * @param filterContainer {string} ID of the changed filter's container
-		 */
-		getFilterKey: function (filterContainer) {
-			for (var key in this.settings.taxonomyFilters) {
-				if (this.settings.taxonomyFilters.hasOwnProperty(key)) {
-					for (var i = 0; i < this.settings.taxonomyFilters[key].length; i++) {
-						if (this.settings.taxonomyFilters[key] === filterContainer) {
-							return key;
-						}
-					}
-				}
-			}
-		},
-
-		/**
 		 * Checks for default location, full map, and HTML5 geolocation settings
 		 */
 		start: function () {
@@ -613,6 +527,26 @@
 				}
 			}
 			return true;
+		},
+
+		/**
+		 * Checks to see if all the perperty values in the object are empty
+		 * 
+		 * @param obj {Object} the object to check
+		 * @returns {boolean}
+		 */
+		hasEmptyObjectVals: function (obj) {
+				var objTest = true;
+
+				for(var key in obj) {
+					if(obj.hasOwnProperty(key)) {
+						if(obj[key] !== '' && obj[key].length !== 0) {
+							objTest = false;
+						}
+					}
+				}
+
+				return objTest;
 		},
 
 		/**
@@ -1213,6 +1147,224 @@
 		},
 
 		/**
+		 * Count the selected filters
+		 *
+		 * @returns {number}
+		 */
+		countFilters: function () {
+			var filterCount = 0;
+
+			if (!this.isEmptyObject(filters)) {
+				for (var key in filters) {
+					if (filters.hasOwnProperty(key)) {
+						filterCount += filters[key].length;
+					}
+				}
+			}
+
+			return filterCount;
+		},
+
+		/**
+		 * Find the existing checked boxes for each checkbox filter
+		 *
+		 * @param key {string} object key
+		 */
+		existingCheckedFilters: function(key) {
+			$('#' + this.settings.taxonomyFilters[key] + ' input[type=checkbox]').each(function () {
+				if ($(this).prop('checked')) {
+					var filterVal = $(this).val();
+
+					// Only add the taxonomy id if it doesn't already exist
+					if (typeof filterVal !== 'undefined' && filterVal !== '' && filters[key].indexOf(filterVal) === -1) {
+						filters[key].push(filterVal);
+					}
+				}
+			});
+		},
+
+		/**
+		 * Find the existing selected value for each select filter
+		 *
+		 * @param key {string} object key
+		 */
+		existingSelectedFilters: function(key) {
+			$('#' + this.settings.taxonomyFilters[key] + ' select').each(function () {
+				var filterVal = $(this).val();
+				
+				// Only add the taxonomy id if it doesn't already exist
+				if (typeof filterVal !== 'undefined' && filterVal !== '' &&  filters[key].indexOf(filterVal) === -1) {
+					filters[key] = [filterVal];
+				}
+			});
+		},
+
+		/**
+		 * Find the existing selected value for each radio button filter
+		 * 
+		 * @param key {string} object key
+		 */
+		existingRadioFilters: function(key) {
+			$('#' + this.settings.taxonomyFilters[key] + ' input[type=radio]').each(function () {
+				if ($(this).prop('checked')) {
+					var filterVal = $(this).val();
+
+					// Only add the taxonomy id if it doesn't already exist
+					if (typeof filterVal !== 'undefined' && filterVal !== '' && filters[key].indexOf(filterVal) === -1) {
+						filters[key] = [filterVal];
+					}
+				}
+			});
+		},
+
+		/**
+		 * Check for existing filter selections
+		 *
+		 */
+		checkFilters: function () {
+			for(var key in this.settings.taxonomyFilters) {
+				if(this.settings.taxonomyFilters.hasOwnProperty(key)) {
+					// Find the existing checked boxes for each checkbox filter
+					this.existingCheckedFilters(key);
+
+					// Find the existing selected value for each select filter
+					this.existingSelectedFilters(key);
+					
+					// Find the existing value for each radio button filter
+					this.existingRadioFilters(key);
+				}
+			}
+		},
+
+		/**
+		 * Get the filter key from the taxonomyFilter setting
+		 *
+		 * @param filterContainer {string} ID of the changed filter's container
+		 */
+		getFilterKey: function (filterContainer) {
+			for (var key in this.settings.taxonomyFilters) {
+				if (this.settings.taxonomyFilters.hasOwnProperty(key)) {
+					for (var i = 0; i < this.settings.taxonomyFilters[key].length; i++) {
+						if (this.settings.taxonomyFilters[key] === filterContainer) {
+							return key;
+						}
+					}
+				}
+			}
+		},
+
+		/**
+		 * Taxonomy filtering
+		 */
+		taxonomyFiltering: function() {
+			var _this = this;
+
+			// Set up the filters
+			for(var key in this.settings.taxonomyFilters) {
+				if(this.settings.taxonomyFilters.hasOwnProperty(key)) {
+					filters[key] = [];
+				}
+			}
+
+			// Handle filter updates
+			$('.' + this.settings.taxonomyFiltersContainer).on('change.'+pluginName, 'input, select', function (e) {
+				e.stopPropagation();
+
+				var filterVal, filterContainer, filterKey;
+
+				// Handle checkbox filters
+				if ($(this).is('input[type="checkbox"]')) {
+					// First check for existing selections
+					_this.checkFilters();
+
+					filterVal = $(this).val();
+					filterContainer = $(this).closest('.bh-sl-filters').attr('id');
+					filterKey = _this.getFilterKey(filterContainer);
+
+					if (filterKey) {
+						// Add or remove filters based on checkbox values
+						if ($(this).prop('checked')) {
+							// Add ids to the filter arrays as they are checked
+							if(filters[filterKey].indexOf(filterVal) === -1) {
+								filters[filterKey].push(filterVal);
+							}
+							
+							if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
+								if ((olat) && (olng)) {
+									_this.settings.mapSettings.zoom = 0;
+									_this.processForm();
+								}
+								else {
+									_this.mapping(mappingObj);
+								}
+							}
+						}
+						else {
+							// Remove ids from the filter arrays as they are unchecked
+							var filterIndex = filters[filterKey].indexOf(filterVal);
+							if (filterIndex > -1) {
+								filters[filterKey].splice(filterIndex, 1);
+								if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
+									if ((olat) && (olng)) {
+										if (_this.countFilters() === 0) {
+											_this.settings.mapSettings.zoom = originalZoom;
+										}
+										else {
+											_this.settings.mapSettings.zoom = 0;
+										}
+										_this.processForm();
+									}
+									else {
+										_this.mapping(mappingObj);
+									}
+								}
+							}
+						}
+					}
+				}
+				// Handle select or radio filters
+				else if ($(this).is('select') || $(this).is('input[type="radio"]')) {
+					// First check for existing selections
+					_this.checkFilters();
+
+					filterVal = $(this).val();
+					filterContainer = $(this).closest('.bh-sl-filters').attr('id');
+					filterKey = _this.getFilterKey(filterContainer);
+
+					// Check for blank filter on select since default val could be empty
+					if (filterVal) {
+						if (filterKey) {
+							filters[filterKey] = [filterVal];
+							if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
+								if ((olat) && (olng)) {
+									_this.settings.mapSettings.zoom = 0;
+									_this.processForm();
+								}
+								else {
+									_this.mapping(mappingObj);
+								}
+							}
+						}
+					}
+					// Reset if the default option is selected
+					else {
+						if (filterKey) {
+							filters[filterKey] = [];
+						}
+						_this.reset();
+						if ((olat) && (olng)) {
+							_this.settings.mapSettings.zoom = originalZoom;
+							_this.processForm();
+						}
+						else {
+							_this.mapping(mappingObj);
+						}
+					}
+				}
+			});
+		},
+
+		/**
 		 * The primary mapping function that runs everything
 		 * 
 		 * @param mappingObject {Object} all the potential mapping properties - latitude, longitude, origin, name, max distance, page
@@ -1255,6 +1407,11 @@
 					// Do the data request - doing this in mapping so the lat/lng and address can be passed over and used if needed
 					dataRequest = _this._getData(olat, olng, origin);
 				}
+			}
+			
+			// Check filteres here to handle selected filtering after page reload
+			if(_this.settings.taxonomyFilters !== null && _this.hasEmptyObjectVals(filters)) {
+				_this.checkFilters();
 			}
 
 			/**
@@ -1637,114 +1794,6 @@
 				$('.' + _this.settings.locationList + ' ul li:even').css('background', _this.settings.listColor1);
 				$('.' + _this.settings.locationList + ' ul li:odd').css('background', _this.settings.listColor2);
 				
-			});
-		},
-
-		/**
-		 * Taxonomy filtering
-		 */
-		taxonomyFiltering: function() {
-			var _this = this;
-
-			// Set up the filters
-			for(var key in this.settings.taxonomyFilters) {
-				if(this.settings.taxonomyFilters.hasOwnProperty(key)) {
-					filters[key] = [];
-				}
-			}
-
-			// Handle filter updates
-			$('.' + this.settings.taxonomyFiltersContainer).on('change.'+pluginName, 'input, select', function (e) {
-					e.stopPropagation();
-
-					var filterId, filterContainer, filterKey;
-
-					// Handle checkbox filters
-					if ($(this).is('input[type="checkbox"]')) {
-							// First check for existing selections
-							_this.checkFilters();
-
-							filterId = $(this).val();
-							filterContainer = $(this).closest('.bh-sl-filters').attr('id');
-							filterKey = _this.getFilterKey(filterContainer);
-
-							if (filterKey) {
-									// Add or remove filters based on checkbox values
-									if ($(this).prop('checked')) {
-											// Add ids to the filter arrays as they are checked
-											filters[filterKey].push(filterId);
-											if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
-													if ((olat) && (olng)) {
-															_this.settings.mapSettings.zoom = 0;
-															_this.processForm();
-													}
-													else {
-															_this.mapping(mappingObj);
-													}
-											}
-									}
-									else {
-											// Remove ids from the filter arrays as they are unchecked
-											var filterIndex = filters[filterKey].indexOf(filterId);
-											if (filterIndex > -1) {
-													filters[filterKey].splice(filterIndex, 1);
-													if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
-															if ((olat) && (olng)) {
-																	if (_this.countFilters() === 0) {
-																			_this.settings.mapSettings.zoom = originalZoom;
-																	}
-																	else {
-																			_this.settings.mapSettings.zoom = 0;
-																	}
-																	_this.processForm();
-															}
-															else {
-																	_this.mapping(mappingObj);
-															}
-													}
-											}
-									}
-							}
-					}
-					// Handle select or radio filters
-					else if ($(this).is('select') || $(this).is('input[type="radio"]')) {
-							// First check for existing selections
-							_this.checkFilters();
-
-							filterId = $(this).val();
-							filterContainer = $(this).closest('.bh-sl-filters').attr('id');
-							filterKey = _this.getFilterKey(filterContainer);
-
-							// Check for blank filter on select since default val could be empty
-							if (filterId) {
-									if (filterKey) {
-											filters[filterKey] = [filterId];
-											if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
-													if ((olat) && (olng)) {
-															_this.settings.mapSettings.zoom = 0;
-															_this.processForm();
-													}
-													else {
-															_this.mapping(mappingObj);
-													}
-											}
-									}
-							}
-							// Reset if the default option is selected
-							else {
-									if (filterKey) {
-											filters[filterKey] = [];
-									}
-									_this.reset();
-									if ((olat) && (olng)) {
-											_this.settings.mapSettings.zoom = originalZoom;
-											_this.processForm();
-									}
-									else {
-											_this.mapping(mappingObj);
-									}
-							}
-					}
 			});
 		}
 
