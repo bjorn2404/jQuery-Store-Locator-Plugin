@@ -37,7 +37,7 @@ on this update off and on for the past six months, so a lot has changed. I've al
 
 * [Grunt](http://gruntjs.com/) is now utilized to minify and compile the plugin and CSS. You only need to worry about running this if you're doing extensive modifications or are interested in submitting a pull request.
 * Plugin file structure and programming pattern have been reworked to follow the [basic jQuery Boilerplate pattern](https://github.com/jquery-boilerplate/jquery-patterns/blob/master/patterns/jquery.basic.plugin-boilerplate.js)
-* Almost all of the methods are public and can be overwritten
+* Many of the methods are public and can be called as needed
 * Google Maps settings are now exposed as a setting. Instead of trying to modify the plugin to make Google Maps settings changes simply use the mapSettings option to override.
 * Added inline directions option
 * Added multi-group live filtering via regex for quick category, etc. filtering.

@@ -1,6 +1,10 @@
-/*! jQuery Google Maps Store Locator - v2.0.0 - 2014-10-28
+/*! jQuery Google Maps Store Locator - v2.0.0 - 2014-11-02
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2014 Bjorn Holine; Licensed MIT */
+
+/*! jQuery Google Maps Store Locator - v2.0.0 - 2014-11-02
+ * http://www.bjornblog.com/web/jquery-store-locator-plugin
+ * Copyright (c) 2014 Bjorn Holine; Licensed MIT */
 
 /* global define, window, document, Handlebars, google */
 
@@ -78,11 +82,15 @@
 		'taxonomyFilters'          : null,
 		'taxonomyFiltersContainer' : 'bh-sl-filters-container',
 		'querystringParams'        : false,
+		'callbackNotify'           : null,
 		'callbackBeforeSend'       : null,
 		'callbackSuccess'          : null,
 		'callbackModalOpen'        : null,
 		'callbackModalClose'       : null,
-		'jsonpCallback'            : null,
+		'callbackJsonp'            : null,
+		'callbackPageChange'       : null,
+		'callbackDirectionsRequest': null,
+		'callbackCloseDirections'  : null,
 		// Language options
 		'geocodeErrorAlert'        : 'Geocode was not successful for the following reason: ',
 		'addressErrorAlert'        : 'Unable to find address',
@@ -225,12 +233,17 @@
 
 		/**
 		 * Notifications
-		 * Some errors use alert by default. This overrrideable method allows these notifications to be handled in other ways
+		 * Some errors use alert by default. This is overrideable with the callbackNotify option
 		 * 
 		 * @param notifyText {string} the notification message
 		 */
 		notify: function (notifyText) {
-			alert(notifyText);
+			if (this.settings.callbackNotify) {
+				this.settings.callbackNotify.call(this, notifyText);
+			}
+			else {
+				alert(notifyText);
+			}
 		},
 		
 		/**
@@ -341,14 +354,14 @@
 				$this.hide();
 			}
 
-			this.start();
-			this.formEventHandler();
+			this._start();
+			this._formEventHandler();
 		},
 
 		/**
-		 * Form event handler setup
+		 * Form event handler setup - private
 		 */
-		formEventHandler: function () {
+		_formEventHandler: function () {
 			var _this = this;
 			// ASP.net or regular submission?
 			if (this.settings.noForm === true) {
@@ -382,12 +395,12 @@
 			
 			// Before send callback
 			if (this.settings.callbackBeforeSend) {
-				this.settings.callbackBeforeSend.call(this);
+				this.settings.callbackBeforeSend.call(this, lat, lng, address);
 			}
 
 			// Loading
 			if(this.settings.loading === true){
-				$('.' + this.settings.formContainer).append('<div class="' + this.settings.loadingContainer +'"><\/div>');
+				$('.' + this.settings.formContainer).append('<div class="' + this.settings.loadingContainer +'"></div>');
 			}
 
 			// AJAX request
@@ -401,7 +414,7 @@
 					'origAddress': address
 				},
 				dataType     : dataTypeRead,
-				jsonpCallback: (this.settings.dataType === 'jsonp' ? this.settings.jsonpCallback : null)
+				jsonpCallback: (this.settings.dataType === 'jsonp' ? this.settings.callbackJsonp : null)
 			}).done(function (p) {
 				d.resolve(p);
 
@@ -414,9 +427,9 @@
 		},
 
 		/**
-		 * Checks for default location, full map, and HTML5 geolocation settings
+		 * Checks for default location, full map, and HTML5 geolocation settings - private
 		 */
-		start: function () {
+		_start: function () {
 			var _this = this;
 			// If a default location is set
 			if (this.settings.defaultLoc === true) {
@@ -454,7 +467,7 @@
 						// Have to do this to get around scope issues
 						_this.autoGeocodeQuery(position);
 					}, function(error){
-						_this.autoGeocodeError(error);
+						_this._autoGeocodeError(error);
 					});
 				}
 			}
@@ -570,11 +583,11 @@
 		},
 
 		/**
-		 * Create the location variables
+		 * Create the location variables - private
 		 *
 		 * @param loopcount {number} current marker id
 		 */
-		createLocationVariables: function (loopcount) {
+		_createLocationVariables: function (loopcount) {
 			var value;
 
 			for (var key in locationset[loopcount]) {
@@ -625,13 +638,13 @@
 		},
 
 		/**
-		 * Build pagination numbers and next/prev links
+		 * Build pagination numbers and next/prev links - private
 		 *
 		 * @param currentPage {number}
 		 * @param totalPages {number}
 		 * @returns {string}
 		 */
-		paginationOutput: function(currentPage, totalPages) {
+		_paginationOutput: function(currentPage, totalPages) {
 			currentPage = parseFloat(currentPage);
 			var output = '';
 			var nextPage = currentPage + 1;
@@ -680,7 +693,7 @@
 			// Initial pagination setup
 			if ($paginationList.length === 0) {
 
-				pagesOutput = this.paginationOutput(currentPage, totalPages);
+				pagesOutput = this._paginationOutput(currentPage, totalPages);
 			}
 			// Update pagination on page change
 			else {
@@ -688,7 +701,7 @@
 				$paginationList.empty();
 
 				// Add the numbers
-				pagesOutput = this.paginationOutput(currentPage, totalPages);
+				pagesOutput = this._paginationOutput(currentPage, totalPages);
 			}
 
 			$paginationList.append(pagesOutput);
@@ -797,16 +810,16 @@
 		},
 
 		/**
-		 * Define the location data for the templates
+		 * Define the location data for the templates - private
 		 *
 		 * @param currentMarker {Object} Google Maps marker
 		 * @param storeStart {number} optional first location on the current page
 		 * @param page {number} optional current page
 		 * @returns {Object} extendded location data object
 		 */
-		defineLocationData: function (currentMarker, storeStart, page) {
+		_defineLocationData: function (currentMarker, storeStart, page) {
 			var indicator = '';
-			this.createLocationVariables(currentMarker.get('id'));
+			this._createLocationVariables(currentMarker.get('id'));
 
 			var distLength;
 			if (locationData.distance <= 1) {
@@ -861,7 +874,7 @@
 		 */
 		listSetup: function (marker, storeStart, page) {
 			// Define the location data
-			var locations = this.defineLocationData(marker, storeStart, page);
+			var locations = this._defineLocationData(marker, storeStart, page);
 
 			// Set up the list template with the location data
 			var listHtml = listTemplate(locations);
@@ -880,7 +893,7 @@
 		createInfowindow: function (marker, location, infowindow, storeStart, page) {
 			var _this = this;
 			// Define the location data
-			var locations = this.defineLocationData(marker, storeStart, page);
+			var locations = this._defineLocationData(marker, storeStart, page);
 
 			// Set up the infowindow template with the location data
 			var formattedAddress = infowindowTemplate(locations);
@@ -936,10 +949,10 @@
 		},
 
 		/**
-		 * Handle autoGeocode failure
+		 * Handle autoGeocode failure - private
 		 *
 		 */
-		autoGeocodeError: function () {
+		_autoGeocodeError: function () {
 			// If automatic detection doesn't work show an error
 			this.notify(this.settings.autoGeocodeErrorAlert);
 		},
@@ -950,6 +963,11 @@
 		 * @param newPage {number} page to change to
 		 */
 		paginationChange: function (newPage) {
+
+			// Page change callback
+			if (this.settings.callbackPageChange) {
+				this.settings.callbackPageChange.call(this, newPage);
+			}
 
 			mappingObj.page = newPage;
 			this.mapping(mappingObj);
@@ -991,6 +1009,12 @@
 		 * @param map {Object} Google Map
 		 */
 		directionsRequest: function(origin, locID, map) {
+
+			// Directions request callback
+			if (this.settings.callbackDirectionsRequest) {
+				this.settings.callbackDirectionsRequest.call(this, origin, locID, map);
+			}
+			
 			var destination = this.getAddressByMarker(locID);
 
 			if(destination) {
@@ -1024,6 +1048,12 @@
 		 * Close the directions panel and reset the map with the original locationset and zoom
 		 */
 		closeDirections: function() {
+
+			// Close directions callback
+			if (this.settings.callbackCloseDirections) {
+				this.settings.callbackCloseDirections.call(this);
+			}
+			
 			// Remove the close icon, remove the directions, add the list back
 			$('.bh-sl-close-directions-container').remove();
 			$('.' + this.settings.locationList + ' .adp').remove();
@@ -1086,7 +1116,7 @@
 			var region = $('#' + this.settings.regionID).val();
 
 			if (addressInput === '' && searchInput === '') {
-				this.start();
+				this._start();
 			}
 			else if(addressInput !== '') {
 				var g = new this.googleGeocode();
@@ -1166,11 +1196,11 @@
 		},
 
 		/**
-		 * Find the existing checked boxes for each checkbox filter
+		 * Find the existing checked boxes for each checkbox filter - private
 		 *
 		 * @param key {string} object key
 		 */
-		existingCheckedFilters: function(key) {
+		_existingCheckedFilters: function(key) {
 			$('#' + this.settings.taxonomyFilters[key] + ' input[type=checkbox]').each(function () {
 				if ($(this).prop('checked')) {
 					var filterVal = $(this).val();
@@ -1184,11 +1214,11 @@
 		},
 
 		/**
-		 * Find the existing selected value for each select filter
+		 * Find the existing selected value for each select filter - private
 		 *
 		 * @param key {string} object key
 		 */
-		existingSelectedFilters: function(key) {
+		_existingSelectedFilters: function(key) {
 			$('#' + this.settings.taxonomyFilters[key] + ' select').each(function () {
 				var filterVal = $(this).val();
 				
@@ -1200,11 +1230,11 @@
 		},
 
 		/**
-		 * Find the existing selected value for each radio button filter
+		 * Find the existing selected value for each radio button filter - private
 		 * 
 		 * @param key {string} object key
 		 */
-		existingRadioFilters: function(key) {
+		_existingRadioFilters: function(key) {
 			$('#' + this.settings.taxonomyFilters[key] + ' input[type=radio]').each(function () {
 				if ($(this).prop('checked')) {
 					var filterVal = $(this).val();
@@ -1225,13 +1255,13 @@
 			for(var key in this.settings.taxonomyFilters) {
 				if(this.settings.taxonomyFilters.hasOwnProperty(key)) {
 					// Find the existing checked boxes for each checkbox filter
-					this.existingCheckedFilters(key);
+					this._existingCheckedFilters(key);
 
 					// Find the existing selected value for each select filter
-					this.existingSelectedFilters(key);
+					this._existingSelectedFilters(key);
 					
 					// Find the existing value for each radio button filter
-					this.existingRadioFilters(key);
+					this._existingRadioFilters(key);
 				}
 			}
 		},
@@ -1586,6 +1616,7 @@
 				if (_this.settings.slideMap === true) {
 					$this.slideDown();
 				}
+				
 				// Set up the modal window
 				if (_this.settings.modal === true) {
 					// Callback

@@ -164,7 +164,7 @@
     <description><![CDATA[Minneapolis, MN 55408<br><a href="https://maps.google.com/maps/place?ftid=0x52b332d5a3a586f7:0x8205b247477f675&amp;q=2600+Hennepin+Ave.&amp;hl=en&amp;authuser=0&amp;t=h&amp;cd=1&amp;cad=src:ppiwlink&amp;ei=2FqyUKHFM4OewQHgwIGwBg&amp;sig2=IhpUuEaq4oyfPcV4kPehJA&amp;dtab=5" target="_blank"><img src="https://cbks0.google.com/cbk?output=thumbnail&amp;w=90&amp;h=68&amp;ll=44.955273,-93.297470&amp;thumb=0"></a>]]></description>
     <styleUrl>#style1</styleUrl>
     <Point>
-      <coordinates>-93.297470,44.955273,0.000000</coordinates>
+      <coordinates>-93.29719699999998,44.9553438,0.000000</coordinates>
     </Point>
   </Placemark>
   <Placemark>

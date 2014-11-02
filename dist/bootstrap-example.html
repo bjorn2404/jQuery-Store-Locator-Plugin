@@ -6,7 +6,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-		<link rel="stylesheet" type="text/css" href="css/bootstrap-example.min.css" />
+		<link rel="stylesheet" type="text/css" href="assets/css/bootstrap-example.min.css" />
   </head>
 
   <body>
@@ -21,7 +21,7 @@
 
 					<div class="bh-sl-form-container">
 						<form id="bh-sl-user-location" class="form-inline" method="post" action="#" role="form">
-							<div id="form-input" class="form-group">
+							<div class="form-input form-group">
 								<label for="bh-sl-address">Enter Address or Zip Code:</label>
 								<input class="form-control" type="text" id="bh-sl-address" name="bh-sl-address" />
 							</div>
@@ -51,7 +51,16 @@
     <script src="assets/js/plugins/storeLocator/jquery.storelocator.js"></script>
       <script>
         $(function() {
-          $('#map-container').storeLocator();
+					$('#map-container').storeLocator({
+						'mapSettings' : {
+							zoom : 12,
+							mapTypeId: google.maps.MapTypeId.ROADMAP,
+							disableDoubleClickZoom: true,
+							scrollwheel: false,
+							navigationControl: false,
+							draggable: false
+						}
+					});
         });
       </script>
 

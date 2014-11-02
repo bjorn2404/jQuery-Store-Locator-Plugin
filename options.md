@@ -54,11 +54,15 @@
 | taxonomyFilters | null | Filtering object that can be used to set up live filtering (see categories example). |
 | taxonomyFiltersContainer | 'bh-sl-filters-container' | Class of the container around the filters. |
 | querystringParams | false | Set to true to enable query string support for passing input variables from page to page. |
-| callbackBeforeSend | null | Callback |
-| callbackSuccess | null | Callback |
-| callbackModalOpen | null | Callback |
-| callbackModalClose | null | Callback |
-| jsonpCallback | null | Callback |
+| notify | null | Callback that can override the notify method. |
+| callbackBeforeSend | null | Callback that fires before the AJAX request. |
+| callbackSuccess | null | Callback that fires on successful AJAX request. |
+| callbackModalOpen | null | Callback that fires when a modal opens. |
+| callbackModalClose | null | Callback that fires when a modal closes. |
+| callbackJsonp | null | Callback that can specify the callback function name of a JSONP request. |
+| callbackPageChange | null | Callback that fires when the page changes if pagination is enabled. |
+| callbackDirectionsRequest | null | Callback that fires upon a directions request when using the inline directions option. |
+| callbackCloseDirections | null | Callback that fires when the directions panel closes. |
 | geocodeErrorAlert | 'Geocode was not successful for the following reason: ' | Language setting |
 | addressErrorAlert | 'Unable to find address' | Language setting |
 | autoGeocodeErrorAlert | 'Automatic location detection failed. Please fill in your address or zip code.' | Language setting |
