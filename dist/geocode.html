@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Geocode</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="assets/css/storelocator.css" />
+		<style type="text/css">
+			/* The following is for the geocode page and not the store locator */
+			#geocode-result{
+				clear: left;
+				float: left;
+				margin-top: 30px;
+				width: 100%;
+			}
+		</style>
+  </head>
+
+  <body>
+    
+    <div class="bh-sl-container">
+      <div id="page-header">
+        <h1>Simple geocoding form</h1>
+        <p>You can use the following form to geocode a location.</p>
+      </div>
+      <div class="bh-sl-form-container">
+        <form id="bh-sl-user-location" method="post" action="#">
+            <div class="form-input">
+              <label for="bh-sl-address">Enter Address or Zip Code:</label>
+              <input type="text" id="bh-sl-address" name="bh-sl-address" />
+            </div>
+            
+            <button id="bh-sl-submit" type="submit">Submit</button>
+        </form>
+      </div>
+
+      <div id="geocode-result"></div>
+    </div>
+
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <script src="assets/js/geocode.min.js"></script>
+
+  </body>
+</html>

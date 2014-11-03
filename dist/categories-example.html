@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Map Example - Categories</title>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="assets/css/storelocator.css" />
+</head>
+
+<body>
+
+<div class="bh-sl-container">
+	<div id="page-header">
+		<h1>Using Chipotle as an Example</h1>
+		<p>I used locations around Minneapolis and the southwest suburbs. So, for example, Edina, Plymouth, Eden Prarie, etc. would be good for testing the functionality.
+			You can use just the city as the address - ex: Edina, MN.</p>
+	</div>
+
+	<div class="bh-sl-form-container">
+		<form id="bh-sl-user-location" method="post" action="#">
+			<div class="form-input">
+				<label for="bh-sl-address">Enter Address or Zip Code:</label>
+				<input type="text" id="bh-sl-address" name="bh-sl-address" />
+				<select id="bh-sl-maxdistance" name="bh-sl-maxdistance">
+					<option value="10">10 Miles</option>
+					<option value="20">20 Miles</option>
+					<option value="30">30 Miles</option>
+					<option value="40">40 Miles</option>
+				</select>
+			</div>
+
+			<button id="bh-sl-submit" type="submit">Submit</button>
+
+			<div class="bh-sl-filters-container">
+				<ul id="category-filters-container1" class="bh-sl-filters">
+					<li><h3>Categories</h3></li>
+					<li>
+						<label>
+							<input type="checkbox" name="category" value="Restaurant"> Restaurant
+						</label>
+					</li>
+					<li>
+						<label>
+							<input type="checkbox" name="category" value="Bar"> Bar
+						</label>
+					</li>
+					<li>
+						<label>
+							<input type="checkbox" name="category" value="Cafe"> Cafe
+						</label>
+					</li>
+					<li>
+						<label>
+							<input type="checkbox" name="category" value="Bakery"> Bakery
+						</label>
+					</li>
+					<li>
+						<label>
+							<input type="checkbox" name="category" value="Coffee"> Coffee
+						</label>
+					</li>
+				</ul>
+
+				<ul id="category-filters-container2" class="bh-sl-filters">
+					<li><h3>Features</h3></li>
+					<li>
+						<label>
+							<input type="checkbox" name="feature" value="Fresh Guacamole"> Fresh Guacamole
+						</label>
+					</li>
+					<li>
+						<label>
+							<input type="checkbox" name="feature" value="Online Ordering"> Online Ordering
+						</label>
+					</li>
+					<li>
+						<label>
+							<input type="checkbox" name="feature" value="Margaritas"> Margaritas
+						</label>
+					</li>
+				</ul>
+
+				<ul id="city-filter" class="bh-sl-filters">
+					<li><h3>City</h3></li>
+					<li>
+						<select name="city">
+							<option value="">All cities</option>
+							<option value="Minneapolis">Minneapolis</option>
+							<option value="Bloomington">Bloomington</option>
+							<option value="Golden Valley">Golden Valley</option>
+							<option value="St. Louis Park">St. Louis Park</option>
+						</select>
+					</li>
+				</ul>
+				
+				<ul id="postal-filter" class="bh-sl-filters">
+					<li><h3>Zip</h3></li>
+					<li>
+						<input type="radio" name="postal" value="55416">55416
+					</li>
+					<li>
+						<input type="radio" name="postal" value="55343">55343
+					</li>
+					<li>
+						<input type="radio" name="postal" value="55402">55402
+					</li>
+					<li>
+						<input type="radio" name="postal" value="55317">55317
+					</li>
+				</ul>
+			</div>
+		</form>
+
+	</div>
+
+	<div id="map-container" class="bh-sl-map-container">
+		<div class="bh-sl-loc-list">
+			<ul class="list"></ul>
+		</div>
+		<div id="bh-sl-map" class="bh-sl-map"></div>
+	</div>
+</div>
+
+<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="assets/js/libs/handlebars.min.js"></script>
+<script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script src="assets/js/plugins/storeLocator/jquery.storelocator.js"></script>
+<script>
+	$(function() {
+		$('#map-container').storeLocator({
+			'maxDistance': true,
+			'taxonomyFilters' : {
+				'category' : 'category-filters-container1',
+				'features' : 'category-filters-container2',
+				'city' : 'city-filter',
+				'postal': 'postal-filter'
+			}
+		});
+	});
+</script>
+
+</body>
+</html>

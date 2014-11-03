@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Map Example - Category Markers</title>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="assets/css/storelocator.css" />
+</head>
+
+<body>
+
+<div class="bh-sl-container">
+	<div id="page-header">
+		<h1>Using Chipotle as an Example</h1>
+		<p>I used locations around Minneapolis and the southwest suburbs. So, for example, Edina, Plymouth, Eden Prarie, etc. would be good for testing the functionality.
+			You can use just the city as the address - ex: Edina, MN. <strong>Note: SVGs are not used in this example because there seems to be a bug in IE11 and they aren't
+				displayed. SVG path notation isn't used because it <a href="https://code.google.com/p/gmaps-api-issues/issues/detail?id=6358" target="_blank">looks awful</a> with HDPI devices.</strong></p>
+	</div>
+
+	<div class="bh-sl-form-container">
+		<form id="bh-sl-user-location" method="post" action="#">
+			<div class="form-input">
+				<label for="bh-sl-address">Enter Address or Zip Code:</label>
+				<input type="text" id="bh-sl-address" name="bh-sl-address" />
+			</div>
+
+			<button id="bh-sl-submit" type="submit">Submit</button>
+		</form>
+	</div>
+
+	<div id="map-container" class="bh-sl-map-container">
+		<div class="bh-sl-loc-list">
+			<ul class="list"></ul>
+		</div>
+		<div id="bh-sl-map" class="bh-sl-map"></div>
+	</div>
+</div>
+
+<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="assets/js/libs/handlebars.min.js"></script>
+<script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script src="assets/js/plugins/storeLocator/jquery.storelocator.js"></script>
+<script>
+	$(function() {
+		$('#map-container').storeLocator({
+			catMarkers : {
+				'Restaurant' : ['assets/img/red-marker.png', 32, 32],
+				'Cafe' : ['assets/img/blue-marker.png', 32, 32]
+			}
+		});
+	});
+</script>
+
+</body>
+</html>

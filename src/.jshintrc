@@ -1,0 +1,21 @@
+{
+  "curly": true,
+  "eqeqeq": true,
+  "immed": true,
+  "latedef": true,
+  "newcap": true,
+  "noarg": true,
+  "sub": true,
+  "undef": true,
+  "unused": true,
+  "boss": true,
+  "eqnull": true,
+  "browser": true,
+	"devel": false,
+  "predef": ["jQuery"],
+	"globals": {
+		"google": true,
+		"document": true,
+		"$": true
+	}
+}
