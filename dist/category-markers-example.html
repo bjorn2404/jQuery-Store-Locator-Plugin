@@ -12,7 +12,8 @@
 	<div id="page-header">
 		<h1>Using Chipotle as an Example</h1>
 		<p>I used locations around Minneapolis and the southwest suburbs. So, for example, Edina, Plymouth, Eden Prarie, etc. would be good for testing the functionality.
-			You can use just the city as the address - ex: Edina, MN.</p>
+			You can use just the city as the address - ex: Edina, MN. <strong>Note: SVGs are not used in this example because there seems to be a bug in IE11 and they aren't
+				displayed. SVG path notation isn't used because it <a href="https://code.google.com/p/gmaps-api-issues/issues/detail?id=6358" target="_blank">looks awful</a> with HDPI devices.</strong></p>
 	</div>
 
 	<div class="bh-sl-form-container">
@@ -42,8 +43,8 @@
 	$(function() {
 		$('#map-container').storeLocator({
 			catMarkers : {
-				'Restaurant' : ['assets/img/red-marker.svg', 32, 32],
-				'Cafe' : ['assets/img/blue-marker.svg', 32, 32]
+				'Restaurant' : ['assets/img/red-marker.png', 32, 32],
+				'Cafe' : ['assets/img/blue-marker.png', 32, 32]
 			}
 		});
 	});

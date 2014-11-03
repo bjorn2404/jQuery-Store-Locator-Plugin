@@ -718,14 +718,16 @@
 			if(typeof markerWidth !== 'undefined' && typeof markerHeight !== 'undefined') {
 				markerImg = {
 					url: markerUrl,
-					size: new google.maps.Size(markerWidth, markerHeight)
+					size: new google.maps.Size(markerWidth, markerHeight),
+					scaledSize: new google.maps.Size(markerWidth, markerHeight)
 				};
 			}
 			// Default marker dimensions: 32px x 32px
 			else {
 				markerImg = {
 					url: markerUrl,
-					size: new google.maps.Size(32, 32)
+					size: new google.maps.Size(32, 32),
+					scaledSize: new google.maps.Size(32, 32)
 				};
 			}
 			
