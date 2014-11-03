@@ -207,14 +207,14 @@
 				$('. ' + this.settings.overlay).remove();
 			}
 
-			// Remove map style from cotnainer
+			// Remove map style from container
 			$mapDiv.attr('style', '');
 
 			// Hide map container
 			$this.hide();
 			// Remove data
 			$.removeData($this.get(0));
-			// Remove namespached events
+			// Remove namespaced events
 			$(document).off(pluginName);
 			// Unbind plugin
 			$this.unbind();
@@ -233,7 +233,7 @@
 
 		/**
 		 * Notifications
-		 * Some errors use alert by default. This is overrideable with the callbackNotify option
+		 * Some errors use alert by default. This is overridable with the callbackNotify option
 		 * 
 		 * @param notifyText {string} the notification message
 		 */
@@ -543,7 +543,7 @@
 		},
 
 		/**
-		 * Checks to see if all the perperty values in the object are empty
+		 * Checks to see if all the property values in the object are empty
 		 * 
 		 * @param obj {Object} the object to check
 		 * @returns {boolean}
@@ -711,7 +711,7 @@
 		 * Marker image setup
 		 * 
 		 * @param markerUrl {string} path to marker image
-		 * @param markerWidth {number} width of mearker
+		 * @param markerWidth {number} width of marker
 		 * @param markerHeight {number} height of marker
 		 * @returns {Object} Google Maps icon object
 		 */
@@ -817,7 +817,7 @@
 		 * @param currentMarker {Object} Google Maps marker
 		 * @param storeStart {number} optional first location on the current page
 		 * @param page {number} optional current page
-		 * @returns {Object} extendded location data object
+		 * @returns {Object} extended location data object
 		 */
 		_defineLocationData: function (currentMarker, storeStart, page) {
 			var indicator = '';
@@ -1153,7 +1153,7 @@
 		 * @param l {number} iterator from the loop processing the data in the mapping function below
 		 * @param lat {number} origin latitude
 		 * @param lng {number} origin longitude
-		 * @param firstRun {boolean} inital load check
+		 * @param firstRun {boolean} initial load check
 		 * @param origin {string} origin address
 		 * @param maxDistance {number} maximum distance if set
 		 */
@@ -1441,7 +1441,7 @@
 				}
 			}
 			
-			// Check filteres here to handle selected filtering after page reload
+			// Check filters here to handle selected filtering after page reload
 			if(_this.settings.taxonomyFilters !== null && _this.hasEmptyObjectVals(filters)) {
 				_this.checkFilters();
 			}
@@ -1563,7 +1563,7 @@
 						$this.hide();
 					}
 
-					// Append the no rsults message
+					// Append the no results message
 					noResults = $('<li><div class="bh-sl-noresults-title">' + _this.settings.noResultsTitle +  '</div><br><div class="bh-sl-noresults-desc">' + _this.settings.noResultsDesc + '</li>').hide().fadeIn();
 					
 					// Setup a no results location

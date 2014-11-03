@@ -6,7 +6,7 @@
 | formID | 'bh-sl-user-location' | ID of the input form. |
 | addressID | 'bh-sl-address' | ID of the address input form field. |
 | regionID | 'bh-sl-region' | ID of the region input form field for country region biasing select field. |
-| mapSettings | { zoom : 12, mapTypeId: google.maps.MapTypeId.ROADMAP } | Google maps settings object. |
+| mapSettings | { zoom : 12, mapTypeId: google.maps.MapTypeId.ROADMAP } | Google maps settings object. Add all settings including zoom and map type if overriding. |
 | markerImg | null | Replacement marker image used for all locations |
 | markerDim | null | Replacement marker dimensions object - ex value: { height: 20, width: 20 } |
 | catMarkers | null | Multiple replacement marker images based on categories object. Value should be array with image path followed by dimensions - ex value: catMarkers : {'Restaurant' : ['img/red-marker.svg', 32, 32]}
@@ -54,7 +54,7 @@
 | taxonomyFilters | null | Filtering object that can be used to set up live filtering (see categories example). |
 | taxonomyFiltersContainer | 'bh-sl-filters-container' | Class of the container around the filters. |
 | querystringParams | false | Set to true to enable query string support for passing input variables from page to page. |
-| notify | null | Callback that can override the notify method. |
+| callbackNotify | null | Callback that can override the notify method. |
 | callbackBeforeSend | null | Callback that fires before the AJAX request. |
 | callbackSuccess | null | Callback that fires on successful AJAX request. |
 | callbackModalOpen | null | Callback that fires when a modal opens. |
