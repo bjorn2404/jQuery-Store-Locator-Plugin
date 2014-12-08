@@ -58,11 +58,13 @@
 | callbackBeforeSend | null | Callback that fires before the AJAX request. |
 | callbackSuccess | null | Callback that fires on successful AJAX request. |
 | callbackModalOpen | null | Callback that fires when a modal opens. |
+| callbackModalReady | null | Callback that fires when the content of the modal is generated. |
 | callbackModalClose | null | Callback that fires when a modal closes. |
 | callbackJsonp | null | Callback that can specify the callback function name of a JSONP request. |
 | callbackPageChange | null | Callback that fires when the page changes if pagination is enabled. |
 | callbackDirectionsRequest | null | Callback that fires upon a directions request when using the inline directions option. |
 | callbackCloseDirections | null | Callback that fires when the directions panel closes. |
+| callbackNoResults | null | Callback that fires when no results are found. |
 | geocodeErrorAlert | 'Geocode was not successful for the following reason: ' | Language setting |
 | addressErrorAlert | 'Unable to find address' | Language setting |
 | autoGeocodeErrorAlert | 'Automatic location detection failed. Please fill in your address or zip code.' | Language setting |
