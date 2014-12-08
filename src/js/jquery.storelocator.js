@@ -78,11 +78,13 @@
 		'callbackBeforeSend'       : null,
 		'callbackSuccess'          : null,
 		'callbackModalOpen'        : null,
+		'callbackModalReady'       : null,
 		'callbackModalClose'       : null,
 		'callbackJsonp'            : null,
 		'callbackPageChange'       : null,
 		'callbackDirectionsRequest': null,
 		'callbackCloseDirections'  : null,
+		'callbackNoResults'        : null,
 		// Language options
 		'geocodeErrorAlert'        : 'Geocode was not successful for the following reason: ',
 		'addressErrorAlert'        : 'Unable to find address',
@@ -302,10 +304,10 @@
 			// Handle script tag template method
 			else if (this.settings.listTemplateID !== null && this.settings.infowindowTemplateID !== null) {
 				// Infowindows
-				infowindowTemplate = Handlebars.compile($(this.settings.infowindowTemplateID).html());
+				infowindowTemplate = Handlebars.compile($('#' + this.settings.infowindowTemplateID).html());
 
 				// Locations list
-				listTemplate = Handlebars.compile($(this.settings.listTemplateID).html());
+				listTemplate = Handlebars.compile($('#' + this.settings.listTemplateID).html());
 
 				// Continue to the main script
 				_this.locator();
@@ -559,8 +561,8 @@
 		 */
 		modalClose: function () {
 			// Callback
-			if (this.settings.callbackModalOpen) {
-				this.settings.callbackModalOpen.call(this);
+			if (this.settings.callbackModalClose) {
+				this.settings.callbackModalClose.call(this);
 			}
 			
 			// Reset the filters
@@ -773,11 +775,16 @@
 			
 			// Custom single marker image override
 			if(this.settings.markerImg !== null) {
-					markerImg = this.markerImage(this.settings.markerImg, this.settings.markerDim.width, this.settings.markerDim.height);
+					if(this.settings.markerDim === null) {
+						markerImg = this.markerImage(this.settings.markerImg);
+					}
+					else {
+						markerImg = this.markerImage(this.settings.markerImg, this.settings.markerDim.width, this.settings.markerDim.height);
+					}
 			}
 
 			// Create the default markers
-			if (this.settings.storeLimit === -1 || this.settings.storeLimit > 26 || this.settings.catMarkers !== null) {
+			if (this.settings.storeLimit === -1 || this.settings.storeLimit > 26 || this.settings.catMarkers !== null || this.settings.markerImg !== null) {
 				marker = new google.maps.Marker({
 					position : point,
 					map      : map,
@@ -1550,6 +1557,11 @@
 
 				// Handle no results
 				if (_this.isEmptyObject(locationset)) {
+					// Callback
+					if (_this.settings.callbackNoResults) {
+						_this.settings.callbackNoResults.call(this);
+					}
+					
 					// Hide the map and locations if they're showing
 					if ($mapDiv.hasClass('bh-sl-map-open')) {
 						$this.hide();
@@ -1818,6 +1830,11 @@
 				// Add the list li background colors - this wil be dropped in a future version in favor of CSS
 				$('.' + _this.settings.locationList + ' ul li:even').css('background', _this.settings.listColor1);
 				$('.' + _this.settings.locationList + ' ul li:odd').css('background', _this.settings.listColor2);
+				
+				// Modal ready callback
+				if (_this.settings.modal === true && _this.settings.callbackModalReady) {
+						_this.settings.callbackModalReady.call(this);
+				}
 				
 			});
 		}

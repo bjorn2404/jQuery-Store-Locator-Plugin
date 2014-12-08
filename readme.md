@@ -27,6 +27,19 @@ for even faster loading.
 
 ## Changelog
 
+### Version 2.0.2
+
+* Updated the Handlebars.compile calls when using the inline template options to include the ID hash so that it's
+consistent with the other ID settings.
+* Fixed incorrect callback call in the modalClose method - callbackModalOpen to callbackModalClose.
+* Added callbackModalReady that fires when the the content of the modal is generated.
+* Fixed markerImg setting - previously threw error if markerDim wasn't set.
+
+### Version 2.0.1
+
+* Quick fix to remove a dupicate copyright notice in dist/ file. Copyright was removed from src/jquery.storelocator.js 
+file to prevent duplication with the Grunt Banner task.
+
 ### Version 2.0.0
 
 Version 2 is a complete rewrite of the plugin based on the "basic" plugin pattern of the 
