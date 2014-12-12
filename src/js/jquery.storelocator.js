@@ -1156,7 +1156,7 @@
 		 * @param origin {string} origin address
 		 * @param maxDistance {number} maximum distance if set
 		 */
-		locationsSetup: function (data, l, lat, lng, firstRun, origin, maxDistance) {
+		locationsSetup: function (data, lat, lng, firstRun, origin, maxDistance) {
 			if (typeof origin !== 'undefined') {
 				if (!data.distance) {
 					data.distance = this.geoCodeCalcCalcDistance(lat, lng, data.lat, data.lng, GeoCodeCalc.EarthRadius);
@@ -1166,14 +1166,14 @@
 			// Create the array
 			if (this.settings.maxDistance === true && firstRun !== true && maxDistance !== null) {
 				if (data.distance < maxDistance) {
-					locationset[l] = data;
+					locationset.push( data );
 				}
 				else {
 					return;
 				}
 			}
 			else {
-				locationset[l] = data;
+				locationset.push( data );
 			}
 		},
 
@@ -1487,7 +1487,7 @@
 							}
 						}
 
-						_this.locationsSetup(locationData, i, orig_lat, orig_lng, firstRun, origin, maxDistance);
+						_this.locationsSetup(locationData, orig_lat, orig_lng, firstRun, origin, maxDistance);
 
 						i++;
 					}
@@ -1502,7 +1502,7 @@
 							'description': $(this).find('description').text()
 						};
 
-						_this.locationsSetup(locationData, i, orig_lat, orig_lng, firstRun, origin, maxDistance);
+						_this.locationsSetup(locationData, orig_lat, orig_lng, firstRun, origin, maxDistance);
 
 						i++;
 					});
@@ -1518,7 +1518,7 @@
 							}
 						}
 
-						_this.locationsSetup(locationData, i, orig_lat, orig_lng, firstRun, origin, maxDistance);
+						_this.locationsSetup(locationData, orig_lat, orig_lng, firstRun, origin, maxDistance);
 
 						i++;
 					});
@@ -1649,7 +1649,7 @@
 				}
 
 				// Avoid error if number of locations is less than the default of 26
-				if (_this.settings.storeLimit === -1 || (locationset.length ) < _this.settings.storeLimit) {
+				if (_this.settings.storeLimit === -1 || locationset.length < _this.settings.storeLimit) {
 					storeNum = locationset.length;
 				}
 				else {
