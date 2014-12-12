@@ -27,6 +27,12 @@ for even faster loading.
 
 ## Changelog
 
+### Version 2.0.3
+
+* Fixed bug with maxDistance setting - updated locationsSetup method so that the locationset array uses array.push
+instead of incrementing via a passed in parameter, which was causing undefined array elements and causing errors.
+* Removed testing line from maxdistance-example.html that was left in.
+
 ### Version 2.0.2
 
 * Updated the Handlebars.compile calls when using the inline template options to include the ID hash so that it's
