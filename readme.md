@@ -27,7 +27,7 @@ for even faster loading.
 
 ## Changelog
 
-Version 2.0.4
+### Version 2.0.4
 
 * Fixed bug with maxDistance and pagination setting combination. The last page of of the pagination results was set to
 use the locationsPerPage setting instead of the remaining number, which could have resulted in the plugin trying to 
