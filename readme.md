@@ -27,6 +27,13 @@ for even faster loading.
 
 ## Changelog
 
+Version 2.0.4
+
+* Fixed bug with maxDistance and pagination setting combination. The last page of of the pagination results was set to
+use the locationsPerPage setting instead of the remaining number, which could have resulted in the plugin trying to 
+load undefined locations.
+* Fixed bugs with googleGeocode and reverseGoogleGeocode methods in which references to "this" were undefined.
+
 ### Version 2.0.3
 
 * Fixed bug with maxDistance setting - updated locationsSetup method so that the locationset array uses array.push

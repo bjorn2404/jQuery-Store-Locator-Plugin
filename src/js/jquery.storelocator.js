@@ -428,7 +428,7 @@
 			// If a default location is set
 			if (this.settings.defaultLoc === true) {
 				// The address needs to be determined for the directions link
-				var r = new this.reverseGoogleGeocode();
+				var r = new this.reverseGoogleGeocode(this);
 				var latlng = new google.maps.LatLng(this.settings.defaultLat, this.settings.defaultLng);
 				r.geocode({'latLng': latlng}, function (data) {
 					if (data !== null) {
@@ -470,8 +470,8 @@
 		/**
 		 * Geocode function used to geocode the origin (entered location)
 		 */
-		googleGeocode: function () {
-			var _this = this;
+		googleGeocode: function (thisObj) {
+			var _this = thisObj;
 			var geocoder = new google.maps.Geocoder();
 			this.geocode = function (request, callbackFunction) {
 				geocoder.geocode(request, function (results, status) {
@@ -491,8 +491,8 @@
 		/**
 		 * Reverse geocode to get address for automatic options needed for directions link
 		 */
-		reverseGoogleGeocode: function () {
-			var _this = this;
+		reverseGoogleGeocode: function (thisObj) {
+			var _this = thisObj;
 			var geocoder = new google.maps.Geocoder();
 			this.geocode = function (request, callbackFunction) {
 				geocoder.geocode(request, function (results, status) {
@@ -639,6 +639,7 @@
 		 * @returns {string}
 		 */
 		_paginationOutput: function(currentPage, totalPages) {
+			
 			currentPage = parseFloat(currentPage);
 			var output = '';
 			var nextPage = currentPage + 1;
@@ -650,7 +651,7 @@
 			}
 
 			// Add the numbers
-			for (var p = 0; p < totalPages; p++) {
+			for (var p = 0; p < Math.ceil(totalPages); p++) {
 				var n = p + 1;
 
 				if (p === currentPage) {
@@ -933,7 +934,7 @@
 			var _this = this;
 			var mappingObj = {};
 			// The address needs to be determined for the directions link
-			var r = new this.reverseGoogleGeocode();
+			var r = new this.reverseGoogleGeocode(this);
 			var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 			r.geocode({'latLng': latlng}, function (data) {
 				if (data !== null) {
@@ -1120,7 +1121,7 @@
 				this._start();
 			}
 			else if(addressInput !== '') {
-				var g = new this.googleGeocode();
+				var g = new this.googleGeocode(this);
 				g.geocode({'address': addressInput, 'region': region}, function (data) {
 					if (data !== null) {
 						olat = data.latitude;
@@ -1149,7 +1150,6 @@
 		 * Checks distance of each location and setups up the locationset array
 		 * 
 		 * @param data {Object} location data object
-		 * @param l {number} iterator from the loop processing the data in the mapping function below
 		 * @param lat {number} origin latitude
 		 * @param lng {number} origin longitude
 		 * @param firstRun {boolean} initial load check
@@ -1661,6 +1661,10 @@
 					storeNumToShow = _this.settings.locationsPerPage;
 					storeStart = page * _this.settings.locationsPerPage;
 
+					if( (storeStart + storeNumToShow) > locationset.length ) {
+						storeNumToShow = _this.settings.locationsPerPage - ((storeStart + storeNumToShow) - locationset.length);
+					}
+					
 					locationset = locationset.slice(storeStart, storeStart + storeNumToShow);
 					storeNum = locationset.length;
 				}
