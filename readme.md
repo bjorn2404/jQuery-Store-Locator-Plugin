@@ -27,6 +27,16 @@ for even faster loading.
 
 ## Changelog
 
+### Version 2.0.5
+
+- Fixed typo with originMarker setup.
+- Made the originMarkerDim setting optional when setting a custom origin marker image - defaults to 32px by 32px.
+- Removed geocodeErrorAlert language option and switched error alerts to custom exceptions so users aren't shown 
+multiple alerts.
+- Fixed bug with inline directions where close icon wasn't being removed on page reload.
+- Added callbackListClick that fires when a list element is clicked.
+- Added callbackMarkerClick that fires when a map marker is clicked.
+
 ### Version 2.0.4
 
 * Fixed bug with maxDistance and pagination setting combination. The last page of of the pagination results was set to

@@ -1,6 +1,6 @@
-/*! jQuery Google Maps Store Locator - v2.0.4 - 2014-12-15
+/*! jQuery Google Maps Store Locator - v2.0.5 - 2015-01-04
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
-* Copyright (c) 2014 Bjorn Holine; Licensed MIT */
+* Copyright (c) 2015 Bjorn Holine; Licensed MIT */
 
 ;(function ($, window, document, undefined) {
 	'use strict';
@@ -87,8 +87,9 @@
 		'callbackDirectionsRequest': null,
 		'callbackCloseDirections'  : null,
 		'callbackNoResults'        : null,
+		'callbackListClick'        : null,
+		'callbackMarkerClick'      : null,
 		// Language options
-		'geocodeErrorAlert'        : 'Geocode was not successful for the following reason: ',
 		'addressErrorAlert'        : 'Unable to find address',
 		'autoGeocodeErrorAlert'    : 'Automatic location detection failed. Please fill in your address or zip code.',
 		'distanceErrorAlert'       : 'Unfortunately, our closest location is more than ',
@@ -225,6 +226,9 @@
 			normalset = [];
 			markers = [];
 			$(document).off('click.'+pluginName, '.' + this.settings.locationList + ' li');
+			if( $('.' + this.settings.locationList + ' .bh-sl-close-directions-container').length ) {
+				$('.bh-sl-close-directions-container').remove();
+			}
 		},
 
 		/**
@@ -483,8 +487,8 @@
 						result.longitude = results[0].geometry.location.lng();
 						callbackFunction(result);
 					} else {
-						_this.notify(_this.settings.geocodeErrorAlert + status);
 						callbackFunction(null);
+						throw new Error('Geocode was not successful for the following reason: ' + status);
 					}
 				});
 			};
@@ -505,8 +509,8 @@
 							callbackFunction(result);
 						}
 					} else {
-						_this.notify(_this.settings.geocodeErrorAlert + status);
 						callbackFunction(null);
+						throw new Error('Reverse geocode was not successful for the following reason: ' + status);
 					}
 				});
 			};
@@ -913,9 +917,15 @@
 					infowindow.setContent(formattedAddress);
 					infowindow.open(marker.get('map'), marker);
 					// Focus on the list
-					$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
 					var markerId = marker.get('id');
 					var $selectedLocation = $('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']');
+
+					// Marker click callback
+					if (_this.settings.callbackMarkerClick) {
+						_this.settings.callbackMarkerClick.call(this, marker, markerId, $selectedLocation);
+					}
+					
+					$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
 					$selectedLocation.addClass('list-focus');
 
 					// Scroll list to selected marker
@@ -1059,7 +1069,6 @@
 			}
 			
 			// Remove the close icon, remove the directions, add the list back
-			$('.bh-sl-close-directions-container').remove();
 			$('.' + this.settings.locationList + ' .adp').remove();
 			$('.' + this.settings.locationList + ' ul').fadeIn();
 			
@@ -1724,7 +1733,12 @@
 					}
 					else{
 						if(_this.settings.originMarkerImg !== null) {
-							originImg = this.markerImage(_this.settings.originMarkerImg, _this.settings.originMarkerDim.width, _this.settings.originMarkerDim.height);
+							if(_this.settings.originMarkerDim === null) {
+								originImg = _this.markerImage(_this.settings.originMarkerImg);
+							}
+							else {
+								originImg = _this.markerImage(_this.settings.originMarkerImg, _this.settings.originMarkerDim.width, _this.settings.originMarkerDim.height);
+							}
 						}
 						else {
 							originImg = {
@@ -1806,8 +1820,12 @@
 				// Handle clicks from the list
 				$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li', function () {
 					var markerId = $(this).data('markerid');
-
 					var selectedMarker = markers[markerId];
+
+					// List click callback
+					if (_this.settings.callbackListClick) {
+						_this.settings.callbackListClick.call(this, markerId, selectedMarker);
+					}
 
 					// Focus on the list
 					$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
