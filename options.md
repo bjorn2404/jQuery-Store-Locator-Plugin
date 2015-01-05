@@ -65,7 +65,8 @@
 | callbackDirectionsRequest | null | Callback that fires upon a directions request when using the inline directions option. |
 | callbackCloseDirections | null | Callback that fires when the directions panel closes. |
 | callbackNoResults | null | Callback that fires when no results are found. |
-| geocodeErrorAlert | 'Geocode was not successful for the following reason: ' | Language setting |
+| callbackListClick | null | Callback that fires when a list element is clicked in the location list. |
+| callbackMarkerClick | null | Callback that fires when a map marker is clicked. |
 | addressErrorAlert | 'Unable to find address' | Language setting |
 | autoGeocodeErrorAlert | 'Automatic location detection failed. Please fill in your address or zip code.' | Language setting |
 | distanceErrorAlert | 'Unfortunately, our closest location is more than ' | Language setting |
