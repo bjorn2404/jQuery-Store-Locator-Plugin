@@ -53,6 +53,7 @@
 | infowindowTemplateID | null | ID of infowindow template if using inline Handlebar templates instead of separate files. |
 | taxonomyFilters | null | Filtering object that can be used to set up live filtering (see categories example). |
 | taxonomyFiltersContainer | 'bh-sl-filters-container' | Class of the container around the filters. |
+| exclusiveFiltering | false | Set to true to enable exclusive taxonomy filtering rather than the default inclusive. |
 | querystringParams | false | Set to true to enable query string support for passing input variables from page to page. |
 | callbackNotify | null | Callback that can override the notify method. |
 | callbackBeforeSend | null | Callback that fires before the AJAX request. |
@@ -67,6 +68,7 @@
 | callbackNoResults | null | Callback that fires when no results are found. |
 | callbackListClick | null | Callback that fires when a list element is clicked in the location list. |
 | callbackMarkerClick | null | Callback that fires when a map marker is clicked. |
+| callbackFilters | null | Callback that fires when a filter is changed. |
 | addressErrorAlert | 'Unable to find address' | Language setting |
 | autoGeocodeErrorAlert | 'Automatic location detection failed. Please fill in your address or zip code.' | Language setting |
 | distanceErrorAlert | 'Unfortunately, our closest location is more than ' | Language setting |

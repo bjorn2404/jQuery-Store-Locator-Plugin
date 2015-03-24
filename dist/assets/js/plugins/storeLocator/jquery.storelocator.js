@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.0.5 - 2015-01-04
+/*! jQuery Google Maps Store Locator - v2.0.6 - 2015-03-24
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2015 Bjorn Holine; Licensed MIT */
 
@@ -75,6 +75,7 @@
 		'infowindowTemplateID'     : null,
 		'taxonomyFilters'          : null,
 		'taxonomyFiltersContainer' : 'bh-sl-filters-container',
+		'exclusiveFiltering'       : false,
 		'querystringParams'        : false,
 		'callbackNotify'           : null,
 		'callbackBeforeSend'       : null,
@@ -89,6 +90,7 @@
 		'callbackNoResults'        : null,
 		'callbackListClick'        : null,
 		'callbackMarkerClick'      : null,
+		'callbackFilters'          : null,
 		// Language options
 		'addressErrorAlert'        : 'Unable to find address',
 		'autoGeocodeErrorAlert'    : 'Automatic location detection failed. Please fill in your address or zip code.',
@@ -626,8 +628,25 @@
 
 			for (var k in filters) {
 				if (filters.hasOwnProperty(k)) {
-					if (!(new RegExp(filters[k].join(''), 'i').test(data[k]))) {
-						filterTest = false;
+
+					// Exclusive filtering
+					if(this.settings.exclusiveFiltering === true) {
+						var filterTests = filters[k];
+						var exclusiveTest = [];
+
+						for(var l = 0; l < filterTests.length; l++) {
+							exclusiveTest[l] = new RegExp(filterTests[l], 'i').test(data[k]);
+						}
+
+						if(exclusiveTest.indexOf(true) === -1) {
+							filterTest = false;
+						}
+					}
+					// Inclusive filtering
+					else {
+						if (!(new RegExp(filters[k].join(''), 'i').test(data[k]))) {
+							filterTest = false;
+						}
 					}
 				}
 			}
@@ -951,8 +970,8 @@
 			r.geocode({'latLng': latlng}, function (data) {
 				if (data !== null) {
 					var originAddress = data.address;
-					mappingObj.lat = position.coords.latitude;
-					mappingObj.lng = position.coords.longitude;
+					olat = mappingObj.lat = position.coords.latitude;
+					olng = mappingObj.lng = position.coords.longitude;
 					mappingObj.origin = originAddress;
 					_this.mapping(mappingObj);
 				} else {
@@ -1762,7 +1781,7 @@
 				});
 
 				// Inline directions
-				if(_this.settings.inlineDirections === true){
+				if(_this.settings.inlineDirections === true && typeof origin !== 'undefined') {
 					// Open directions
 					$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li .loc-directions a', function (e) {
 						e.preventDefault();
@@ -1858,6 +1877,11 @@
 				// Modal ready callback
 				if (_this.settings.modal === true && _this.settings.callbackModalReady) {
 						_this.settings.callbackModalReady.call(this);
+				}
+
+				// Filters callback
+				if (_this.settings.callbackFilters) {
+					_this.settings.callbackFilters.call(this, filters);
 				}
 				
 			});
