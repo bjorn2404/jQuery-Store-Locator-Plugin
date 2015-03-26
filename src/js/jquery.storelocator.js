@@ -1175,7 +1175,7 @@
 		},
 
 		/**
-		 * Checks distance of each location and setups up the locationset array
+		 * Checks distance of each location and sets up the locationset array
 		 * 
 		 * @param data {Object} location data object
 		 * @param lat {number} origin latitude
@@ -1192,7 +1192,7 @@
 			}
 
 			// Create the array
-			if (this.settings.maxDistance === true && firstRun !== true && maxDistance !== null) {
+			if (this.settings.maxDistance === true && firstRun !== true && typeof maxDistance !== 'undefined' && maxDistance !== null) {
 				if (data.distance < maxDistance) {
 					locationset.push( data );
 				}
@@ -1440,9 +1440,6 @@
 				maxDistance = mappingObject.distance;
 				page = mappingObject.page;
 			}
-			
-			// Enable the visual refresh https://developers.google.com/maps/documentation/javascript/basics#VisualRefresh
-			google.maps.visualRefresh = true;
 
 			// Set the initial page to zero if not set
 			if (typeof page === 'undefined') {

@@ -33,6 +33,7 @@ for even faster loading.
 * Added callbackFilters that fires when a filter is changed and can return the filter values.
 * Fixed issue with fullMapStart and inlineDirections setting combination.
 * Fixed issue with global olat and olng variables not being set with autoGeocode setting enabled.
+* Fixed issue with maxDistance and autoGeocode setting combination.
 
 ### Version 2.0.5
 
