@@ -35,6 +35,7 @@
 		'distanceAlert'            : 60,
 		'dataType'                 : 'xml',
 		'dataLocation'             : 'data/locations.xml',
+		'dataRaw'                  : null,
 		'xmlElement'               : 'marker',
 		'listColor1'               : '#ffffff',
 		'listColor2'               : '#eeeeee',
@@ -391,39 +392,55 @@
 		 */
 		_getData: function (lat, lng, address) {
 			var _this = this;
-			var d = $.Deferred();
 			
 			// Before send callback
 			if (this.settings.callbackBeforeSend) {
 				this.settings.callbackBeforeSend.call(this, lat, lng, address);
 			}
 
-			// Loading
-			if(this.settings.loading === true){
-				$('.' + this.settings.formContainer).append('<div class="' + this.settings.loadingContainer +'"></div>');
-			}
-
-			// AJAX request
-			$.ajax({
-				type         : 'GET',
-				url          : this.settings.dataLocation + (this.settings.dataType === 'jsonp' ? (this.settings.dataLocation.match(/\?/) ? '&' : '?') + 'callback=?' : ''),
-				// Passing the lat, lng, and address with the AJAX request so they can optionally be used by back-end languages
-				data: {
-					'origLat' : lat,
-					'origLng' : lng,
-					'origAddress': address
-				},
-				dataType     : dataTypeRead,
-				jsonpCallback: (this.settings.dataType === 'jsonp' ? this.settings.callbackJsonp : null)
-			}).done(function (p) {
-				d.resolve(p);
-
-				// Loading remove
-				if(_this.settings.loading === true){
-					$('.' + _this.settings.formContainer + ' .' + _this.settings.loadingContainer).remove();
+			// Raw data
+			if( _this.settings.dataRaw !== null ) {
+				// XML
+				if( dataTypeRead === 'xml' ) {
+					return $.parseXML(_this.settings.dataRaw);
 				}
-			}).fail(d.reject);
-			return d.promise();
+
+				// JSON
+				else if( dataTypeRead === 'json' ) {
+					return $.parseJSON(_this.settings.dataRaw);
+				}
+			}
+			// Remote data
+			else {
+				var d = $.Deferred();
+
+				// Loading
+				if(this.settings.loading === true){
+					$('.' + this.settings.formContainer).append('<div class="' + this.settings.loadingContainer +'"></div>');
+				}
+
+				// AJAX request
+				$.ajax({
+					type         : 'GET',
+					url          : this.settings.dataLocation + (this.settings.dataType === 'jsonp' ? (this.settings.dataLocation.match(/\?/) ? '&' : '?') + 'callback=?' : ''),
+					// Passing the lat, lng, and address with the AJAX request so they can optionally be used by back-end languages
+					data: {
+						'origLat' : lat,
+						'origLng' : lng,
+						'origAddress': address
+					},
+					dataType     : dataTypeRead,
+					jsonpCallback: (this.settings.dataType === 'jsonp' ? this.settings.callbackJsonp : null)
+				}).done(function (p) {
+					d.resolve(p);
+
+					// Loading remove
+					if(_this.settings.loading === true){
+						$('.' + _this.settings.formContainer + ' .' + _this.settings.loadingContainer).remove();
+					}
+				}).fail(d.reject);
+				return d.promise();
+			}
 		},
 
 		/**
@@ -1430,14 +1447,11 @@
 		 */
 		mapping: function (mappingObject) {
 			var _this = this;
-			var orig_lat, orig_lng, origin, name, maxDistance, page, firstRun, marker, bounds, storeStart, storeNumToShow, myOptions, noResults;
-			var i = 0;
+			var orig_lat, orig_lng, origin, originPoint, page;
 			if (!this.isEmptyObject(mappingObject)) {
 				orig_lat = mappingObject.lat;
 				orig_lng = mappingObject.lng;
 				origin = mappingObject.origin;
-				name = mappingObject.name;
-				maxDistance = mappingObject.distance;
 				page = mappingObject.page;
 			}
 
@@ -1452,7 +1466,7 @@
 			}
 			else {
 				// Setup the origin point
-				var originPoint = new google.maps.LatLng(orig_lat, orig_lng);
+				originPoint = new google.maps.LatLng(orig_lat, orig_lng);
 				
 				// If the origin hasn't changed use the existing data so we aren't making unneeded AJAX requests
 				if((typeof originalOrigin !== 'undefined') && (origin === originalOrigin) && (typeof originalData !== 'undefined')) {
@@ -1473,413 +1487,443 @@
 			/**
 			 * Process the location data
 			 */
-			dataRequest.done(function (data) {
-				var $mapDiv = $('#' + _this.settings.mapID);
-				// Get the length unit
-				var distUnit = (_this.settings.lengthUnit === 'km') ? _this.settings.kilometersLang : _this.settings.milesLang;
+			// Raw data
+			if( _this.settings.dataRaw !== null ) {
+				_this.processData(mappingObject, originPoint, dataRequest, page);
+			}
+			// Remote data
+			else {
+				dataRequest.done(function (data) {
+					_this.processData(mappingObject, originPoint, data, page);
+				});
+			}
+		},
 
-				// Save data and origin separately so we can potentially avoid multiple AJAX requests
-				originalData = dataRequest;
-				originalOrigin = origin;
-				
-				// Callback
-				if (_this.settings.callbackSuccess) {
-					_this.settings.callbackSuccess.call(this);
-				}
-				
-				// Set a variable for fullMapStart so we can detect the first run
-				if (_this.settings.fullMapStart === true && $mapDiv.hasClass('bh-sl-map-open') === false) {
-					firstRun = true;
-				}
-				else {
-					_this.reset();
-				}
+		/**
+		 * Processes the location data
+		 *
+		 * @param mappingObject {Object} all the potential mapping properties - latitude, longitude, origin, name, max distance, page
+		 * @param originPoint {Object} LatLng of origin point
+		 * @param data {Object} location data
+		 * @param page {number} current page number
+		 */
+		processData: function (mappingObject, originPoint, data, page) {
+			var _this = this;
+			var i = 0;
+			var orig_lat, orig_lng, origin, name, maxDistance, firstRun, marker, bounds, storeStart, storeNumToShow, myOptions, noResults;
+			if (!this.isEmptyObject(mappingObject)) {
+				orig_lat = mappingObject.lat;
+				orig_lng = mappingObject.lng;
+				origin = mappingObject.origin;
+				name = mappingObject.name;
+				maxDistance = mappingObject.distance;
+			}
 
-				$mapDiv.addClass('bh-sl-map-open');
+			var $mapDiv = $('#' + _this.settings.mapID);
+			// Get the length unit
+			var distUnit = (_this.settings.lengthUnit === 'km') ? _this.settings.kilometersLang : _this.settings.milesLang;
 
-				// Process the location data depending on the data format type
-				if (_this.settings.dataType === 'json' || _this.settings.dataType === 'jsonp') {
-					
-					// Process JSON
-					for(var x = 0; i < data.length; x++){
-						var obj = data[x];
-						var locationData = {};
+			// Save data and origin separately so we can potentially avoid multiple AJAX requests
+			originalData = dataRequest;
+			originalOrigin = origin;
 
-						// Parse each data variable
-						for (var key in obj) {
-							if (obj.hasOwnProperty(key)) {
-								locationData[key] = obj[key];
-							}
-						}
+			// Callback
+			if (_this.settings.callbackSuccess) {
+				_this.settings.callbackSuccess.call(this);
+			}
 
-						_this.locationsSetup(locationData, orig_lat, orig_lng, firstRun, origin, maxDistance);
+			// Set a variable for fullMapStart so we can detect the first run
+			if (_this.settings.fullMapStart === true && $mapDiv.hasClass('bh-sl-map-open') === false) {
+				firstRun = true;
+			}
+			else {
+				_this.reset();
+			}
 
-						i++;
-					}
-				}
-				else if (_this.settings.dataType === 'kml') {
-					// Process KML
-					$(data).find('Placemark').each(function () {
-						var locationData = {
-							'name'       : $(this).find('name').text(),
-							'lat'        : $(this).find('coordinates').text().split(',')[1],
-							'lng'        : $(this).find('coordinates').text().split(',')[0],
-							'description': $(this).find('description').text()
-						};
+			$mapDiv.addClass('bh-sl-map-open');
 
-						_this.locationsSetup(locationData, orig_lat, orig_lng, firstRun, origin, maxDistance);
+			// Process the location data depending on the data format type
+			if (_this.settings.dataType === 'json' || _this.settings.dataType === 'jsonp') {
 
-						i++;
-					});
-				}
-				else {
-					// Process XML
-					$(data).find(_this.settings.xmlElement).each(function () {
-						var locationData = {};
+				// Process JSON
+				for(var x = 0; i < data.length; x++){
+					var obj = data[x];
+					var locationData = {};
 
-						for (var key in this.attributes) {
-							if (this.attributes.hasOwnProperty(key)) {
-								locationData[this.attributes[key].name] = this.attributes[key].value;
-							}
-						}
-
-						_this.locationsSetup(locationData, orig_lat, orig_lng, firstRun, origin, maxDistance);
-
-						i++;
-					});
-				}
-				
-				// Name search - using taxonomy filter to handle
-				if (_this.settings.nameSearch === true) {
-					if(typeof searchInput !== 'undefined') {
-							filters[_this.settings.nameAttribute] = [searchInput];
-					}
-				}
-
-				// Taxonomy filtering setup
-				if (_this.settings.taxonomyFilters !== null || _this.settings.nameSearch === true) {
-					var taxFilters = {};
-					
-					for(var k in filters) {
-						if (filters.hasOwnProperty(k) && filters[k].length > 0) {
-							// Let's use regex
-							for (var z = 0; z < filters[k].length; z++) {
-								// Creating a new object so we don't mess up the original filters
-								if (!taxFilters[k]) {
-									taxFilters[k] = [];
-								}
-								taxFilters[k][z] = '(?=.*\\b' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1") + '\\b)';
-							}
+					// Parse each data variable
+					for (var key in obj) {
+						if (obj.hasOwnProperty(key)) {
+							locationData[key] = obj[key];
 						}
 					}
-					// Filter the data
-					if (!_this.isEmptyObject(taxFilters)) {
-						locationset = $.grep(locationset, function (val) {
-							return _this.filterData(val, taxFilters);
-						});
-					}
+
+					_this.locationsSetup(locationData, orig_lat, orig_lng, firstRun, origin, maxDistance);
+
+					i++;
 				}
-
-				// Handle no results
-				if (_this.isEmptyObject(locationset)) {
-					// Callback
-					if (_this.settings.callbackNoResults) {
-						_this.settings.callbackNoResults.call(this);
-					}
-					
-					// Hide the map and locations if they're showing
-					if ($mapDiv.hasClass('bh-sl-map-open')) {
-						$this.hide();
-					}
-
-					// Append the no results message
-					noResults = $('<li><div class="bh-sl-noresults-title">' + _this.settings.noResultsTitle +  '</div><br><div class="bh-sl-noresults-desc">' + _this.settings.noResultsDesc + '</li>').hide().fadeIn();
-					
-					// Setup a no results location
-					locationset[0] = {
-						'distance': 0,
-						'lat' : 0,
-						'lng': 0
+			}
+			else if (_this.settings.dataType === 'kml') {
+				// Process KML
+				$(data).find('Placemark').each(function () {
+					var locationData = {
+						'name'       : $(this).find('name').text(),
+						'lat'        : $(this).find('coordinates').text().split(',')[1],
+						'lng'        : $(this).find('coordinates').text().split(',')[0],
+						'description': $(this).find('description').text()
 					};
-				}
 
-				// Sort the multi-dimensional array by distance
-				if (typeof origin !== 'undefined') {
-					_this.sortNumerically(locationset);
-				}
+					_this.locationsSetup(locationData, orig_lat, orig_lng, firstRun, origin, maxDistance);
 
-				// Featured locations filtering
-				if (_this.settings.featuredLocations === true) {
-					// Create array for featured locations
-					featuredset = $.grep(locationset, function (val) {
-						return val.featured === 'true';
-					});
+					i++;
+				});
+			}
+			else {
+				// Process XML
+				$(data).find(_this.settings.xmlElement).each(function () {
+					var locationData = {};
 
-					// Create array for normal locations
-					normalset = $.grep(locationset, function (val) {
-						return val.featured !== 'true';
-					});
-
-					// Combine the arrays
-					locationset = [];
-					locationset = featuredset.concat(normalset);
-				}
-
-				// Check the closest marker
-				if (_this.settings.maxDistance === true && firstRun !== true && maxDistance) {
-					if (typeof locationset[0] === 'undefined' || locationset[0].distance > maxDistance) {
-						_this.notify(_this.settings.distanceErrorAlert + maxDistance + ' ' + distUnit);
-						return;
-					}
-				}
-				else {
-					if (_this.settings.distanceAlert !== -1 && locationset[0].distance > _this.settings.distanceAlert) {
-						_this.notify(_this.settings.distanceErrorAlert + _this.settings.distanceAlert + ' ' + distUnit);
-					}
-				}
-
-				// Output page numbers if pagination setting is true
-				if (_this.settings.pagination === true) {
-					_this.paginationSetup(page);
-				}
-
-				// Slide in the map container
-				if (_this.settings.slideMap === true) {
-					$this.slideDown();
-				}
-				
-				// Set up the modal window
-				if (_this.settings.modal === true) {
-					// Callback
-					if (_this.settings.callbackModalOpen) {
-						_this.settings.callbackModalOpen.call(this);
-					}
-
-					// Pop up the modal window
-					$('.' + _this.settings.overlay).fadeIn();
-					// Close modal when close icon is clicked and when background overlay is clicked
-					$(document).on('click.'+pluginName, '.' + _this.settings.closeIcon + ', .' + _this.settings.overlay, function () {
-						_this.modalClose();
-					});
-					// Prevent clicks within the modal window from closing the entire thing
-					$(document).on('click.'+pluginName, '.' + _this.settings.modalWindow, function (e) {
-						e.stopPropagation();
-					});
-					// Close modal when escape key is pressed
-					$(document).on('keyup.'+pluginName, function (e) {
-						if (e.keyCode === 27) {
-							_this.modalClose();
+					for (var key in this.attributes) {
+						if (this.attributes.hasOwnProperty(key)) {
+							locationData[this.attributes[key].name] = this.attributes[key].value;
 						}
+					}
+
+					_this.locationsSetup(locationData, orig_lat, orig_lng, firstRun, origin, maxDistance);
+
+					i++;
+				});
+			}
+
+			// Name search - using taxonomy filter to handle
+			if (_this.settings.nameSearch === true) {
+				if(typeof searchInput !== 'undefined') {
+					filters[_this.settings.nameAttribute] = [searchInput];
+				}
+			}
+
+			// Taxonomy filtering setup
+			if (_this.settings.taxonomyFilters !== null || _this.settings.nameSearch === true) {
+				var taxFilters = {};
+
+				for(var k in filters) {
+					if (filters.hasOwnProperty(k) && filters[k].length > 0) {
+						// Let's use regex
+						for (var z = 0; z < filters[k].length; z++) {
+							// Creating a new object so we don't mess up the original filters
+							if (!taxFilters[k]) {
+								taxFilters[k] = [];
+							}
+							taxFilters[k][z] = '(?=.*\\b' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1") + '\\b)';
+						}
+					}
+				}
+				// Filter the data
+				if (!_this.isEmptyObject(taxFilters)) {
+					locationset = $.grep(locationset, function (val) {
+						return _this.filterData(val, taxFilters);
 					});
 				}
+			}
 
-				// Avoid error if number of locations is less than the default of 26
-				if (_this.settings.storeLimit === -1 || locationset.length < _this.settings.storeLimit) {
-					storeNum = locationset.length;
+			// Handle no results
+			if (_this.isEmptyObject(locationset)) {
+				// Callback
+				if (_this.settings.callbackNoResults) {
+					_this.settings.callbackNoResults.call(this);
 				}
-				else {
-					storeNum = _this.settings.storeLimit;
+
+				// Hide the map and locations if they're showing
+				if ($mapDiv.hasClass('bh-sl-map-open')) {
+					$this.hide();
 				}
 
-				// If pagination is on, change the store limit to the setting and slice the locationset array
-				if (_this.settings.pagination === true) {
-					storeNumToShow = _this.settings.locationsPerPage;
-					storeStart = page * _this.settings.locationsPerPage;
+				// Append the no results message
+				noResults = $('<li><div class="bh-sl-noresults-title">' + _this.settings.noResultsTitle +  '</div><br><div class="bh-sl-noresults-desc">' + _this.settings.noResultsDesc + '</li>').hide().fadeIn();
 
-					if( (storeStart + storeNumToShow) > locationset.length ) {
-						storeNumToShow = _this.settings.locationsPerPage - ((storeStart + storeNumToShow) - locationset.length);
+				// Setup a no results location
+				locationset[0] = {
+					'distance': 0,
+					'lat' : 0,
+					'lng': 0
+				};
+			}
+
+			// Sort the multi-dimensional array by distance
+			if (typeof origin !== 'undefined') {
+				_this.sortNumerically(locationset);
+			}
+
+			// Featured locations filtering
+			if (_this.settings.featuredLocations === true) {
+				// Create array for featured locations
+				featuredset = $.grep(locationset, function (val) {
+					return val.featured === 'true';
+				});
+
+				// Create array for normal locations
+				normalset = $.grep(locationset, function (val) {
+					return val.featured !== 'true';
+				});
+
+				// Combine the arrays
+				locationset = [];
+				locationset = featuredset.concat(normalset);
+			}
+
+			// Check the closest marker
+			if (_this.settings.maxDistance === true && firstRun !== true && maxDistance) {
+				if (typeof locationset[0] === 'undefined' || locationset[0].distance > maxDistance) {
+					_this.notify(_this.settings.distanceErrorAlert + maxDistance + ' ' + distUnit);
+					return;
+				}
+			}
+			else {
+				if (_this.settings.distanceAlert !== -1 && locationset[0].distance > _this.settings.distanceAlert) {
+					_this.notify(_this.settings.distanceErrorAlert + _this.settings.distanceAlert + ' ' + distUnit);
+				}
+			}
+
+			// Output page numbers if pagination setting is true
+			if (_this.settings.pagination === true) {
+				_this.paginationSetup(page);
+			}
+
+			// Slide in the map container
+			if (_this.settings.slideMap === true) {
+				$this.slideDown();
+			}
+
+			// Set up the modal window
+			if (_this.settings.modal === true) {
+				// Callback
+				if (_this.settings.callbackModalOpen) {
+					_this.settings.callbackModalOpen.call(this);
+				}
+
+				// Pop up the modal window
+				$('.' + _this.settings.overlay).fadeIn();
+				// Close modal when close icon is clicked and when background overlay is clicked
+				$(document).on('click.'+pluginName, '.' + _this.settings.closeIcon + ', .' + _this.settings.overlay, function () {
+					_this.modalClose();
+				});
+				// Prevent clicks within the modal window from closing the entire thing
+				$(document).on('click.'+pluginName, '.' + _this.settings.modalWindow, function (e) {
+					e.stopPropagation();
+				});
+				// Close modal when escape key is pressed
+				$(document).on('keyup.'+pluginName, function (e) {
+					if (e.keyCode === 27) {
+						_this.modalClose();
 					}
-					
-					locationset = locationset.slice(storeStart, storeStart + storeNumToShow);
-					storeNum = locationset.length;
-				}
-				else {
-					storeNumToShow = storeNum;
-					storeStart = 0;
+				});
+			}
+
+			// Avoid error if number of locations is less than the default of 26
+			if (_this.settings.storeLimit === -1 || locationset.length < _this.settings.storeLimit) {
+				storeNum = locationset.length;
+			}
+			else {
+				storeNum = _this.settings.storeLimit;
+			}
+
+			// If pagination is on, change the store limit to the setting and slice the locationset array
+			if (_this.settings.pagination === true) {
+				storeNumToShow = _this.settings.locationsPerPage;
+				storeStart = page * _this.settings.locationsPerPage;
+
+				if( (storeStart + storeNumToShow) > locationset.length ) {
+					storeNumToShow = _this.settings.locationsPerPage - ((storeStart + storeNumToShow) - locationset.length);
 				}
 
-				// Google maps settings
-				if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined')) {
-					myOptions = _this.settings.mapSettings;
-					bounds = new google.maps.LatLngBounds();
-				}
-				else if (_this.settings.pagination === true) {
-					// Update the map to focus on the first point in the new set
-					var nextPoint = new google.maps.LatLng(locationset[0].lat, locationset[0].lng);
+				locationset = locationset.slice(storeStart, storeStart + storeNumToShow);
+				storeNum = locationset.length;
+			}
+			else {
+				storeNumToShow = storeNum;
+				storeStart = 0;
+			}
 
-					if (page === 0) {
-						_this.settings.mapSettings.center = originPoint;
-						myOptions = _this.settings.mapSettings;
-					}
-					else {
-						_this.settings.mapSettings.center = nextPoint;
-						myOptions = _this.settings.mapSettings;
-					}
-				}
-				else {
+			// Google maps settings
+			if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined')) {
+				myOptions = _this.settings.mapSettings;
+				bounds = new google.maps.LatLngBounds();
+			}
+			else if (_this.settings.pagination === true) {
+				// Update the map to focus on the first point in the new set
+				var nextPoint = new google.maps.LatLng(locationset[0].lat, locationset[0].lng);
+
+				if (page === 0) {
 					_this.settings.mapSettings.center = originPoint;
 					myOptions = _this.settings.mapSettings;
 				}
+				else {
+					_this.settings.mapSettings.center = nextPoint;
+					myOptions = _this.settings.mapSettings;
+				}
+			}
+			else {
+				_this.settings.mapSettings.center = originPoint;
+				myOptions = _this.settings.mapSettings;
+			}
 
-				// Create the map
-				var map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
+			// Create the map
+			var map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
 
-				// Re-center the map when the browser is resized
-				google.maps.event.addDomListener(window, 'resize', function() {
-					var center = map.getCenter();
-					google.maps.event.trigger(map, 'resize');
-					map.setCenter(center);
-				});
-				
-				// Load the map
-				$this.data(_this.settings.mapID.replace('#', ''), map);
+			// Re-center the map when the browser is resized
+			google.maps.event.addDomListener(window, 'resize', function() {
+				var center = map.getCenter();
+				google.maps.event.trigger(map, 'resize');
+				map.setCenter(center);
+			});
 
-				// Initialize the infowondow
-				var infowindow = new google.maps.InfoWindow();
+			// Load the map
+			$this.data(_this.settings.mapID.replace('#', ''), map);
 
-				// Add origin marker if the setting is set
-				if (_this.settings.originMarker === true) {
-					var originImg = '';
-					
-					// If fullMapStart is on and it's the first run there is no origin
-					if(_this.settings.fullMapStart === false && firstRun === true) {
-						return;
-					}
-					else{
-						if(_this.settings.originMarkerImg !== null) {
-							if(_this.settings.originMarkerDim === null) {
-								originImg = _this.markerImage(_this.settings.originMarkerImg);
-							}
-							else {
-								originImg = _this.markerImage(_this.settings.originMarkerImg, _this.settings.originMarkerDim.width, _this.settings.originMarkerDim.height);
-							}
+			// Initialize the infowondow
+			var infowindow = new google.maps.InfoWindow();
+
+			// Add origin marker if the setting is set
+			if (_this.settings.originMarker === true) {
+				var originImg = '';
+
+				// If fullMapStart is on and it's the first run there is no origin
+				if(_this.settings.fullMapStart === false && firstRun === true) {
+					return;
+				}
+				else{
+					if(_this.settings.originMarkerImg !== null) {
+						if(_this.settings.originMarkerDim === null) {
+							originImg = _this.markerImage(_this.settings.originMarkerImg);
 						}
 						else {
-							originImg = {
-								url: 'https://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-waypoint-a.png'
-							};
+							originImg = _this.markerImage(_this.settings.originMarkerImg, _this.settings.originMarkerDim.width, _this.settings.originMarkerDim.height);
 						}
-
-						marker = new google.maps.Marker({
-							position : originPoint,
-							map      : map,
-							icon     : originImg,
-							draggable: false
-						});
-					}
-				}
-
-				// Handle pagination
-				$(document).on('click.'+pluginName, '.bh-sl-pagination li', function () {
-					// Run paginationChange
-					_this.paginationChange($(this).attr('data-page'));
-				});
-
-				// Inline directions
-				if(_this.settings.inlineDirections === true && typeof origin !== 'undefined') {
-					// Open directions
-					$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li .loc-directions a', function (e) {
-						e.preventDefault();
-						var locID = $(this).closest('li').attr('data-markerid');
-						_this.directionsRequest(origin, locID, map);
-					});
-
-					// Close directions
-					$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' .bh-sl-close-icon', function () {
-						_this.closeDirections();
-					});
-				}
-
-				// Add markers and infowindows loop
-				for (var y = 0; y <= storeNumToShow - 1; y++) {
-					var letter = '';
-
-					if (page > 0) {
-						letter = String.fromCharCode('A'.charCodeAt(0) + (storeStart + y));
 					}
 					else {
-						letter = String.fromCharCode('A'.charCodeAt(0) + y);
+						originImg = {
+							url: 'https://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-waypoint-a.png'
+						};
 					}
-					
-					var point = new google.maps.LatLng(locationset[y].lat, locationset[y].lng);
-					marker = _this.createMarker(point, locationset[y].name, locationset[y].address, letter, map, locationset[y].category);
-					marker.set('id', y);
-					markers[y] = marker;
-					if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined')) {
-						bounds.extend(point);
-					}
-					// Pass variables to the pop-up infowindows
-					_this.createInfowindow(marker, null, infowindow, storeStart, page);
-				}
 
-				// Center and zoom if no origin or zoom was provided
-				if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined')) {
-					map.fitBounds(bounds);
+					marker = new google.maps.Marker({
+						position : originPoint,
+						map      : map,
+						icon     : originImg,
+						draggable: false
+					});
 				}
+			}
 
-				// Create the links that focus on the related marker
-				var locList =  $('.' + _this.settings.locationList + ' ul');
-				locList.empty();
-				// Check the locationset and continue with the list setup or show no results message
-				if(locationset[0].lat === 0 && locationset[0].lng === 0) {
-					locList.append(noResults);
+			// Handle pagination
+			$(document).on('click.'+pluginName, '.bh-sl-pagination li', function () {
+				// Run paginationChange
+				_this.paginationChange($(this).attr('data-page'));
+			});
+
+			// Inline directions
+			if(_this.settings.inlineDirections === true && typeof origin !== 'undefined') {
+				// Open directions
+				$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li .loc-directions a', function (e) {
+					e.preventDefault();
+					var locID = $(this).closest('li').attr('data-markerid');
+					_this.directionsRequest(origin, locID, map);
+				});
+
+				// Close directions
+				$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' .bh-sl-close-icon', function () {
+					_this.closeDirections();
+				});
+			}
+
+			// Add markers and infowindows loop
+			for (var y = 0; y <= storeNumToShow - 1; y++) {
+				var letter = '';
+
+				if (page > 0) {
+					letter = String.fromCharCode('A'.charCodeAt(0) + (storeStart + y));
 				}
 				else {
-					$(markers).each(function (x) {
-						var currentMarker = markers[x];
-						_this.listSetup(currentMarker, storeStart, page);
-					});
+					letter = String.fromCharCode('A'.charCodeAt(0) + y);
 				}
 
-				// Handle clicks from the list
-				$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li', function () {
-					var markerId = $(this).data('markerid');
-					var selectedMarker = markers[markerId];
+				var point = new google.maps.LatLng(locationset[y].lat, locationset[y].lng);
+				marker = _this.createMarker(point, locationset[y].name, locationset[y].address, letter, map, locationset[y].category);
+				marker.set('id', y);
+				markers[y] = marker;
+				if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined')) {
+					bounds.extend(point);
+				}
+				// Pass variables to the pop-up infowindows
+				_this.createInfowindow(marker, null, infowindow, storeStart, page);
+			}
 
-					// List click callback
-					if (_this.settings.callbackListClick) {
-						_this.settings.callbackListClick.call(this, markerId, selectedMarker);
-					}
+			// Center and zoom if no origin or zoom was provided
+			if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined')) {
+				map.fitBounds(bounds);
+			}
 
-					// Focus on the list
-					$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
-					$('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']').addClass('list-focus');
-
-					map.panTo(selectedMarker.getPosition());
-					var listLoc = 'left';
-					if (_this.settings.bounceMarker === true) {
-						selectedMarker.setAnimation(google.maps.Animation.BOUNCE);
-						setTimeout(function () {
-									selectedMarker.setAnimation(null);
-									_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
-								}, 700
-						);
-					}
-					else {
-						_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
-					}
+			// Create the links that focus on the related marker
+			var locList =  $('.' + _this.settings.locationList + ' ul');
+			locList.empty();
+			// Check the locationset and continue with the list setup or show no results message
+			if(locationset[0].lat === 0 && locationset[0].lng === 0) {
+				locList.append(noResults);
+			}
+			else {
+				$(markers).each(function (x) {
+					var currentMarker = markers[x];
+					_this.listSetup(currentMarker, storeStart, page);
 				});
-				
-				// Prevent bubbling from list content links
-				$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li a', function (e) {
-					e.stopPropagation();
-				});
+			}
 
-				// Add the list li background colors - this wil be dropped in a future version in favor of CSS
-				$('.' + _this.settings.locationList + ' ul li:even').css('background', _this.settings.listColor1);
-				$('.' + _this.settings.locationList + ' ul li:odd').css('background', _this.settings.listColor2);
-				
-				// Modal ready callback
-				if (_this.settings.modal === true && _this.settings.callbackModalReady) {
-						_this.settings.callbackModalReady.call(this);
+			// Handle clicks from the list
+			$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li', function () {
+				var markerId = $(this).data('markerid');
+				var selectedMarker = markers[markerId];
+
+				// List click callback
+				if (_this.settings.callbackListClick) {
+					_this.settings.callbackListClick.call(this, markerId, selectedMarker);
 				}
 
-				// Filters callback
-				if (_this.settings.callbackFilters) {
-					_this.settings.callbackFilters.call(this, filters);
+				// Focus on the list
+				$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
+				$('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']').addClass('list-focus');
+
+				map.panTo(selectedMarker.getPosition());
+				var listLoc = 'left';
+				if (_this.settings.bounceMarker === true) {
+					selectedMarker.setAnimation(google.maps.Animation.BOUNCE);
+					setTimeout(function () {
+							selectedMarker.setAnimation(null);
+							_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
+						}, 700
+					);
 				}
-				
+				else {
+					_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
+				}
 			});
+
+			// Prevent bubbling from list content links
+			$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li a', function (e) {
+				e.stopPropagation();
+			});
+
+			// Add the list li background colors - this wil be dropped in a future version in favor of CSS
+			$('.' + _this.settings.locationList + ' ul li:even').css('background', _this.settings.listColor1);
+			$('.' + _this.settings.locationList + ' ul li:odd').css('background', _this.settings.listColor2);
+
+			// Modal ready callback
+			if (_this.settings.modal === true && _this.settings.callbackModalReady) {
+				_this.settings.callbackModalReady.call(this);
+			}
+
+			// Filters callback
+			if (_this.settings.callbackFilters) {
+				_this.settings.callbackFilters.call(this, filters);
+			}
+
 		}
 
 	});

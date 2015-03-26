@@ -15,6 +15,7 @@
 | distanceAlert | 60 | Displays alert if there are no locations with 60 m/km of the user's location. Set to -1 to disable. |
 | dataType | 'xml' | The format of the data source. Accepted values include kml, xml, json, and jsonp. |
 | dataLocation | 'data/locations.xml' | The path to the location data. |
+| dataRaw | null | Accepts raw KML, XML, or JSON instead of using a remote file. |
 | xmlElement | 'marker' | XML element used for locations (tag). |
 | listColor1 | '#ffffff' | Background color of the odd list elements. |
 | listColor2 | '#eeeeee' | Background color of the even list elements. |
