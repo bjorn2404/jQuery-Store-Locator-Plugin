@@ -40,7 +40,9 @@
     <script src="assets/js/plugins/storeLocator/jquery.storelocator.js"></script>
 		<script>
 			$(function() {
-				$('#map-container').storeLocator();
+				$('#map-container').storeLocator({
+					'visibleMarkersList': true
+				});
 			});
 		</script>
 

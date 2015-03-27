@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.0.6 - 2015-03-26
+/*! jQuery Google Maps Store Locator - v2.0.6 - 2015-03-27
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2015 Bjorn Holine; Licensed MIT */
 
@@ -68,6 +68,7 @@
 		'nameSearch'               : false,
 		'searchID'                 : 'bh-sl-search',
 		'nameAttribute'            : 'name',
+		'visibleMarkersList'       : false,
 		'infowindowTemplatePath'   : 'assets/js/plugins/storeLocator/templates/infowindow-description.html',
 		'listTemplatePath'         : 'assets/js/plugins/storeLocator/templates/location-list-description.html',
 		'KMLinfowindowTemplatePath': 'assets/js/plugins/storeLocator/templates/kml-infowindow-description.html',
@@ -1443,6 +1444,32 @@
 		},
 
 		/**
+		 * Updates the location list to reflect the markers that are displayed on the map
+		 *
+		 * @param markers {Object} Map markers
+		 * @param map {Object} Google map
+		 */
+		checkVisibleMarkers: function(markers, map) {
+			var _this = this;
+			var locations, listHtml;
+
+			// Empty the location list
+			$('.' + this.settings.locationList + ' ul').empty();
+
+			// Set up the new list
+			$(markers).each(function(x, marker){
+				if(map.getBounds().contains(marker.getPosition())) {
+					// Define the location data
+					_this.listSetup(marker, 0, 0);
+
+					// Set up the list template with the location data
+					listHtml = listTemplate(locations);
+					$('.' + _this.settings.locationList + ' ul').append(listHtml);
+				}
+			});
+		},
+
+		/**
 		 * The primary mapping function that runs everything
 		 * 
 		 * @param mappingObject {Object} all the potential mapping properties - latitude, longitude, origin, name, max distance, page
@@ -1915,6 +1942,24 @@
 			// Add the list li background colors - this wil be dropped in a future version in favor of CSS
 			$('.' + _this.settings.locationList + ' ul li:even').css('background', _this.settings.listColor1);
 			$('.' + _this.settings.locationList + ' ul li:odd').css('background', _this.settings.listColor2);
+
+			// Visible markers list
+			if(_this.settings.visibleMarkersList === true) {
+				// Add event listener to filter the list when the map is fully loaded
+				google.maps.event.addListenerOnce(map, 'idle', function(){
+					_this.checkVisibleMarkers(markers, map);
+				});
+
+				// Add event listener for center change
+				google.maps.event.addListener(map, 'center_changed', function() {
+					_this.checkVisibleMarkers(markers, map);
+				});
+
+				// Add event listener for zoom change
+				google.maps.event.addListener(map, 'zoom_changed', function() {
+					_this.checkVisibleMarkers(markers, map);
+				});
+			}
 
 			// Modal ready callback
 			if (_this.settings.modal === true && _this.settings.callbackModalReady) {
