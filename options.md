@@ -46,6 +46,7 @@
 | nameSearch | false | Set to true to allow searching for locations by name using separate searchID field. |
 | searchID | 'bh-sl-search' | ID of the search input form field for location name searching. |
 | nameAttribute | 'name' | If using nameSearch, the data attribute used for the location name in the data file. |
+| visibleMarkersList | false | Set to true to have the location list only show data from markers that are visible on the map. |
 | infowindowTemplatePath | 'templates/infowindow-description.html' | Path to the default infowindow template. |
 | listTemplatePath | 'templates/location-list-description.html' | Path to the default list template. |
 | KMLinfowindowTemplatePath | 'templates/kml-infowindow-description.html' | Path to the KML infowindow template – used if dataType is set to kml. |
