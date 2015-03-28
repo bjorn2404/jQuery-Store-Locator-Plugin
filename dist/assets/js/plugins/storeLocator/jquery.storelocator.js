@@ -1539,7 +1539,7 @@
 		processData: function (mappingObject, originPoint, data, page) {
 			var _this = this;
 			var i = 0;
-			var orig_lat, orig_lng, origin, name, maxDistance, firstRun, marker, bounds, storeStart, storeNumToShow, myOptions, noResults;
+			var orig_lat, orig_lng, origin, name, maxDistance, firstRun, marker, bounds, storeStart, storeNumToShow, myOptions, noResults, distError;
 			if (!this.isEmptyObject(mappingObject)) {
 				orig_lat = mappingObject.lat;
 				orig_lng = mappingObject.lng;
@@ -1709,6 +1709,7 @@
 			else {
 				if (_this.settings.distanceAlert !== -1 && locationset[0].distance > _this.settings.distanceAlert) {
 					_this.notify(_this.settings.distanceErrorAlert + _this.settings.distanceAlert + ' ' + distUnit);
+					distError = true;
 				}
 			}
 
@@ -1773,7 +1774,7 @@
 			}
 
 			// Google maps settings
-			if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined')) {
+			if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined') || (distError === true)) {
 				myOptions = _this.settings.mapSettings;
 				bounds = new google.maps.LatLngBounds();
 			}
@@ -1798,7 +1799,7 @@
 			// Create the map
 			var map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
 
-			// Re-center the map when the browser is resized
+			// Re-center the map when the browser is re-sized
 			google.maps.event.addDomListener(window, 'resize', function() {
 				var center = map.getCenter();
 				google.maps.event.trigger(map, 'resize');
@@ -1879,15 +1880,15 @@
 				marker = _this.createMarker(point, locationset[y].name, locationset[y].address, letter, map, locationset[y].category);
 				marker.set('id', y);
 				markers[y] = marker;
-				if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined')) {
+				if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined') || (distError === true)) {
 					bounds.extend(point);
 				}
 				// Pass variables to the pop-up infowindows
 				_this.createInfowindow(marker, null, infowindow, storeStart, page);
 			}
 
-			// Center and zoom if no origin or zoom was provided
-			if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined')) {
+			// Center and zoom if no origin or zoom was provided, or distance of first marker is greater than distanceAlert
+			if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined') || (distError === true)) {
 				map.fitBounds(bounds);
 			}
 
