@@ -63,7 +63,7 @@ $data = '<?xml version="1.0" encoding="utf-8"?>
 	</div>
 </div>
 
-<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
 <script src="assets/js/libs/handlebars.min.js"></script>
 <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <script src="assets/js/plugins/storeLocator/jquery.storelocator.js"></script>
