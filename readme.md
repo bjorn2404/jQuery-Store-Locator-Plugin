@@ -27,15 +27,29 @@ for even faster loading.
 
 ## Changelog
 
+### Version 2.0.6
+
+* Added the option to filter data exclusively rather than inclusively with the exclusiveFiltering setting.
+* Added callbackFilters that fires when a filter is changed and returns the filter values if needed.
+* Added dataRaw option to use raw KML, XML or JSON data instead of the AJAX call.
+* Added basic raw data example rawdata-example.php file.
+* Added visibleMarkersList option that updates the location list to only display data from the markers that are curently
+displayed on the map.
+* Changed the distance error functionality so that the map centers and zooms automatically and all locations are
+displayed on the map.
+* Fixed issue with fullMapStart and inlineDirections setting combination.
+* Fixed issue with global olat and olng variables not being set with autoGeocode setting enabled.
+* Fixed issue with maxDistance and autoGeocode setting combination.
+
 ### Version 2.0.5
 
-- Fixed typo with originMarker setup.
-- Made the originMarkerDim setting optional when setting a custom origin marker image - defaults to 32px by 32px.
-- Removed geocodeErrorAlert language option and switched error alerts to custom exceptions so users aren't shown 
+* Fixed typo with originMarker setup.
+* Made the originMarkerDim setting optional when setting a custom origin marker image - defaults to 32px by 32px.
+* Removed geocodeErrorAlert language option and switched error alerts to custom exceptions so users aren't shown
 multiple alerts.
-- Fixed bug with inline directions where close icon wasn't being removed on page reload.
-- Added callbackListClick that fires when a list element is clicked.
-- Added callbackMarkerClick that fires when a map marker is clicked.
+* Fixed bug with inline directions where close icon wasn't being removed on page reload.
+* Added callbackListClick that fires when a list element is clicked.
+* Added callbackMarkerClick that fires when a map marker is clicked.
 
 ### Version 2.0.4
 

@@ -22,7 +22,7 @@
 
 	/**
 	 * This file contains very minimal testing. I may or may not do more extensive tests -
-	 * more or lesss playing around with it for the frist time
+	 * more or less playing around with it for the first time
 	 */
 
   module('storeLocator', {
@@ -106,6 +106,16 @@
 	});
 
 	/**
+	 * Round number
+	 */
+	test('roundNumber()', 2, function() {
+		var $this = $('#map-container').data('plugin_storeLocator');
+
+		deepEqual($this.roundNumber(2.345432, 0), 2, 'Round down test');
+		deepEqual($this.roundNumber(2.694928, 0), 3, 'Round up test');
+	});
+
+	/**
 	 * Empty object test
 	 */
 	test('isEmptyObject()', 2, function() {
@@ -118,5 +128,107 @@
 		deepEqual($this.isEmptyObject(emptyObj), true, 'Empty object test');
 		deepEqual($this.isEmptyObject(nonEmptyObj), false, 'Empty object fail test');
 	});
+
+	/**
+	 * Empty object values test
+	 */
+	test('hasEmptyObjectVals()', 3, function() {
+		var $this = $('#map-container').data('plugin_storeLocator');
+		var emptyObj = {};
+		var emptyObjVals = {
+			'test1' : '',
+			'test2' : ''
+		};
+		var nonEmptyObj = {
+			'test': 'testing'
+		};
+
+		deepEqual($this.hasEmptyObjectVals(emptyObj), true, 'Empty object test');
+		deepEqual($this.hasEmptyObjectVals(emptyObjVals), true, 'Empty object vals test');
+		deepEqual($this.hasEmptyObjectVals(nonEmptyObj), false, 'Empty object fail test');
+	});
+
+
+	/**
+	 * Sort locations (array of objects) numerically by distance test
+	 */
+	test('sortNumerically()', 1, function() {
+		var $this = $('#map-container').data('plugin_storeLocator');
+		var positiveTest = [
+			{ 'distance': 9 },
+			{ 'distance': 2 },
+			{ 'distance': 30 },
+			{ 'distance': 5 }
+		];
+		var positiveMatch = [
+			{ 'distance': 2 },
+			{ 'distance': 5 },
+			{ 'distance': 9 },
+			{ 'distance': 30 }
+		];
+
+		$this.sortNumerically(positiveTest);
+
+		deepEqual(positiveTest, positiveMatch, 'Positive test');
+	});
+
+	/**
+	 * Filter data test
+	 */
+	test('filterData()', 2, function() {
+		var filter, filters, locationset, locationMatch, locationsMatch, inclusiveTest, exclusiveTest;
+		var $this = $('#map-container').data('plugin_storeLocator');
+
+		// Single filter
+		filter = {
+			'city': ['Minneapolis']
+		};
+
+		// Multi-filter
+		filters = {
+			'city': ['Minneapolis', 'St. Paul']
+		};
+
+		locationset = [{
+			'city': 'St. Paul',
+			'state': 'MN'
+		}, {
+			'city': 'Des Moines',
+			'state': 'IA'
+		}, {
+			'city': 'Minneapolis',
+			'state': 'MN'
+		}];
+
+		locationMatch = [{
+			'city': 'Minneapolis',
+			'state': 'MN'
+		}];
+
+		locationsMatch = [{
+			'city': 'St. Paul',
+			'state': 'MN'
+		}, {
+			'city': 'Minneapolis',
+			'state': 'MN'
+		}];
+
+		inclusiveTest = $.grep(locationset, function (val, i) {
+			return $this.filterData(val, filter);
+		});
+
+		// Inclusive test
+		deepEqual(inclusiveTest, locationMatch, 'Inclusive filtering test');
+
+		$this.settings.exclusiveFiltering = true;
+
+		exclusiveTest = $.grep(locationset, function (val, i) {
+			return $this.filterData(val, filters);
+		});
+
+		// Exclusive test
+		deepEqual(exclusiveTest, locationsMatch, 'Exclusive filtering test');
+	});
+
 	
 }(jQuery));

@@ -15,6 +15,7 @@
 | distanceAlert | 60 | Displays alert if there are no locations with 60 m/km of the user's location. Set to -1 to disable. |
 | dataType | 'xml' | The format of the data source. Accepted values include kml, xml, json, and jsonp. |
 | dataLocation | 'data/locations.xml' | The path to the location data. |
+| dataRaw | null | Accepts raw KML, XML, or JSON instead of using a remote file. |
 | xmlElement | 'marker' | XML element used for locations (tag). |
 | listColor1 | '#ffffff' | Background color of the odd list elements. |
 | listColor2 | '#eeeeee' | Background color of the even list elements. |
@@ -45,6 +46,7 @@
 | nameSearch | false | Set to true to allow searching for locations by name using separate searchID field. |
 | searchID | 'bh-sl-search' | ID of the search input form field for location name searching. |
 | nameAttribute | 'name' | If using nameSearch, the data attribute used for the location name in the data file. |
+| visibleMarkersList | false | Set to true to have the location list only show data from markers that are visible on the map. |
 | infowindowTemplatePath | 'templates/infowindow-description.html' | Path to the default infowindow template. |
 | listTemplatePath | 'templates/location-list-description.html' | Path to the default list template. |
 | KMLinfowindowTemplatePath | 'templates/kml-infowindow-description.html' | Path to the KML infowindow template – used if dataType is set to kml. |
@@ -53,6 +55,7 @@
 | infowindowTemplateID | null | ID of infowindow template if using inline Handlebar templates instead of separate files. |
 | taxonomyFilters | null | Filtering object that can be used to set up live filtering (see categories example). |
 | taxonomyFiltersContainer | 'bh-sl-filters-container' | Class of the container around the filters. |
+| exclusiveFiltering | false | Set to true to enable exclusive taxonomy filtering rather than the default inclusive. |
 | querystringParams | false | Set to true to enable query string support for passing input variables from page to page. |
 | callbackNotify | null | Callback that can override the notify method. |
 | callbackBeforeSend | null | Callback that fires before the AJAX request. |
@@ -67,6 +70,7 @@
 | callbackNoResults | null | Callback that fires when no results are found. |
 | callbackListClick | null | Callback that fires when a list element is clicked in the location list. |
 | callbackMarkerClick | null | Callback that fires when a map marker is clicked. |
+| callbackFilters | null | Callback that fires when a filter is changed. |
 | addressErrorAlert | 'Unable to find address' | Language setting |
 | autoGeocodeErrorAlert | 'Automatic location detection failed. Please fill in your address or zip code.' | Language setting |
 | distanceErrorAlert | 'Unfortunately, our closest location is more than ' | Language setting |
