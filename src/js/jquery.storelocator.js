@@ -903,7 +903,7 @@
 					'markerid': markerId,
 					'marker'  : indicator,
 					'length'  : distLength,
-					'origin'  : addressInput
+					'origin'  : originalOrigin
 				})]
 			};
 		},
