@@ -27,6 +27,12 @@ for even faster loading.
 
 ## Changelog
 
+### Version 2.0.7
+
+* Fixed bug where reverse geocoding wasn't passing the origin to the templates (autogeocode and default location),
+causing incorrect direction links.
+* Updated location list directions link to use https.
+
 ### Version 2.0.6
 
 * Added the option to filter data exclusively rather than inclusively with the exclusiveFiltering setting.
