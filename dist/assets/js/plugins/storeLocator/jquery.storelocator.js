@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.0.7 - 2015-04-02
+/*! jQuery Google Maps Store Locator - v2.0.8 - 2015-04-21
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2015 Bjorn Holine; Licensed MIT */
 
@@ -1031,7 +1031,7 @@
 		 * @returns {string} formatted address
 		 */
 		getAddressByMarker: function(markerID) {
-			var formattedAddress = null;
+			var formattedAddress = "";
 			// Set up formatted address
 			if(locationset[markerID].address){ formattedAddress += locationset[markerID].address + ' '; }
 			if(locationset[markerID].address2){ formattedAddress += locationset[markerID].address2 + ' '; }
@@ -1138,28 +1138,32 @@
 				e.preventDefault();
 			}
 
-			// Get the distance if set
-			if (this.settings.maxDistance === true) {
-				distance = $('#' + this.settings.maxDistanceID).val();
-			}
-
+			// Query string parameters
 			if(this.settings.querystringParams === true) {
-
 				// Check for query string parameters
-				if(this.getQueryString(this.settings.addressID) || this.getQueryString(this.settings.searchID)){
+				if(this.getQueryString(this.settings.addressID) || this.getQueryString(this.settings.searchID) || this.getQueryString(this.settings.maxDistanceID)){
 					addressInput = this.getQueryString(this.settings.addressID);
 					searchInput = this.getQueryString(this.settings.searchID);
+					distance = this.getQueryString(this.settings.maxDistanceID);
 				}
 				else{
 					// Get the user input and use it
 					addressInput = $('#' + this.settings.addressID).val();
 					searchInput = $('#' + this.settings.searchID).val();
+					// Get the distance if set
+					if (this.settings.maxDistance === true) {
+						distance = $('#' + this.settings.maxDistanceID).val();
+					}
 				}
 			}
 			else {
 				// Get the user input and use it
 				addressInput = $('#' + this.settings.addressID).val();
 				searchInput = $('#' + this.settings.searchID).val();
+				// Get the distance if set
+				if (this.settings.maxDistance === true) {
+					distance = $('#' + this.settings.maxDistanceID).val();
+				}
 			}
 
 			// Get the region setting if set
@@ -1169,24 +1173,37 @@
 				this._start();
 			}
 			else if(addressInput !== '') {
-				var g = new this.googleGeocode(this);
-				g.geocode({'address': addressInput, 'region': region}, function (data) {
-					if (data !== null) {
-						olat = data.latitude;
-						olng = data.longitude;
 
-						// Run the mapping function
-						mappingObj.lat = olat;
-						mappingObj.lng = olng;
-						mappingObj.origin = addressInput;
-						mappingObj.name = searchInput;
-						mappingObj.distance = distance;
-						_this.mapping(mappingObj);
-					} else {
-						// Unable to geocode
-						_this.notify(_this.settings.addressErrorAlert);
-					}
-				});
+				// Geocode the origin if needed
+				if(typeof originalOrigin !== 'undefined' && typeof olat !== 'undefined' && typeof olng !== 'undefined' && (addressInput === originalOrigin)) {
+					// Run the mapping function
+					mappingObj.lat = olat;
+					mappingObj.lng = olng;
+					mappingObj.origin = addressInput;
+					mappingObj.name = searchInput;
+					mappingObj.distance = distance;
+					_this.mapping(mappingObj);
+				}
+				else {
+					var g = new this.googleGeocode(this);
+					g.geocode({'address': addressInput, 'region': region}, function (data) {
+						if (data !== null) {
+							olat = data.latitude;
+							olng = data.longitude;
+
+							// Run the mapping function
+							mappingObj.lat = olat;
+							mappingObj.lng = olng;
+							mappingObj.origin = addressInput;
+							mappingObj.name = searchInput;
+							mappingObj.distance = distance;
+							_this.mapping(mappingObj);
+						} else {
+							// Unable to geocode
+							_this.notify(_this.settings.addressErrorAlert);
+						}
+					});
+				}
 			}
 			else if(searchInput !== '') {
 				mappingObj.name = searchInput;

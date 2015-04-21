@@ -27,6 +27,13 @@ for even faster loading.
 
 ## Changelog
 
+### Version 2.0.8
+
+* Fixed issue with inline directions where "null" was prepended to the destination address.
+* Updated processForm method to accept max distance query string parameter.
+* Updated processForm method to use existing origin data if it's presenta and matches to avoid unecessary geocode 
+requests.
+
 ### Version 2.0.7
 
 * Fixed bug where reverse geocoding wasn't passing the origin to the templates (autogeocode and default location),
