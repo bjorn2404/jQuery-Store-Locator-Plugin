@@ -470,7 +470,7 @@
 
 			// If show full map option is true
 			if (this.settings.fullMapStart === true) {
-				if(this.settings.querystringParams === true && this.getQueryString(this.settings.addressID) || this.getQueryString(this.settings.searchID)) {
+				if((this.settings.querystringParams === true && this.getQueryString(this.settings.addressID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.searchID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.maxDistanceID))) {
 					this.processForm(null);
 				}
 				else {
@@ -1228,7 +1228,15 @@
 
 			// Create the array
 			if (this.settings.maxDistance === true && firstRun !== true && typeof maxDistance !== 'undefined' && maxDistance !== null) {
-				if (data.distance < maxDistance) {
+				if (data.distance <= maxDistance) {
+					locationset.push( data );
+				}
+				else {
+					return;
+				}
+			}
+			else if(this.settings.maxDistance === true && this.settings.querystringParams === true && this.settings.maxDistance === true && typeof maxDistance !== 'undefined' && maxDistance !== null) {
+				if (data.distance <= maxDistance) {
 					locationset.push( data );
 				}
 				else {
