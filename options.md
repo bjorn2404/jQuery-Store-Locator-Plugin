@@ -5,7 +5,7 @@
 | formContainer | 'bh-sl-form-container' | Class of the container around the form. |
 | formID | 'bh-sl-user-location' | ID of the input form. |
 | addressID | 'bh-sl-address' | ID of the address input form field. |
-| regionID | 'bh-sl-region' | ID of the region input form field for country region biasing select field. |
+| regionID | 'bh-sl-region' | ID of the region select form field for country region biasing. |
 | mapSettings | { zoom : 12, mapTypeId: google.maps.MapTypeId.ROADMAP } | Google maps settings object. Add all settings including zoom and map type if overriding. |
 | markerImg | null | Replacement marker image used for all locations |
 | markerDim | null | Replacement marker dimensions object - ex value: { height: 20, width: 20 } |
