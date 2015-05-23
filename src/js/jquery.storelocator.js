@@ -370,7 +370,7 @@
 				$(document).on('click.'+pluginName, '.' + this.settings.formContainer + ' button', function (e) {
 					_this.processForm(e);
 				});
-				$(document).on('keyup.'+pluginName, function (e) {
+				$(document).on('keydown.'+pluginName, function (e) {
 					if (e.keyCode === 13 && $('#' + _this.settings.addressID).is(':focus')) {
 						_this.processForm(e);
 					}

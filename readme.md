@@ -35,7 +35,8 @@ for even faster loading.
 requests.
 * Changed infowindow and location list templates so that the comma is added if the city is available.
 * Updated max distance check to less than or equal to the selected distance vs. just less than.
-* Updated regionID description in options.md for clarity. 
+* Updated regionID description in options.md for clarity.
+* Updated formEventHandler method to prevent ASP.net form submission on keydown instead of keyup.
 
 ### Version 2.0.7
 
