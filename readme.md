@@ -31,14 +31,14 @@ for even faster loading.
 
 * Fixed issue with inline directions where "null" was prepended to the destination address.
 * Updated processForm method to accept max distance query string parameter.
-* Updated processForm method to use existing origin data if it's present and matches to avoid unecessary geocode 
+* Updated processForm method to use existing origin data if it's present and matches to avoid unnecessary geocode 
 requests.
 * Changed infowindow and location list templates so that the comma is added if the city is available.
 * Updated max distance check to less than or equal to the selected distance vs. just less than.
 * Updated regionID description in options.md for clarity.
 * Updated formEventHandler method to prevent ASP.net form submission on keydown instead of keyup.
 * Updated mapSettings description in options.md to highlight that zoom can be set to 0 for automatic centering and zooming.
-* Fixed close directiosn bug where close icon couldn't be clicked more than two times.
+* Fixed close directions bug where close icon couldn't be clicked more than two times.
 
 ### Version 2.0.7
 
