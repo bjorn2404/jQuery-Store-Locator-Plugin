@@ -1880,11 +1880,11 @@
 					e.preventDefault();
 					var locID = $(this).closest('li').attr('data-markerid');
 					_this.directionsRequest(origin, locID, map);
-				});
 
-				// Close directions
-				$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' .bh-sl-close-icon', function () {
-					_this.closeDirections();
+					// Close directions
+					$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' .bh-sl-close-icon', function () {
+						_this.closeDirections();
+					});
 				});
 			}
 

@@ -37,6 +37,8 @@ requests.
 * Updated max distance check to less than or equal to the selected distance vs. just less than.
 * Updated regionID description in options.md for clarity.
 * Updated formEventHandler method to prevent ASP.net form submission on keydown instead of keyup.
+* Updated mapSettings description in options.md to highlight that zoom can be set to 0 for automatic centering and zooming.
+* Fixed close directiosn bug where close icon couldn't be clicked more than two times.
 
 ### Version 2.0.7
 

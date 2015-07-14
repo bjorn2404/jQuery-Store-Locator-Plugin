@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.0.8 - 2015-05-23
+/*! jQuery Google Maps Store Locator - v2.0.8 - 2015-07-13
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2015 Bjorn Holine; Licensed MIT */
 
@@ -1882,11 +1882,11 @@
 					e.preventDefault();
 					var locID = $(this).closest('li').attr('data-markerid');
 					_this.directionsRequest(origin, locID, map);
-				});
 
-				// Close directions
-				$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' .bh-sl-close-icon', function () {
-					_this.closeDirections();
+					// Close directions
+					$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' .bh-sl-close-icon', function () {
+						_this.closeDirections();
+					});
 				});
 			}
 
