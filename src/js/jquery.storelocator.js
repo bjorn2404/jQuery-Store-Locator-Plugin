@@ -1130,6 +1130,9 @@
 		processForm: function (e) {
 			var _this = this;
 			var distance = null;
+			var $addressInput = $('#' + this.settings.addressID);
+			var $searchInput = $('#' + this.settings.searchID);
+			var $distanceInput = $('#' + this.settings.maxDistanceID);
 
 			// Stop the form submission
 			if(typeof e !== 'undefined' && e !== null) {
@@ -1143,24 +1146,35 @@
 					addressInput = this.getQueryString(this.settings.addressID);
 					searchInput = this.getQueryString(this.settings.searchID);
 					distance = this.getQueryString(this.settings.maxDistanceID);
+
+					// The form should override the query string parameters
+					if($('#' + this.settings.addressID).val() !== '') {
+						addressInput = $addressInput.val();
+					}
+					if($searchInput.val() !== '') {
+						searchInput = $searchInput.val();
+					}
+					if($distanceInput.val() !== '') {
+						distance = $distanceInput.val();
+					}
 				}
 				else{
 					// Get the user input and use it
-					addressInput = $('#' + this.settings.addressID).val();
-					searchInput = $('#' + this.settings.searchID).val();
+					addressInput = $addressInput.val();
+					searchInput = $searchInput.val();
 					// Get the distance if set
 					if (this.settings.maxDistance === true) {
-						distance = $('#' + this.settings.maxDistanceID).val();
+						distance = $distanceInput.val();
 					}
 				}
 			}
 			else {
 				// Get the user input and use it
-				addressInput = $('#' + this.settings.addressID).val();
-				searchInput = $('#' + this.settings.searchID).val();
+				addressInput = $addressInput.val();
+				searchInput = $searchInput.val();
 				// Get the distance if set
 				if (this.settings.maxDistance === true) {
-					distance = $('#' + this.settings.maxDistanceID).val();
+					distance = $distanceInput.val();
 				}
 			}
 
