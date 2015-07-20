@@ -5,8 +5,8 @@
 | formContainer | 'bh-sl-form-container' | Class of the container around the form. |
 | formID | 'bh-sl-user-location' | ID of the input form. |
 | addressID | 'bh-sl-address' | ID of the address input form field. |
-| regionID | 'bh-sl-region' | ID of the region input form field for country region biasing select field. |
-| mapSettings | { zoom : 12, mapTypeId: google.maps.MapTypeId.ROADMAP } | Google maps settings object. Add all settings including zoom and map type if overriding. |
+| regionID | 'bh-sl-region' | ID of the region select form field for country region biasing. |
+| mapSettings | { zoom : 12, mapTypeId: google.maps.MapTypeId.ROADMAP } | Google maps settings object. Add all settings including zoom and map type if overriding. Set zoom to 0 to automatically center and zoom to show all display markers on the map |
 | markerImg | null | Replacement marker image used for all locations |
 | markerDim | null | Replacement marker dimensions object - ex value: { height: 20, width: 20 } |
 | catMarkers | null | Multiple replacement marker images based on categories object. Value should be array with image path followed by dimensions - ex value: catMarkers : {'Restaurant' : ['img/red-marker.svg', 32, 32]}
@@ -34,7 +34,7 @@
 | defaultLng | null | If using defaultLoc, set this to the default location longitude. |
 | autoGeocode | false | Set to true if you want to use the HTML5 geolocation API (good for mobile) to geocode the user's location. |
 | maxDistance | false | Set to true if you want to give users an option to limit the distance from their location to the markers. |
-| maxDistanceID | 'maxdistance' | ID of the select element for the maximum distance options. |
+| maxDistanceID | 'bh-sl-maxdistance' | ID of the select element for the maximum distance options. |
 | fullMapStart | false | Set to true if you want to immediately show a map of all locations. The map will center and zoom automatically. |
 | noForm | false | Set to true if you aren't able to use form tags (ASP.net WebForms). |
 | loading | false | Set to true to display a loading animated gif next to the submit button. |

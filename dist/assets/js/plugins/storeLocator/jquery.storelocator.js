@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.0.7 - 2015-04-02
+/*! jQuery Google Maps Store Locator - v2.0.8 - 2015-07-19
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2015 Bjorn Holine; Licensed MIT */
 
@@ -372,7 +372,7 @@
 				$(document).on('click.'+pluginName, '.' + this.settings.formContainer + ' button', function (e) {
 					_this.processForm(e);
 				});
-				$(document).on('keyup.'+pluginName, function (e) {
+				$(document).on('keydown.'+pluginName, function (e) {
 					if (e.keyCode === 13 && $('#' + _this.settings.addressID).is(':focus')) {
 						_this.processForm(e);
 					}
@@ -472,7 +472,7 @@
 
 			// If show full map option is true
 			if (this.settings.fullMapStart === true) {
-				if(this.settings.querystringParams === true && this.getQueryString(this.settings.addressID) || this.getQueryString(this.settings.searchID)) {
+				if((this.settings.querystringParams === true && this.getQueryString(this.settings.addressID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.searchID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.maxDistanceID))) {
 					this.processForm(null);
 				}
 				else {
@@ -1031,7 +1031,7 @@
 		 * @returns {string} formatted address
 		 */
 		getAddressByMarker: function(markerID) {
-			var formattedAddress = null;
+			var formattedAddress = "";
 			// Set up formatted address
 			if(locationset[markerID].address){ formattedAddress += locationset[markerID].address + ' '; }
 			if(locationset[markerID].address2){ formattedAddress += locationset[markerID].address2 + ' '; }
@@ -1132,34 +1132,52 @@
 		processForm: function (e) {
 			var _this = this;
 			var distance = null;
+			var $addressInput = $('#' + this.settings.addressID);
+			var $searchInput = $('#' + this.settings.searchID);
+			var $distanceInput = $('#' + this.settings.maxDistanceID);
 
 			// Stop the form submission
 			if(typeof e !== 'undefined' && e !== null) {
 				e.preventDefault();
 			}
 
-			// Get the distance if set
-			if (this.settings.maxDistance === true) {
-				distance = $('#' + this.settings.maxDistanceID).val();
-			}
-
+			// Query string parameters
 			if(this.settings.querystringParams === true) {
-
 				// Check for query string parameters
-				if(this.getQueryString(this.settings.addressID) || this.getQueryString(this.settings.searchID)){
+				if(this.getQueryString(this.settings.addressID) || this.getQueryString(this.settings.searchID) || this.getQueryString(this.settings.maxDistanceID)){
 					addressInput = this.getQueryString(this.settings.addressID);
 					searchInput = this.getQueryString(this.settings.searchID);
+					distance = this.getQueryString(this.settings.maxDistanceID);
+
+					// The form should override the query string parameters
+					if($('#' + this.settings.addressID).val() !== '') {
+						addressInput = $addressInput.val();
+					}
+					if($searchInput.val() !== '') {
+						searchInput = $searchInput.val();
+					}
+					if($distanceInput.val() !== '') {
+						distance = $distanceInput.val();
+					}
 				}
 				else{
 					// Get the user input and use it
-					addressInput = $('#' + this.settings.addressID).val();
-					searchInput = $('#' + this.settings.searchID).val();
+					addressInput = $addressInput.val();
+					searchInput = $searchInput.val();
+					// Get the distance if set
+					if (this.settings.maxDistance === true) {
+						distance = $distanceInput.val();
+					}
 				}
 			}
 			else {
 				// Get the user input and use it
-				addressInput = $('#' + this.settings.addressID).val();
-				searchInput = $('#' + this.settings.searchID).val();
+				addressInput = $addressInput.val();
+				searchInput = $searchInput.val();
+				// Get the distance if set
+				if (this.settings.maxDistance === true) {
+					distance = $distanceInput.val();
+				}
 			}
 
 			// Get the region setting if set
@@ -1169,24 +1187,37 @@
 				this._start();
 			}
 			else if(addressInput !== '') {
-				var g = new this.googleGeocode(this);
-				g.geocode({'address': addressInput, 'region': region}, function (data) {
-					if (data !== null) {
-						olat = data.latitude;
-						olng = data.longitude;
 
-						// Run the mapping function
-						mappingObj.lat = olat;
-						mappingObj.lng = olng;
-						mappingObj.origin = addressInput;
-						mappingObj.name = searchInput;
-						mappingObj.distance = distance;
-						_this.mapping(mappingObj);
-					} else {
-						// Unable to geocode
-						_this.notify(_this.settings.addressErrorAlert);
-					}
-				});
+				// Geocode the origin if needed
+				if(typeof originalOrigin !== 'undefined' && typeof olat !== 'undefined' && typeof olng !== 'undefined' && (addressInput === originalOrigin)) {
+					// Run the mapping function
+					mappingObj.lat = olat;
+					mappingObj.lng = olng;
+					mappingObj.origin = addressInput;
+					mappingObj.name = searchInput;
+					mappingObj.distance = distance;
+					_this.mapping(mappingObj);
+				}
+				else {
+					var g = new this.googleGeocode(this);
+					g.geocode({'address': addressInput, 'region': region}, function (data) {
+						if (data !== null) {
+							olat = data.latitude;
+							olng = data.longitude;
+
+							// Run the mapping function
+							mappingObj.lat = olat;
+							mappingObj.lng = olng;
+							mappingObj.origin = addressInput;
+							mappingObj.name = searchInput;
+							mappingObj.distance = distance;
+							_this.mapping(mappingObj);
+						} else {
+							// Unable to geocode
+							_this.notify(_this.settings.addressErrorAlert);
+						}
+					});
+				}
 			}
 			else if(searchInput !== '') {
 				mappingObj.name = searchInput;
@@ -1213,7 +1244,15 @@
 
 			// Create the array
 			if (this.settings.maxDistance === true && firstRun !== true && typeof maxDistance !== 'undefined' && maxDistance !== null) {
-				if (data.distance < maxDistance) {
+				if (data.distance <= maxDistance) {
+					locationset.push( data );
+				}
+				else {
+					return;
+				}
+			}
+			else if(this.settings.maxDistance === true && this.settings.querystringParams === true && this.settings.maxDistance === true && typeof maxDistance !== 'undefined' && maxDistance !== null) {
+				if (data.distance <= maxDistance) {
 					locationset.push( data );
 				}
 				else {
@@ -1857,11 +1896,11 @@
 					e.preventDefault();
 					var locID = $(this).closest('li').attr('data-markerid');
 					_this.directionsRequest(origin, locID, map);
-				});
 
-				// Close directions
-				$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' .bh-sl-close-icon', function () {
-					_this.closeDirections();
+					// Close directions
+					$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' .bh-sl-close-icon', function () {
+						_this.closeDirections();
+					});
 				});
 			}
 
