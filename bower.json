@@ -1,0 +1,30 @@
+{
+  "name": "jquery-storelocator-plugin",
+  "version": "2.0.8",
+  "description": "This jQuery plugin takes advantage of Google Maps API version 3 to create an easy to implement store locator. No back-end programming is required, you just need to feed it KML, XML, or JSON data with all the location information.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bjorn2404/jQuery-Store-Locator-Plugin.git"
+  },
+  "keywords": ["jquery-plugin","locator","store", "location","locations","maps","map","stores","find","finder"],
+  "authors": [
+    "Bjorn Holine <bjorn2404@gmail.com> (http://www.bjornblog.com)"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "jquery": ">=1.7",
+    "handlebars": ">=1.0"
+  },
+  "devDependencies": {
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-contrib-qunit": "~0.2.0",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-uglify": "~0.2.0",
+    "grunt-contrib-watch": "~0.4.0",
+    "grunt-contrib-clean": "~0.4.0",
+    "grunt-contrib-less": "~0.11.0",
+    "grunt": "~0.4.4",
+    "grunt-banner": "~0.2.2",
+    "grunt-contrib-cssmin": "~0.9.0"
+  }
+}
