@@ -27,6 +27,10 @@ for even faster loading.
 
 ## Changelog
 
+### Version 2.0.9
+
+* Fixed issue when using catMarkers setting and not setting a location's category resulted in an error.
+
 ### Version 2.0.8
 
 * Changed infowindow and location list templates so that the comma is added if the city is available.

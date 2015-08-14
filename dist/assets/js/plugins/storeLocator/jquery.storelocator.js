@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.0.8 - 2015-07-19
+/*! jQuery Google Maps Store Locator - v2.0.9 - 2015-08-13
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2015 Bjorn Holine; Licensed MIT */
 
@@ -798,21 +798,23 @@
 			
 			// Custom multi-marker image override (different markers for different categories
 			if(this.settings.catMarkers !== null) {
-				// Multiple categories
-				if(category.indexOf(',') !== -1) {
-					// Break the category variable into an array if there are multiple categories for the location
-					categories = category.split(',');
-					// With multiple categories the color will be determined by the last matched category in the data
-					for(var i = 0; i < categories.length; i++) {
-						if(categories[i] in this.settings.catMarkers) {
-							markerImg = this.markerImage(this.settings.catMarkers[categories[i]][0], this.settings.catMarkers[categories[i]][1], this.settings.catMarkers[categories[i]][2]);
+				if(typeof category !== 'undefined') {
+					// Multiple categories
+					if(category.indexOf(',') !== -1) {
+						// Break the category variable into an array if there are multiple categories for the location
+						categories = category.split(',');
+						// With multiple categories the color will be determined by the last matched category in the data
+						for(var i = 0; i < categories.length; i++) {
+							if(categories[i] in this.settings.catMarkers) {
+								markerImg = this.markerImage(this.settings.catMarkers[categories[i]][0], this.settings.catMarkers[categories[i]][1], this.settings.catMarkers[categories[i]][2]);
+							}
 						}
 					}
-				}
-				// Single category
-				else {
-					if(category in this.settings.catMarkers) {
-						markerImg = this.markerImage(this.settings.catMarkers[category][0], this.settings.catMarkers[category][1], this.settings.catMarkers[category][2]);
+					// Single category
+					else {
+						if(category in this.settings.catMarkers) {
+							markerImg = this.markerImage(this.settings.catMarkers[category][0], this.settings.catMarkers[category][1], this.settings.catMarkers[category][2]);
+						}
 					}
 				}
 			}
