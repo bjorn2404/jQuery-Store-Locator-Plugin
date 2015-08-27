@@ -1231,21 +1231,21 @@
 				}
 				else{
 					// Get the user input and use it
-					addressInput = $addressInput.val();
-					searchInput = $searchInput.val();
+					addressInput 	= $addressInput.val() || '';
+					searchInput 	= $searchInput.val() || '';
 					// Get the distance if set
 					if (this.settings.maxDistance === true) {
-						distance = $distanceInput.val();
+						distance = $distanceInput.val() || '';
 					}
 				}
 			}
 			else {
 				// Get the user input and use it
-				addressInput = $addressInput.val();
-				searchInput = $searchInput.val();
+				addressInput = $addressInput.val() || '';
+				searchInput = $searchInput.val() || '';
 				// Get the distance if set
 				if (this.settings.maxDistance === true) {
-					distance = $distanceInput.val();
+					distance = $distanceInput.val() || '';
 				}
 			}
 
