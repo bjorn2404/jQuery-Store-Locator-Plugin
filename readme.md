@@ -27,7 +27,7 @@ for even faster loading.
 
 ## Changelog
 
-### Version 2.0.10
+### Version 2.1.0
 
 Includes contributions from from [Giancarlo Gomez](https://github.com/GiancarloGomez).
 
