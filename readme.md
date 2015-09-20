@@ -27,6 +27,16 @@ for even faster loading.
 
 ## Changelog
 
+### Version 2.0.10
+
+Includes contributions from from [Giancarlo Gomez](https://github.com/GiancarloGomez).
+
+* Added ability to pass in array object as dataRaw.
+* Added writeDebug console.log helper function for debugging.
+* Added sessionStorage option to store user's location when autoGeocode in enabled to prevent multiple lookups per session.
+* Fixed bug with inline directions panel that occurred after multiple address submissions.
+* Updated processForm method form field variables with empty string fallback values.
+
 ### Version 2.0.9
 
 * Fixed issue when using catMarkers setting and not setting a location's category resulted in an error.

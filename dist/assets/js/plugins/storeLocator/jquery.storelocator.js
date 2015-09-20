@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.0.9 - 2015-09-19
+/*! jQuery Google Maps Store Locator - v2.0.9 - 2015-09-20
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2015 Bjorn Holine; Licensed MIT */
 
@@ -79,7 +79,7 @@
 		'taxonomyFiltersContainer' : 'bh-sl-filters-container',
 		'exclusiveFiltering'       : false,
 		'querystringParams'        : false,
-		'debug'                    : true,
+		'debug'                    : false,
 		'sessionStorage'           : false,
 		'callbackNotify'           : null,
 		'callbackBeforeSend'       : null,
@@ -145,10 +145,8 @@
 				dataTypeRead = this.settings.dataType;
 			}
 
-			// Set up the directionsService if it's true
+			// Add directions panel if enabled
 			if(this.settings.inlineDirections === true) {
-				directionsDisplay = new google.maps.DirectionsRenderer();
-				directionsService = new google.maps.DirectionsService();
 				$('.' + this.settings.locationList).prepend('<div class="bh-sl-directions-panel"></div>');
 			}
 
@@ -237,6 +235,15 @@
 			$(document).off('click.'+pluginName, '.' + this.settings.locationList + ' li');
 			if( $('.' + this.settings.locationList + ' .bh-sl-close-directions-container').length ) {
 				$('.bh-sl-close-directions-container').remove();
+			}
+			if(this.settings.inlineDirections === true) {
+				// Remove directions panel if it's there
+				var $adp = $('.' + this.settings.locationList + ' .adp');
+				if ( $adp.length > 0 ) {
+					$adp.remove();
+					$('.' + this.settings.locationList + ' ul').fadeIn();
+				}
+				$(document).off('click', '.' + this.settings.locationList + ' li .loc-directions a');
 			}
 		},
 
@@ -1150,7 +1157,16 @@
 				$('.' + this.settings.locationList + ' ul').hide();
 				// Remove the markers
 				this.clearMarkers();
+				
+				// Clear the previous directions request
+				if(directionsDisplay !== null && typeof directionsDisplay !== 'undefined') {
+					directionsDisplay.setMap(null);
+					directionsDisplay = null;
+				}
 
+				directionsDisplay = new google.maps.DirectionsRenderer();
+				directionsService = new google.maps.DirectionsService();
+				
 				// Directions request
 				directionsDisplay.setMap(map);
 				directionsDisplay.setPanel($('.bh-sl-directions-panel').get(0));
@@ -1184,11 +1200,8 @@
 			}
 
 			// Remove the close icon, remove the directions, add the list back
-			$('.' + this.settings.locationList + ' .adp').remove();
-			$('.' + this.settings.locationList + ' ul').fadeIn();
-
 			this.reset();
-
+			
 			if ((olat) && (olng)) {
 				if (this.countFilters() === 0) {
 					this.settings.mapSettings.zoom = originalZoom;
