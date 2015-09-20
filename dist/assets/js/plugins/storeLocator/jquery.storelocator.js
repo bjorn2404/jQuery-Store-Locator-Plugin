@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.0.9 - 2015-08-28
+/*! jQuery Google Maps Store Locator - v2.0.9 - 2015-09-19
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2015 Bjorn Holine; Licensed MIT */
 
@@ -34,7 +34,6 @@
 		'catMarkers'               : null,
 		'lengthUnit'               : 'm',
 		'storeLimit'               : 26,
-		'debug'                    : false,
 		'distanceAlert'            : 60,
 		'dataType'                 : 'xml',
 		'dataLocation'             : 'data/locations.xml',
@@ -68,7 +67,6 @@
 		'inlineDirections'         : false,
 		'nameSearch'               : false,
 		'searchID'                 : 'bh-sl-search',
-		'sessionStorage'           : false,
 		'nameAttribute'            : 'name',
 		'visibleMarkersList'       : false,
 		'infowindowTemplatePath'   : 'assets/js/plugins/storeLocator/templates/infowindow-description.html',
@@ -81,6 +79,8 @@
 		'taxonomyFiltersContainer' : 'bh-sl-filters-container',
 		'exclusiveFiltering'       : false,
 		'querystringParams'        : false,
+		'debug'                    : true,
+		'sessionStorage'           : false,
 		'callbackNotify'           : null,
 		'callbackBeforeSend'       : null,
 		'callbackSuccess'          : null,
@@ -424,12 +424,16 @@
 
 				// JSON
 				else if( dataTypeRead === 'json' ) {
-					if (Array.isArray && Array.isArray(_this.settings.dataRaw))
+					if (Array.isArray && Array.isArray(_this.settings.dataRaw)) {
 						return _this.settings.dataRaw;
-					else if (typeof _this.settings.dataRaw === 'string')
+					}
+					else if (typeof _this.settings.dataRaw === 'string') {
 						return $.parseJSON(_this.settings.dataRaw);
-					else
+					}
+					else {
 						return [];
+					}
+						
 				}
 			}
 			// Remote data
@@ -470,8 +474,8 @@
 		 */
 		_start: function () {
 			this.writeDebug('_start');
-			var _this 		= this,
-				doAutoGeo 	= this.settings.autoGeocode;
+			var _this = this,
+					doAutoGeo = this.settings.autoGeocode;
 			// If a default location is set
 			if (this.settings.defaultLoc === true) {
 				// The address needs to be determined for the directions link
@@ -496,14 +500,14 @@
 			if ( $('#' + this.settings.addressID).val().trim() !== ''){
 				_this.writeDebug('Using Address Field');
 				_this.processForm(null);
-				doAutoGeo = false; // no need for additional processing
+				doAutoGeo = false; // No need for additional processing
 			}
 			// If show full map option is true
 			else if (this.settings.fullMapStart === true) {
 				if((this.settings.querystringParams === true && this.getQueryString(this.settings.addressID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.searchID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.maxDistanceID))) {
 					_this.writeDebug('Using Query String');
 					this.processForm(null);
-					doAutoGeo = false; // no need for additional processing
+					doAutoGeo = false; // No need for additional processing
 				}
 				else {
 					this.mapping(null);
@@ -513,7 +517,7 @@
 			// HTML5 geolocation API option
 			if (this.settings.autoGeocode === true && doAutoGeo === true) {
 				_this.writeDebug('Auto Geo');
-				// saved geo location (saves around 3-5 seconds)
+				// Saved geo location (saves around 3-5 seconds)
 				if (_this.settings.sessionStorage === true && window.sessionStorage && window.sessionStorage.getItem('myGeo')){
 					_this.writeDebug('Using Session Saved Values for GEO');
 					_this.autoGeocodeQuery(JSON.parse(window.sessionStorage.getItem('myGeo')));
@@ -522,17 +526,18 @@
 				else if (navigator.geolocation) {
 					navigator.geolocation.getCurrentPosition(function(position){
 						_this.writeDebug('Current Position Result');
-						// to not break autoGeocodeQuery then we create the obj to match the geolocation format
+						// To not break autoGeocodeQuery then we create the obj to match the geolocation format
 						var pos = {
-							coords : {
-								latitude 	: position.coords.latitude,
-								longitude 	: position.coords.longitude,
-								accuracy 	: position.coords.accuracy
+							coords: {
+								latitude : position.coords.latitude,
+								longitude: position.coords.longitude,
+								accuracy : position.coords.accuracy
 							}
 						};
 						// Have to do this to get around scope issues
-						if (_this.settings.sessionStorage === true && window.sessionStorage)
+						if (_this.settings.sessionStorage === true && window.sessionStorage) {
 							window.sessionStorage.setItem('myGeo',JSON.stringify(pos));
+						}
 						_this.autoGeocodeQuery(pos);
 					}, function(error){
 						_this._autoGeocodeError(error);
@@ -1236,8 +1241,8 @@
 				}
 				else{
 					// Get the user input and use it
-					addressInput 	= $addressInput.val() || '';
-					searchInput 	= $searchInput.val() || '';
+					addressInput = $addressInput.val() || '';
+					searchInput = $searchInput.val() || '';
 					// Get the distance if set
 					if (this.settings.maxDistance === true) {
 						distance = $distanceInput.val() || '';
@@ -2097,21 +2102,25 @@
 			}
 		},
 
-		writeDebug : function (){
-            // http://www.briangrinstead.com/blog/console-log-helper-function
+		/**
+		 * console.log helper function
+		 * 
+		 * http://www.briangrinstead.com/blog/console-log-helper-function
+		 */
+		writeDebug: function () {
 			if (window.console && this.settings.debug) {
 				// Only run on the first time through - reset this function to the appropriate console.log helper
 				if (Function.prototype.bind) {
 					this.writeDebug = Function.prototype.bind.call(console.log, console, 'StoreLocator :');
 				} else {
-					this.writeDebug = function(){
+					this.writeDebug = function () {
 						arguments[0] = 'StoreLocator : ' + arguments[0];
 						Function.prototype.apply.call(console.log, console, arguments);
 					};
 				}
 				this.writeDebug.apply(this, arguments);
 			}
-        }
+		}
 
 	});
 

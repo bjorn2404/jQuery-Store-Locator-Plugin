@@ -57,6 +57,8 @@
 | taxonomyFiltersContainer | 'bh-sl-filters-container' | Class of the container around the filters. |
 | exclusiveFiltering | false | Set to true to enable exclusive taxonomy filtering rather than the default inclusive. |
 | querystringParams | false | Set to true to enable query string support for passing input variables from page to page. |
+| debug | false | Set to true to enable console.log helper function that can be used for debugging. |
+| sessionStorage | false | Set to true to enable Window.sessionStorage for user's location when autoGeocode is enabled. |
 | callbackNotify | null | Callback that can override the notify method. |
 | callbackBeforeSend | null | Callback that fires before the AJAX request. |
 | callbackSuccess | null | Callback that fires on successful AJAX request. |
