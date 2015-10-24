@@ -27,6 +27,10 @@ for even faster loading.
 
 ## Changelog
 
+### Version 2.1.1
+
+* Added check for Google Maps API
+
 ### Version 2.1.0
 
 Includes contributions from from [Giancarlo Gomez](https://github.com/GiancarloGomez).
