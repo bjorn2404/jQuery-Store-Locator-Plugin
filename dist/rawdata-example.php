@@ -39,7 +39,7 @@ $data = '<?xml version="1.0" encoding="utf-8"?>
 
 <div class="bh-sl-container">
 	<div id="page-header">
-		<h1>Using Chipotle as an Example</h1>
+		<h1 class="bh-sl-title">Using Chipotle as an Example</h1>
 		<p>I used locations around Minneapolis and the southwest suburbs. So, for example, Edina, Plymouth, Eden Prarie, etc. would be good for testing the functionality.
 			You can use just the city as the address - ex: Edina, MN.</p>
 	</div>
@@ -65,7 +65,7 @@ $data = '<?xml version="1.0" encoding="utf-8"?>
 
 <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
 <script src="assets/js/libs/handlebars.min.js"></script>
-<script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script src="http://maps.google.com/maps/api/js"></script>
 <script src="assets/js/plugins/storeLocator/jquery.storelocator.js"></script>
 <script>
 	$(function() {

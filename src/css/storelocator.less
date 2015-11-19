@@ -1,8 +1,9 @@
 @white: #fff;
 @gray: #ccc;
 @darkgray: #8e8e8e;
-@textgray: #333;
+@titlegray: #797874;
 @shadow: #656565;
+@textgray: #555;
 @darkergray: #2c2c2c;
 @black: #000;
 @orange: #e76737;
@@ -15,6 +16,10 @@
 #page-header {
 	float: left;
 	display: block;
+	
+	.bh-sl-title {
+		color: @titlegray;
+	}
 }
 
 /* Infowindow Roboto font override */
@@ -35,7 +40,7 @@
 	float: left;
 	margin-left: 20px;
 	width: 875px;
-  	font: normal 14px/20px @arialFont;
+	font: normal 14px/20px @arialFont;
 	color: @textgray;
 
 	.bh-sl-form-container {
@@ -71,9 +76,9 @@
 		padding: 6px 12px;
 		background: @red;
 		border: 1px solid @darkred;
-	  	font: normal 14px/18px @arialFont;
+		font: bold 14px/18px @arialFont;
 		color: @white;
-	  	white-space: nowrap;
+		white-space: nowrap;
 		-webkit-border-radius: 4px;
 		border-radius: 4px;
 	}
@@ -139,6 +144,7 @@
 		width: 30%;
 		height: 530px;
 		overflow-x: auto;
+		font-size: 13px;
 
 		ul {
 			display: block;
@@ -163,13 +169,14 @@
 		.list-label {
 			float: left;
 			margin: 10px 0 0 6px;
-			padding: 2px 3px;
+			padding: 4px;
 			width: 10%;
 			max-width: 25px;
 			text-align: center;
 			background: @maroon;
 			color: @white;
 			font-weight: bold;
+			border-radius: 16px;
 		}
 
 		.list-details {
@@ -215,8 +222,8 @@
 
 	.loc-name {
 		/* Picked up by both list and infowindows */
-		color: @red;
 		font-weight: bold;
+		font-size: 15px;
 	}
 
 	.bh-sl-map {
@@ -240,7 +247,6 @@
 				cursor: pointer;
 				font: bold 14px @arialFont;
 				color: @red;
-				text-decoration: underline;
 			}
 
 			.bh-sl-current {

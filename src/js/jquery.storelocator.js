@@ -1623,8 +1623,10 @@
 			}
 
 			// Set the initial page to zero if not set
-			if (typeof page === 'undefined') {
-				page = 0;
+			if ( _this.settings.pagination === true ) {
+				if (typeof page === 'undefined' || originalOrigin !== addressInput ) {
+					page = 0;
+				}
 			}
 
 			// Data request

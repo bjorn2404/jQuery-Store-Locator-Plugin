@@ -3,6 +3,9 @@
   float: left;
   display: block;
 }
+#page-header .bh-sl-title {
+  color: #797874;
+}
 /* Infowindow Roboto font override */
 .gm-style div,
 .gm-style span,
@@ -23,7 +26,7 @@
   margin-left: 20px;
   width: 875px;
   font: normal 14px/20px Arial, Helvetica, sans-serif;
-  color: #333333;
+  color: #555555;
 }
 .bh-sl-container .bh-sl-form-container {
   clear: left;
@@ -55,7 +58,7 @@
   padding: 6px 12px;
   background: #ae2118;
   border: 1px solid #961f17;
-  font: normal 14px/18px Arial, Helvetica, sans-serif;
+  font: bold 14px/18px Arial, Helvetica, sans-serif;
   color: #ffffff;
   white-space: nowrap;
   -webkit-border-radius: 4px;
@@ -115,6 +118,7 @@
   width: 30%;
   height: 530px;
   overflow-x: auto;
+  font-size: 13px;
 }
 .bh-sl-container .bh-sl-loc-list ul {
   display: block;
@@ -138,13 +142,14 @@
 .bh-sl-container .bh-sl-loc-list .list-label {
   float: left;
   margin: 10px 0 0 6px;
-  padding: 2px 3px;
+  padding: 4px;
   width: 10%;
   max-width: 25px;
   text-align: center;
   background: #451400;
   color: #ffffff;
   font-weight: bold;
+  border-radius: 16px;
 }
 .bh-sl-container .bh-sl-loc-list .list-details {
   float: left;
@@ -181,8 +186,8 @@
 }
 .bh-sl-container .loc-name {
   /* Picked up by both list and infowindows */
-  color: #ae2118;
   font-weight: bold;
+  font-size: 15px;
 }
 .bh-sl-container .bh-sl-map {
   float: left;
@@ -204,10 +209,9 @@
   cursor: pointer;
   font: bold 14px Arial, Helvetica, sans-serif;
   color: #ae2118;
-  text-decoration: underline;
 }
 .bh-sl-container .bh-sl-pagination-container ol .bh-sl-current {
-  color: #333333;
+  color: #555555;
   cursor: auto;
   text-decoration: none;
 }
