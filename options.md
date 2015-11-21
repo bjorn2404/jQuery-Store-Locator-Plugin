@@ -47,10 +47,10 @@
 | searchID | 'bh-sl-search' | ID of the search input form field for location name searching. |
 | nameAttribute | 'name' | If using nameSearch, the data attribute used for the location name in the data file. |
 | visibleMarkersList | false | Set to true to have the location list only show data from markers that are visible on the map. |
-| infowindowTemplatePath | 'templates/infowindow-description.html' | Path to the default infowindow template. |
-| listTemplatePath | 'templates/location-list-description.html' | Path to the default list template. |
-| KMLinfowindowTemplatePath | 'templates/kml-infowindow-description.html' | Path to the KML infowindow template – used if dataType is set to kml. |
-| KMLlistTemplatePath | 'templates/kml-location-list-description.html' | Path to the KML list template – used if dataType is set to kml. |
+| infowindowTemplatePath | 'assets/js/plugins/storeLocator/templates/infowindow-description.html' | Path to the default infowindow template. |
+| listTemplatePath | 'assets/js/plugins/storeLocator/templates/location-list-description.html' | Path to the default list template. |
+| KMLinfowindowTemplatePath | 'assets/js/plugins/storeLocator/templates/kml-infowindow-description.html' | Path to the KML infowindow template – used if dataType is set to kml. |
+| KMLlistTemplatePath | 'assets/js/plugins/storeLocator/templates/kml-location-list-description.html' | Path to the KML list template – used if dataType is set to kml. |
 | listTemplateID | null | ID of list template if using inline Handlebar templates instead of separate files. |
 | infowindowTemplateID | null | ID of infowindow template if using inline Handlebar templates instead of separate files. |
 | taxonomyFilters | null | Filtering object that can be used to set up live filtering (see categories example). |

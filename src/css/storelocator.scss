@@ -1,30 +1,30 @@
-@white: #fff;
-@gray: #ccc;
-@darkgray: #8e8e8e;
-@titlegray: #797874;
-@shadow: #656565;
-@textgray: #555;
-@darkergray: #2c2c2c;
-@black: #000;
-@orange: #e76737;
-@red: #ae2118;
-@darkred: #961f17;
-@maroon: #451400;
-@arialFont: Arial, Helvetica, sans-serif;
+$white: #fff;
+$gray: #ccc;
+$darkgray: #8e8e8e;
+$titlegray: #797874;
+$shadow: #656565;
+$textgray: #555;
+$darkergray: #2c2c2c;
+$black: #000;
+$orange: #e76737;
+$red: #ae2118;
+$darkred: #961f17;
+$maroon: #451400;
+$arialFont: Arial, Helvetica, sans-serif;
 
 /* #page-header it just included for the examples */
 #page-header {
 	float: left;
 	display: block;
-	
+
 	.bh-sl-title {
-		color: @titlegray;
+		color: $titlegray;
 	}
 }
 
 /* Infowindow Roboto font override */
 .gm-style div, .gm-style span, .gm-style label, .gm-style a {
-	font-family: @arialFont;
+	font-family: $arialFont;
 }
 
 .bh-sl-error {
@@ -32,7 +32,7 @@
 	float: left;
 	width: 100%;
 	padding: 10px 0;
-	color: @red;
+	color: $red;
 	font-weight: bold;
 }
 
@@ -40,8 +40,8 @@
 	float: left;
 	margin-left: 20px;
 	width: 875px;
-	font: normal 14px/20px @arialFont;
-	color: @textgray;
+	font: normal 14px/20px $arialFont;
+	color: $textgray;
 
 	.bh-sl-form-container {
 		clear: left;
@@ -62,8 +62,8 @@
 			margin: 0 15px 0 10px;
 			padding: 6px 12px;
 			line-height: 16px;
-			border: 1px solid @gray;
-		  	font: normal 14px/18px @arialFont;
+			border: 1px solid $gray;
+			font: normal 14px/18px $arialFont;
 			-webkit-border-radius: 4px;
 			border-radius: 4px;
 		}
@@ -74,10 +74,10 @@
 		cursor: pointer;
 		margin-top: 3px;
 		padding: 6px 12px;
-		background: @red;
-		border: 1px solid @darkred;
-		font: bold 14px/18px @arialFont;
-		color: @white;
+		background: $red;
+		border: 1px solid $darkred;
+		font: bold 14px/18px $arialFont;
+		color: $white;
 		white-space: nowrap;
 		-webkit-border-radius: 4px;
 		border-radius: 4px;
@@ -131,7 +131,7 @@
 		width: 875px;
 
 		a {
-			color: @orange;
+			color: $orange;
 			text-decoration: none;
 			&:hover, &:active {
 				text-decoration: underline;
@@ -162,7 +162,7 @@
 				margin: 3% 4%;
 				cursor: pointer;
 				width: 92%;
-				border: 1px solid @white; /* Adding this to prevent moving li elements when adding the list-focus class*/
+				border: 1px solid $white; /* Adding this to prevent moving li elements when adding the list-focus class*/
 			}
 		}
 
@@ -173,8 +173,8 @@
 			width: 10%;
 			max-width: 25px;
 			text-align: center;
-			background: @maroon;
-			color: @white;
+			background: $maroon;
+			color: $white;
 			font-weight: bold;
 			border-radius: 16px;
 		}
@@ -191,7 +191,7 @@
 			.loc-dist {
 				font-weight: bold;
 				font-style: italic;
-				color: @darkgray;
+				color: $darkgray;
 			}
 		}
 
@@ -216,7 +216,7 @@
 
 		.bh-sl-noresults-title {
 			font-weight: bold;
-			color: @red;
+			color: $red;
 		}
 	}
 
@@ -245,12 +245,12 @@
 				display: inline-block;
 				padding: 10px;
 				cursor: pointer;
-				font: bold 14px @arialFont;
-				color: @red;
+				font: bold 14px $arialFont;
+				color: $red;
 			}
 
 			.bh-sl-current {
-				color: @textgray;
+				color: $textgray;
 				cursor: auto;
 				text-decoration: none;
 			}
@@ -276,7 +276,7 @@
 		width: 920px;
 		height: 590px;
 		z-index: 10010;
-		background: @white;
+		background: $white;
 		border-radius: 10px;
 		box-shadow: 0 0 10px #656565;
 
@@ -297,8 +297,8 @@
 	width: 18px;
 	height: 18px;
 	cursor: pointer;
-	background: @darkergray url(../img/close-icon.png) 3px 3px no-repeat;
-	border: 1px solid @black;
+	background: $darkergray url(../img/close-icon.png) 3px 3px no-repeat;
+	border: 1px solid $black;
 	border-radius: 3px;
-	box-shadow: 0 0 3px @shadow;
+	box-shadow: 0 0 3px $shadow;
 }

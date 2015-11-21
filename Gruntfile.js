@@ -16,8 +16,14 @@ module.exports = function (grunt) {
 		less     : {
 			dist: {
 				files: {
-					'dist/assets/css/storelocator.css' : 'src/css/storelocator.less',
 					'dist/assets/css/bootstrap-example.css' : 'src/css/bootstrap-example.less'
+				}
+			}
+		},
+		sass     : {
+			dist: {
+				files: {
+					'dist/assets/css/storelocator.css' : 'src/css/storelocator.scss'
 				}
 			}
 		},
@@ -86,6 +92,14 @@ module.exports = function (grunt) {
 				}
 			}
 		},
+		handlebars   : {
+			dist: {
+				files: {
+					'dist/assets/js/plugins/storeLocator/templates/compiled/standard-templates.js': 'src/templates/standard/*.html',
+					'dist/assets/js/plugins/storeLocator/templates/compiled/kml-templates.js': 'src/templates/kml/*.html'
+				}
+			}
+		},
 		watch    : {
 			gruntfile: {
 				files: '<%= jshint.gruntfile.src %>',
@@ -93,7 +107,7 @@ module.exports = function (grunt) {
 			},
 			src      : {
 				files  : ['src/**/*'],
-				tasks  : ['less', 'concat', 'uglify', 'usebanner', 'cssmin'],
+				tasks  : ['less', 'sass', 'concat', 'uglify', 'usebanner', 'cssmin', 'handlebars'],
 				options: {
 					spawn     : false,
 					livereload: true
@@ -109,6 +123,7 @@ module.exports = function (grunt) {
 	// These plugins provide necessary tasks.
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-less');
+	grunt.loadNpmTasks('grunt-contrib-sass');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
@@ -116,11 +131,11 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-banner');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
+	grunt.loadNpmTasks('grunt-contrib-handlebars');
 
-	// Default task.
-	//grunt.registerTask('default', ['jshint', 'qunit', 'less', 'concat', 'uglify', 'usebanner', 'cssmin']);
 	// Build
-	grunt.registerTask('build', ['less', 'concat', 'uglify', 'usebanner', 'cssmin']);
+	grunt.registerTask('build', ['less', 'sass', 'concat', 'uglify', 'usebanner', 'cssmin', 'handlebars']);
+	
 	//Watch src build
 	grunt.registerTask('watchsrc', ['watch:src']);
 

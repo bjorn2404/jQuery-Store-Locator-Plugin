@@ -27,9 +27,14 @@ for even faster loading.
 
 ## Changelog
 
-### Version 2.1.1
+### Version 2.2.0
 
-* Added check for Google Maps API
+* Added check for Google Maps API.
+* Added Grunt Handlebars task for compiling Handlebars templates from src directory - will add more compatibility in future release.
+* Default design refresh.
+* Removed sensor parameter from Google Maps API URL as it's no longer needed.
+* Switched the default plugin styling from LESS to SASS.
+* Updated included Handlebars to v4.0.5.
 
 ### Version 2.1.0
 
