@@ -46,8 +46,8 @@
     cursor: pointer;
     margin-top: 3px;
     padding: 6px 12px;
-    background: #ae2118;
-    border: 1px solid #961f17;
+    border: none;
+    background: #004479;
     font: bold 14px/18px Arial, Helvetica, sans-serif;
     color: white;
     white-space: nowrap;
@@ -88,7 +88,7 @@
     height: 530px;
     width: 875px; }
     .bh-sl-container .bh-sl-map-container a {
-      color: #e76737;
+      color: #005293;
       text-decoration: none; }
       .bh-sl-container .bh-sl-map-container a:hover, .bh-sl-container .bh-sl-map-container a:active {
         text-decoration: underline; }
@@ -122,7 +122,7 @@
       width: 10%;
       max-width: 25px;
       text-align: center;
-      background: #451400;
+      background: #00192d;
       color: white;
       font-weight: bold;
       border-radius: 16px; }
@@ -137,10 +137,10 @@
         font-style: italic;
         color: #8e8e8e; }
     .bh-sl-container .bh-sl-loc-list .list-focus {
-      border: 1px solid rgba(150, 31, 23, 0.4);
-      -moz-box-shadow: 0 0 8px rgba(150, 31, 23, 0.4);
-      -webkit-box-shadow: 0 0 8px rgba(150, 31, 23, 0.4);
-      box-shadow: 0 0 8px rgba(150, 31, 23, 0.4);
+      border: 1px solid rgba(0, 82, 147, 0.4);
+      -moz-box-shadow: 0 0 8px rgba(0, 82, 147, 0.4);
+      -webkit-box-shadow: 0 0 8px rgba(0, 82, 147, 0.4);
+      box-shadow: 0 0 8px rgba(0, 100, 180, 0.4);
       transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s; }
     .bh-sl-container .bh-sl-loc-list .bh-sl-close-directions-container {
       width: 100%;
@@ -150,8 +150,7 @@
         top: 0;
         right: 6px; }
     .bh-sl-container .bh-sl-loc-list .bh-sl-noresults-title {
-      font-weight: bold;
-      color: #ae2118; }
+      font-weight: bold; }
   .bh-sl-container .loc-name {
     /* Picked up by both list and infowindows */
     font-weight: bold;
@@ -172,7 +171,7 @@
         padding: 10px;
         cursor: pointer;
         font: bold 14px Arial, Helvetica, sans-serif;
-        color: #ae2118; }
+        color: #005293; }
       .bh-sl-container .bh-sl-pagination-container ol .bh-sl-current {
         color: #555555;
         cursor: auto;
@@ -181,8 +180,8 @@
 /* Modal window */
 .bh-sl-overlay {
   position: fixed;
-  left: 0px;
-  top: 0px;
+  left: 0;
+  top: 0;
   width: 100%;
   height: 100%;
   z-index: 10000;
@@ -194,25 +193,49 @@
     /* width divided by 2 */
     margin-top: 60px;
     width: 920px;
-    height: 590px;
+    height: 620px;
     z-index: 10010;
     background: white;
     border-radius: 10px;
     box-shadow: 0 0 10px #656565; }
+    .bh-sl-overlay .bh-sl-modal-window .bh-sl-map-container {
+      margin-top: 50px;
+      /* increase map container margin */ }
     .bh-sl-overlay .bh-sl-modal-window .bh-sl-modal-content {
       float: left;
       padding: 0 22px;
       /* there's already a margin on the top of the map-container div */ }
     .bh-sl-overlay .bh-sl-modal-window .bh-sl-close-icon {
-      top: -6px;
-      right: -6px; }
+      top: 13px;
+      right: 22px; }
 
 .bh-sl-close-icon {
   position: absolute;
-  width: 18px;
-  height: 18px;
   cursor: pointer;
-  background: #2c2c2c url(../img/close-icon.png) 3px 3px no-repeat;
-  border: 1px solid black;
-  border-radius: 3px;
-  box-shadow: 0 0 3px #656565; }
+  height: 24px;
+  width: 24px; }
+  .bh-sl-close-icon:after, .bh-sl-close-icon:before {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    bottom: 0;
+    left: 50%;
+    background: #cccccc;
+    content: '';
+    display: block;
+    height: 24px;
+    margin: -3px 0 0 -1px;
+    width: 3px;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg); }
+  .bh-sl-close-icon:hover:after, .bh-sl-close-icon:hover:before {
+    background: #b3b3b3; }
+  .bh-sl-close-icon:before {
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg); }
