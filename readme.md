@@ -31,6 +31,7 @@ for even faster loading.
 
 * Added check for Google Maps API.
 * Added Grunt Handlebars task for compiling Handlebars templates from src directory - will add more compatibility in future release.
+* Added preventative styling to avoid conflicts with CSS frameworks and resets.
 * Default design refresh.
 * Fixed bug with inline directions panel that occurred after multiple address submissions.
 * Removed sensor parameter from Google Maps API URL as it's no longer needed.
