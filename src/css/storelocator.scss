@@ -41,6 +41,18 @@ $arialFont: Arial, Helvetica, sans-serif;
 	font: normal 14px/20px $arialFont;
 	color: $textgray;
 
+	/* Avoid image issues with Google Maps and CSS resets */
+	img {
+		max-width: none !important;
+		border-radius: 0 !important;
+		box-shadow: none !important;
+	}
+
+	/* Avoid issues with Google Maps and CSS frameworks */
+	> * {
+		box-sizing: content-box !important;
+	}
+
 	.bh-sl-form-container {
 		clear: left;
 		float: left;

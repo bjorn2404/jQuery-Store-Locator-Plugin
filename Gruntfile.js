@@ -107,7 +107,7 @@ module.exports = function (grunt) {
 			},
 			src      : {
 				files  : ['src/**/*'],
-				tasks  : ['less', 'sass', 'concat', 'uglify', 'usebanner', 'cssmin', 'handlebars'],
+				tasks  : ['less', 'sass', 'concat', 'uglify', 'usebanner', 'cssmin'],
 				options: {
 					spawn     : false,
 					livereload: true
@@ -134,7 +134,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-handlebars');
 
 	// Build
-	grunt.registerTask('build', ['less', 'sass', 'concat', 'uglify', 'usebanner', 'cssmin', 'handlebars']);
+	grunt.registerTask('build', ['less', 'sass', 'concat', 'uglify', 'usebanner', 'cssmin']);
 	
 	//Watch src build
 	grunt.registerTask('watchsrc', ['watch:src']);
