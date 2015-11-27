@@ -27,6 +27,10 @@ for even faster loading.
 
 ## Changelog
 
+### Version 2.2.1
+
+* Updated preventative styling to be more specific to the map container and added max-height img rule.
+
 ### Version 2.2.0
 
 * Added check for Google Maps API.

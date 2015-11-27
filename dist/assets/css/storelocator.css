@@ -17,18 +17,20 @@
   color: #ae2118;
   font-weight: bold; }
 
+/* Avoid image issues with Google Maps and CSS resets */
+.bh-sl-map-container img {
+  max-height: none !important;
+  max-width: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important; }
+
 .bh-sl-container {
   float: left;
   margin-left: 20px;
   width: 875px;
   font: normal 14px/20px Arial, Helvetica, sans-serif;
   color: #555555;
-  /* Avoid image issues with Google Maps and CSS resets */
   /* Avoid issues with Google Maps and CSS frameworks */ }
-  .bh-sl-container img {
-    max-width: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important; }
   .bh-sl-container > * {
     box-sizing: content-box !important; }
   .bh-sl-container .bh-sl-form-container {

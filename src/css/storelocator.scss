@@ -34,19 +34,20 @@ $arialFont: Arial, Helvetica, sans-serif;
 	font-weight: bold;
 }
 
+/* Avoid image issues with Google Maps and CSS resets */
+.bh-sl-map-container img {
+	max-height: none !important;
+	max-width: none !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+}
+
 .bh-sl-container {
 	float: left;
 	margin-left: 20px;
 	width: 875px;
 	font: normal 14px/20px $arialFont;
 	color: $textgray;
-
-	/* Avoid image issues with Google Maps and CSS resets */
-	img {
-		max-width: none !important;
-		border-radius: 0 !important;
-		box-shadow: none !important;
-	}
 
 	/* Avoid issues with Google Maps and CSS frameworks */
 	> * {
