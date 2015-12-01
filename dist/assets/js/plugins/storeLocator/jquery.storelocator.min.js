@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.2.1 - 2015-11-30
+/*! jQuery Google Maps Store Locator - v2.2.2 - 2015-11-30
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2015 Bjorn Holine; Licensed MIT */
 
