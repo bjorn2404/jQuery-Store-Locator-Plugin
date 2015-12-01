@@ -218,6 +218,11 @@ $arialFont: Arial, Helvetica, sans-serif;
 			width: 100%;
 			height: 20px;
 			position: relative;
+			
+			/* Avoid issues with table-layout */
+			table {
+				table-layout: auto;
+			}
 
 			.bh-sl-close-icon {
 				top: 0;

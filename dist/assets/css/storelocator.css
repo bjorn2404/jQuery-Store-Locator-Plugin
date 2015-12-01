@@ -155,7 +155,10 @@
     .bh-sl-container .bh-sl-loc-list .bh-sl-close-directions-container {
       width: 100%;
       height: 20px;
-      position: relative; }
+      position: relative;
+      /* Avoid issues with table-layout */ }
+      .bh-sl-container .bh-sl-loc-list .bh-sl-close-directions-container table {
+        table-layout: auto; }
       .bh-sl-container .bh-sl-loc-list .bh-sl-close-directions-container .bh-sl-close-icon {
         top: 0;
         right: 6px; }

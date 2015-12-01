@@ -27,6 +27,11 @@ for even faster loading.
 
 ## Changelog
 
+### Version 2.2.2
+
+* Added preventative styling to avoid table conflicts with directions panel.
+* Fixed clearMarkers issue with inline directions enabled.
+
 ### Version 2.2.1
 
 * Updated preventative styling to be more specific to the map container and added max-height img rule.

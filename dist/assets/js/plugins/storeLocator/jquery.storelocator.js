@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.2.1 - 2015-11-27
+/*! jQuery Google Maps Store Locator - v2.2.1 - 2015-11-30
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2015 Bjorn Holine; Licensed MIT */
 
@@ -1130,7 +1130,16 @@
 		 */
 		clearMarkers: function() {
 			this.writeDebug('clearMarkers');
-			for (var i = 0; i < locationset.length; i++) {
+			var locationsLimit = null;
+			
+			if (locationset.length < this.settings.storeLimit) {
+				locationsLimit = locationset.length;
+			}
+			else {
+				locationsLimit = this.settings.storeLimit;
+			}
+			
+			for (var i = 0; i < locationsLimit; i++) {
 				markers[i].setMap(null);
 			}
 		},

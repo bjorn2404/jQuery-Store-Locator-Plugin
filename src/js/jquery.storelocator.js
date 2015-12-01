@@ -1127,7 +1127,16 @@
 		 */
 		clearMarkers: function() {
 			this.writeDebug('clearMarkers');
-			for (var i = 0; i < locationset.length; i++) {
+			var locationsLimit = null;
+			
+			if (locationset.length < this.settings.storeLimit) {
+				locationsLimit = locationset.length;
+			}
+			else {
+				locationsLimit = this.settings.storeLimit;
+			}
+			
+			for (var i = 0; i < locationsLimit; i++) {
 				markers[i].setMap(null);
 			}
 		},
