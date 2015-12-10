@@ -55,7 +55,7 @@ $data = '<?xml version="1.0" encoding="utf-8"?>
 		</form>
 	</div>
 
-	<div id="map-container" class="bh-sl-map-container">
+	<div id="bh-sl-map-container" class="bh-sl-map-container">
 		<div class="bh-sl-loc-list">
 			<ul class="list"></ul>
 		</div>
@@ -69,7 +69,7 @@ $data = '<?xml version="1.0" encoding="utf-8"?>
 <script src="assets/js/plugins/storeLocator/jquery.storelocator.js"></script>
 <script>
 	$(function() {
-		$('#map-container').storeLocator({
+		$('#bh-sl-map-container').storeLocator({
 			'dataRaw': <?php echo json_encode($data); ?>
 		});
 	});

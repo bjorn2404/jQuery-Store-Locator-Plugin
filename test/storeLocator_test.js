@@ -44,7 +44,7 @@
 	module('Independent methods', {
     // This will run before each test in this module.
     setup: function() {
-      $('#map-container').storeLocator({
+      $('#bh-sl-map-container').storeLocator({
 				'infowindowTemplatePath': '../dist/assets/js/plugins/storeLocator/templates/infowindow-description.html',
 				'listTemplatePath': '../dist/assets/js/plugins/storeLocator/templates/location-list-description.html',
 				'taxonomyFilters': {
@@ -57,7 +57,7 @@
     },
 
 		teardown: function() {
-			$('#map-container').data('plugin_storeLocator').destroy();
+			$('#bh-sl-map-container').data('plugin_storeLocator').destroy();
 		}
   });
 
@@ -65,7 +65,7 @@
 	 * Distance calculations
 	 */
 	test('geoCodeCalcToRadian()', 3, function() {
-		var $this = $('#map-container').data('plugin_storeLocator');
+		var $this = $('#bh-sl-map-container').data('plugin_storeLocator');
 		var radiansPerDegree = Math.PI / 180;
 
 		deepEqual($this.geoCodeCalcToRadian(0), 0, 'Zero test');
@@ -74,7 +74,7 @@
 	});
 
 	test('geoCodeCalcDiffRadian()', 2, function() {
-		var $this = $('#map-container').data('plugin_storeLocator');
+		var $this = $('#bh-sl-map-container').data('plugin_storeLocator');
 		
 		deepEqual($this.geoCodeCalcDiffRadian(10, 5), ($this.geoCodeCalcToRadian(5) - $this.geoCodeCalcToRadian(10)), 'Integer test');
 		deepEqual($this.geoCodeCalcDiffRadian(10.10, 5.5), ($this.geoCodeCalcToRadian(5.5) - $this.geoCodeCalcToRadian(10.10)), 'Float test');
@@ -86,7 +86,7 @@
 	 * URL needs to be set to /test/storeLocator.html?bh-sl-address=test for this to pass
 	 */
 	test('getQueryString()', 2, function() {
-		var $this = $('#map-container').data('plugin_storeLocator');
+		var $this = $('#bh-sl-map-container').data('plugin_storeLocator');
 
 		deepEqual($this.getQueryString(), undefined, 'Empty test');
 		deepEqual($this.getQueryString('bh-sl-address'), 'test', 'String test');
@@ -96,7 +96,7 @@
 	 * Get data
 	 */
 	asyncTest('getData', 1, function() {
-		var $this = $('#map-container').data('plugin_storeLocator');
+		var $this = $('#bh-sl-map-container').data('plugin_storeLocator');
 		var dataRequest = $this._getData('44.8896866', '-93.34994890000002', 'Edina,MN');
 
 		setTimeout(function() {
@@ -109,7 +109,7 @@
 	 * Round number
 	 */
 	test('roundNumber()', 2, function() {
-		var $this = $('#map-container').data('plugin_storeLocator');
+		var $this = $('#bh-sl-map-container').data('plugin_storeLocator');
 
 		deepEqual($this.roundNumber(2.345432, 0), 2, 'Round down test');
 		deepEqual($this.roundNumber(2.694928, 0), 3, 'Round up test');
@@ -119,7 +119,7 @@
 	 * Empty object test
 	 */
 	test('isEmptyObject()', 2, function() {
-		var $this = $('#map-container').data('plugin_storeLocator');
+		var $this = $('#bh-sl-map-container').data('plugin_storeLocator');
 		var emptyObj = {};
 		var nonEmptyObj = {
 			'test': 'testing'
@@ -133,7 +133,7 @@
 	 * Empty object values test
 	 */
 	test('hasEmptyObjectVals()', 3, function() {
-		var $this = $('#map-container').data('plugin_storeLocator');
+		var $this = $('#bh-sl-map-container').data('plugin_storeLocator');
 		var emptyObj = {};
 		var emptyObjVals = {
 			'test1' : '',
@@ -153,7 +153,7 @@
 	 * Sort locations (array of objects) numerically by distance test
 	 */
 	test('sortNumerically()', 1, function() {
-		var $this = $('#map-container').data('plugin_storeLocator');
+		var $this = $('#bh-sl-map-container').data('plugin_storeLocator');
 		var positiveTest = [
 			{ 'distance': 9 },
 			{ 'distance': 2 },
@@ -177,7 +177,7 @@
 	 */
 	test('filterData()', 2, function() {
 		var filter, filters, locationset, locationMatch, locationsMatch, inclusiveTest, exclusiveTest;
-		var $this = $('#map-container').data('plugin_storeLocator');
+		var $this = $('#bh-sl-map-container').data('plugin_storeLocator');
 
 		// Single filter
 		filter = {
