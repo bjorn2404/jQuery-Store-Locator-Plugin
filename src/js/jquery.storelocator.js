@@ -55,6 +55,7 @@
 		'maxDistance'              : false,
 		'maxDistanceID'            : 'bh-sl-maxdistance',
 		'fullMapStart'             : false,
+		'fullMapStartBlank'        : false,
 		'noForm'                   : false,
 		'loading'                  : false,
 		'loadingContainer'         : 'bh-sl-loading',
@@ -479,73 +480,100 @@
 		_start: function () {
 			this.writeDebug('_start');
 			var _this = this,
-					doAutoGeo = this.settings.autoGeocode;
-			// If a default location is set
-			if (this.settings.defaultLoc === true) {
-				// The address needs to be determined for the directions link
-				var r = new this.reverseGoogleGeocode(this);
-				var latlng = new google.maps.LatLng(this.settings.defaultLat, this.settings.defaultLng);
-				r.geocode({'latLng': latlng}, function (data) {
-					if (data !== null) {
-						var originAddress = data.address;
-						mappingObj.lat = _this.settings.defaultLat;
-						mappingObj.lng = _this.settings.defaultLng;
-						mappingObj.origin = originAddress;
-						_this.mapping(mappingObj);
-					} else {
-						// Unable to geocode
-						_this.notify(_this.settings.addressErrorAlert);
-					}
+					doAutoGeo = this.settings.autoGeocode,
+					latlng;
+
+			// Full map blank start
+			if (_this.settings.fullMapStartBlank !== false) {
+				var $mapDiv = $('#' + _this.settings.mapID);
+				$mapDiv.addClass('bh-sl-map-open');
+				var myOptions = _this.settings.mapSettings;
+				myOptions.zoom = _this.settings.fullMapStartBlank;
+				
+				latlng = new google.maps.LatLng(this.settings.defaultLat, this.settings.defaultLng);
+				myOptions.center = latlng;
+
+				// Create the map
+				var map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
+
+				// Re-center the map when the browser is re-sized
+				google.maps.event.addDomListener(window, 'resize', function() {
+					var center = map.getCenter();
+					google.maps.event.trigger(map, 'resize');
+					map.setCenter(center);
 				});
-			}
 
-
-			// If there is already have a value in the address bar
-			if ( $('#' + this.settings.addressID).val().trim() !== ''){
-				_this.writeDebug('Using Address Field');
-				_this.processForm(null);
-				doAutoGeo = false; // No need for additional processing
+				// Only do this once
+				_this.settings.fullMapStartBlank = false;
+				myOptions.zoom = originalZoom;
 			}
-			// If show full map option is true
-			else if (this.settings.fullMapStart === true) {
-				if((this.settings.querystringParams === true && this.getQueryString(this.settings.addressID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.searchID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.maxDistanceID))) {
-					_this.writeDebug('Using Query String');
-					this.processForm(null);
+			else {
+				// If a default location is set
+				if (this.settings.defaultLoc === true) {
+					// The address needs to be determined for the directions link
+					var r = new this.reverseGoogleGeocode(this);
+					latlng = new google.maps.LatLng(this.settings.defaultLat, this.settings.defaultLng);
+					r.geocode({'latLng': latlng}, function (data) {
+						if (data !== null) {
+							var originAddress = data.address;
+							mappingObj.lat = _this.settings.defaultLat;
+							mappingObj.lng = _this.settings.defaultLng;
+							mappingObj.origin = originAddress;
+							_this.mapping(mappingObj);
+						} else {
+							// Unable to geocode
+							_this.notify(_this.settings.addressErrorAlert);
+						}
+					});
+				}
+
+				// If there is already have a value in the address bar
+				if ( $('#' + this.settings.addressID).val().trim() !== ''){
+					_this.writeDebug('Using Address Field');
+					_this.processForm(null);
 					doAutoGeo = false; // No need for additional processing
 				}
-				else {
-					this.mapping(null);
+				// If show full map option is true
+				else if (this.settings.fullMapStart === true) {
+					if((this.settings.querystringParams === true && this.getQueryString(this.settings.addressID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.searchID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.maxDistanceID))) {
+						_this.writeDebug('Using Query String');
+						this.processForm(null);
+						doAutoGeo = false; // No need for additional processing
+					}
+					else {
+						this.mapping(null);
+					}
 				}
-			}
 
-			// HTML5 geolocation API option
-			if (this.settings.autoGeocode === true && doAutoGeo === true) {
-				_this.writeDebug('Auto Geo');
-				// Saved geo location (saves around 3-5 seconds)
-				if (_this.settings.sessionStorage === true && window.sessionStorage && window.sessionStorage.getItem('myGeo')){
-					_this.writeDebug('Using Session Saved Values for GEO');
-					_this.autoGeocodeQuery(JSON.parse(window.sessionStorage.getItem('myGeo')));
-					return false;
-				}
-				else if (navigator.geolocation) {
-					navigator.geolocation.getCurrentPosition(function(position){
-						_this.writeDebug('Current Position Result');
-						// To not break autoGeocodeQuery then we create the obj to match the geolocation format
-						var pos = {
-							coords: {
-								latitude : position.coords.latitude,
-								longitude: position.coords.longitude,
-								accuracy : position.coords.accuracy
+				// HTML5 geolocation API option
+				if (this.settings.autoGeocode === true && doAutoGeo === true) {
+					_this.writeDebug('Auto Geo');
+					// Saved geo location (saves around 3-5 seconds)
+					if (_this.settings.sessionStorage === true && window.sessionStorage && window.sessionStorage.getItem('myGeo')){
+						_this.writeDebug('Using Session Saved Values for GEO');
+						_this.autoGeocodeQuery(JSON.parse(window.sessionStorage.getItem('myGeo')));
+						return false;
+					}
+					else if (navigator.geolocation) {
+						navigator.geolocation.getCurrentPosition(function(position){
+							_this.writeDebug('Current Position Result');
+							// To not break autoGeocodeQuery then we create the obj to match the geolocation format
+							var pos = {
+								coords: {
+									latitude : position.coords.latitude,
+									longitude: position.coords.longitude,
+									accuracy : position.coords.accuracy
+								}
+							};
+							// Have to do this to get around scope issues
+							if (_this.settings.sessionStorage === true && window.sessionStorage) {
+								window.sessionStorage.setItem('myGeo',JSON.stringify(pos));
 							}
-						};
-						// Have to do this to get around scope issues
-						if (_this.settings.sessionStorage === true && window.sessionStorage) {
-							window.sessionStorage.setItem('myGeo',JSON.stringify(pos));
-						}
-						_this.autoGeocodeQuery(pos);
-					}, function(error){
-						_this._autoGeocodeError(error);
-					});
+							_this.autoGeocodeQuery(pos);
+						}, function(error){
+							_this._autoGeocodeError(error);
+						});
+					}
 				}
 			}
 		},
@@ -1630,7 +1658,7 @@
 				origin = mappingObject.origin;
 				page = mappingObject.page;
 			}
-
+			
 			// Set the initial page to zero if not set
 			if ( _this.settings.pagination === true ) {
 				if (typeof page === 'undefined' || originalOrigin !== addressInput ) {
@@ -1661,7 +1689,6 @@
 			if(_this.settings.taxonomyFilters !== null && _this.hasEmptyObjectVals(filters)) {
 				_this.checkFilters();
 			}
-
 			/**
 			 * Process the location data
 			 */

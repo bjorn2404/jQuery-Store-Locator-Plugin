@@ -27,6 +27,13 @@ for even faster loading.
 
 ## Changelog
 
+### Version 2.3.0
+
+* Added fullMapStartBlank option to show a blank map without any locations initially. Set this setting to an integer, 
+which will be applied as the initial Google Maps zoom value and will then fall back to the mapSettings zoom level after
+a serach is performed.
+* Added fullMapStartBlank example file.
+
 ### Version 2.2.2
 
 * Added preventative styling to avoid table conflicts with directions panel.
