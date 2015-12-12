@@ -114,6 +114,14 @@
           display: block;
           float: left;
           margin-right: 8px; }
+        .bh-sl-container .bh-sl-filters-container .bh-sl-filters li select {
+          box-sizing: border-box;
+          border: 1px solid #cccccc;
+          border-radius: 4px;
+          font: normal 14px/18px Arial, Helvetica, sans-serif;
+          line-height: 16px;
+          padding: 6px 12px;
+          -webkit-border-radius: 4px; }
   .bh-sl-container .bh-sl-map-container {
     clear: left;
     float: left;

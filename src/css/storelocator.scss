@@ -162,6 +162,16 @@ $tabletLarge: '(min-width: 1024px)';
 					float: left;
 					margin-right: 8px;
 				}
+				
+				select {
+					box-sizing: border-box;
+					border: 1px solid $gray;
+					border-radius: 4px;
+					font: normal 14px/18px $arialFont;
+					line-height: 16px;
+					padding: 6px 12px;
+					-webkit-border-radius: 4px;
+				}
 			}
 		}
 	}
