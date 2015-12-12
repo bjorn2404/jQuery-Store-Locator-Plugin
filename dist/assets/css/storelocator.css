@@ -136,7 +136,6 @@
       .bh-sl-container .bh-sl-map-container a:focus, .bh-sl-container .bh-sl-map-container a:hover, .bh-sl-container .bh-sl-map-container a:active {
         text-decoration: underline; }
   .bh-sl-container .bh-sl-loc-list {
-    float: left;
     font-size: 13px;
     height: 530px;
     overflow-x: auto;
