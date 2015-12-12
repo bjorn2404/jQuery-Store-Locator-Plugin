@@ -31,9 +31,10 @@ for even faster loading.
 
 * Added fullMapStartBlank option to show a blank map without any locations initially. Set this setting to an integer, 
 which will be applied as the initial Google Maps zoom value and will then fall back to the mapSettings zoom level after
-a serach is performed.
+a search is performed.
 * Added fullMapStartBlank example file.
 * Moved pagination container within map container div in pagination example to avoid confusion when combined with modal option.
+* Reworked styling so that all HTML example files are responsive by default.
 * Updated map-container ID in all example files with bh-sl prefix.
 
 ### Version 2.2.2

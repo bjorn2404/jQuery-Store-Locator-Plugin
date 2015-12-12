@@ -9,14 +9,22 @@ $black: #000;
 $blue: #005293;
 $red: #ae2118;
 $arialFont: Arial, Helvetica, sans-serif;
+$tablet: '(min-width: 768px)';
+$tabletLarge: '(min-width: 1024px)';
 
 /* #page-header it just included for the examples */
 #page-header {
-	float: left;
 	display: block;
+	float: left;
+	max-width: 800px;
 
 	.bh-sl-title {
 		color: $titlegray;
+		font: normal 20px/1.4 $arialFont;
+
+		@media #{$tabletLarge} {
+			font-size: 30px;
+		}
 	}
 }
 
@@ -27,27 +35,28 @@ $arialFont: Arial, Helvetica, sans-serif;
 
 .bh-sl-error {
 	clear: both;
-	float: left;
-	width: 100%;
-	padding: 10px 0;
 	color: $red;
+	float: left;
 	font-weight: bold;
+	padding: 10px 0;
+	width: 100%;
 }
 
 /* Avoid image issues with Google Maps and CSS resets */
 .bh-sl-map-container img {
-	max-height: none !important;
-	max-width: none !important;
 	border-radius: 0 !important;
 	box-shadow: none !important;
+	max-height: none !important;
+	max-width: none !important;
 }
 
 .bh-sl-container {
-	float: left;
-	margin-left: 20px;
-	width: 875px;
-	font: normal 14px/20px $arialFont;
+	box-sizing: border-box;
 	color: $textgray;
+	float: left;
+	font: normal 14px/1.4 $arialFont;
+	padding: 0 15px;
+	width: 100%;
 
 	/* Avoid issues with Google Maps and CSS frameworks */
 	> * {
@@ -64,71 +73,94 @@ $arialFont: Arial, Helvetica, sans-serif;
 	.form-input {
 		float: left;
 		margin-top: 3px;
+		width: 100%;
 
-		label {
-			font-weight: bold;
+		// Tablet up
+		@media #{$tablet} {
+			width: auto;
 		}
 
-		input,select {
-			margin: 0 15px 0 10px;
-			padding: 6px 12px;
-			line-height: 16px;
+		label {
+			display: block;
+			font-weight: bold;
+			width: 100%;
+
+			// Tablet up
+			@media #{$tablet} {
+				display: inline-block;
+				width: auto;
+			}
+		}
+
+		input, select {
+			box-sizing: border-box;
 			border: 1px solid $gray;
-			font: normal 14px/18px $arialFont;
-			-webkit-border-radius: 4px;
 			border-radius: 4px;
+			font: normal 14px/18px $arialFont;
+			line-height: 16px;
+			margin: 15px 0;
+			padding: 6px 12px;
+			width: 100%;
+			-webkit-border-radius: 4px;
+
+			// Tablet up
+			@media #{$tablet} {
+				width: auto;
+				margin: 0 15px 0 10px;
+			}
 		}
 	}
 
 	button {
-		float: left;
+		background: darken( $blue, 5% );
+		border: none;
+		border-radius: 4px;
+		color: $white;
 		cursor: pointer;
+		float: left;
+		font: bold 14px/18px $arialFont;
 		margin-top: 3px;
 		padding: 6px 12px;
-		border: none;
-		background: darken( $blue, 5% );
-		font: bold 14px/18px $arialFont;
-		color: $white;
 		white-space: nowrap;
 		-webkit-border-radius: 4px;
-		border-radius: 4px;
 	}
 
 	.bh-sl-loading {
+		background: url(../img/ajax-loader.gif) no-repeat;
 		float: left;
 		margin: 4px 0 0 10px;
-		width: 16px;
 		height: 16px;
-		background: url(../img/ajax-loader.gif) no-repeat;
+		width: 16px;
 	}
 
 	.bh-sl-filters-container {
 		clear: both;
 		float: left;
-		width: 100%;
 		margin: 15px 0;
+		width: 100%;
 
 		.bh-sl-filters {
-			list-style: none;
 			float: left;
-			padding: 0;
+			list-style: none;
 			margin: 0 100px 0 0;
+			padding: 0;
 
 			li {
-				display: block;
 				clear: left;
+				display: block;
 				float: left;
-				width: 100%;
 				margin: 5px 0;
+				width: 100%;
 
 				label {
 					display: inline;
+					vertical-align: text-bottom;
 				}
 
 				input {
 					display: block;
 					float: left;
-					margin: 2px 8px 2px 0;
+					margin-right: 8px;
 				}
 			}
 		}
@@ -138,13 +170,20 @@ $arialFont: Arial, Helvetica, sans-serif;
 		clear: left;
 		float: left;
 		margin-top: 27px;
-		height: 530px;
-		width: 875px;
+		width: 100%;
+
+		// Tablet large up
+		@media #{$tabletLarge} {
+			margin-bottom: 60px;
+		}
 
 		a {
 			color: $blue;
 			text-decoration: none;
-			&:hover, &:active {
+			
+			&:focus,
+			&:hover,
+			&:active {
 				text-decoration: underline;
 			}
 		}
@@ -152,10 +191,15 @@ $arialFont: Arial, Helvetica, sans-serif;
 
 	.bh-sl-loc-list {
 		float: left;
-		width: 30%;
+		font-size: 13px;
 		height: 530px;
 		overflow-x: auto;
-		font-size: 13px;
+		width: 100%;
+
+		// Tablet large up
+		@media #{$tabletLarge} {
+			width: 30%;
+		}
 
 		ul {
 			display: block;
@@ -167,27 +211,26 @@ $arialFont: Arial, Helvetica, sans-serif;
 			padding: 0;
 
 			li {
-				display: block;
-				clear: left;
-				float: left;
-				margin: 3% 4%;
-				cursor: pointer;
-				width: 92%;
 				border: 1px solid $white; /* Adding this to prevent moving li elements when adding the list-focus class*/
+				box-sizing: border-box;
+				clear: left;
+				cursor: pointer;
+				display: block;
+				float: left;
+				width: 100%;
 			}
 		}
 
 		.list-label {
-			float: left;
-			margin: 10px 0 0 6px;
-			padding: 4px;
-			width: 10%;
-			max-width: 21px;
-			text-align: center;
 			background: darken( $blue, 20% );
-			color: $white;
-			font-weight: bold;
 			border-radius: 15px;
+			color: $white;
+			float: left;
+			font-weight: bold;
+			margin: 10px 0 0 15px;
+			padding: 4px 7px;
+			text-align: center;
+			width: 13px;
 		}
 
 		.list-details {
@@ -200,24 +243,21 @@ $arialFont: Arial, Helvetica, sans-serif;
 			}
 
 			.loc-dist {
+				color: $darkgray;
 				font-weight: bold;
 				font-style: italic;
-				color: $darkgray;
 			}
 		}
 
 		.list-focus {
 			border: 1px solid rgba(0, 82, 147, 0.4);
-			-moz-box-shadow: 0 0 8px rgba(0, 82, 147, 0.4);
-			-webkit-box-shadow: 0 0 8px rgba(0, 82, 147, 0.4);
-			box-shadow: 0 0 8px rgba(0, 100, 180, 0.4);
 			transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
 		}
 
 		.bh-sl-close-directions-container {
-			width: 100%;
 			height: 20px;
 			position: relative;
+			width: 100%;
 			
 			/* Avoid issues with table-layout */
 			table {
@@ -225,26 +265,36 @@ $arialFont: Arial, Helvetica, sans-serif;
 			}
 
 			.bh-sl-close-icon {
-				top: 0;
 				right: 6px;
+				top: 0;
 			}
 		}
 
 		.bh-sl-noresults-title {
 			font-weight: bold;
+			margin: 15px;
+		}
+		
+		.bh-sl-noresults-desc {
+			margin: 0 15px;
 		}
 	}
 
 	.loc-name {
 		/* Picked up by both list and infowindows */
-		font-weight: bold;
 		font-size: 15px;
+		font-weight: bold;
 	}
 
 	.bh-sl-map {
 		float: left;
-		width: 70%;
 		height: 530px;
+		width: 100%;
+
+		// Tablet large up
+		@media #{$tabletLarge} {
+			width: 70%;
+		}
 	}
 
 	.bh-sl-pagination-container {
@@ -252,16 +302,16 @@ $arialFont: Arial, Helvetica, sans-serif;
 
 		ol {
 			list-style-type: none;
-			text-align: center;
 			margin: 0;
 			padding: 10px 0;
+			text-align: center;
 
 			li {
-				display: inline-block;
-				padding: 10px;
-				cursor: pointer;
-				font: bold 14px $arialFont;
 				color: $blue;
+				cursor: pointer;
+				display: inline-block;
+				font: bold 14px $arialFont;
+				padding: 10px;
 			}
 
 			.bh-sl-current {
@@ -275,60 +325,61 @@ $arialFont: Arial, Helvetica, sans-serif;
 
 /* Modal window */
 .bh-sl-overlay {
-	position: fixed;
+	background: url(../img/overlay-bg.png) repeat;
+	height: 100%;
 	left: 0;
+	position: fixed;
 	top: 0;
 	width: 100%;
-	height: 100%;
 	z-index: 10000;
-	background: url(../img/overlay-bg.png) repeat;
-
+	
 	.bh-sl-modal-window {
+		background: $white;
+		border-radius: 10px;
+		box-shadow: 0 0 10px #656565;
 		position: absolute;
 		left: 50%;
 		margin-left: -460px; /* width divided by 2 */
 		margin-top: 60px;
-		width: 920px;
 		height: 620px;
+		width: 920px;
 		z-index: 10010;
-		background: $white;
-		border-radius: 10px;
-		box-shadow: 0 0 10px #656565;
-
+		
 		.bh-sl-map-container {
 			margin-top: 50px; /* increase map container margin */
 		}
 
 		.bh-sl-modal-content {
 			float: left;
-			padding: 0 22px; /* there's already a margin on the top of the map-container div */
+			padding: 0 1%; /* there's already a margin on the top of the map-container div */
+			width: 98%;
 		}
 
 		.bh-sl-close-icon {
-			top: 13px;
 			right: 22px;
+			top: 13px;
 		}
 	}
 }
 
 .bh-sl-close-icon {
-	position: absolute;
 	cursor: pointer;
 	height: 24px;
+	position: absolute;
 	width: 24px;
 	
 	&:after,
 	&:before {
-		position: absolute;
-		top: 3px;
-		right: 3px;
-		bottom: 0;
-		left: 50%;
 		background: $gray;
 		content: '';
 		display: block;
 		height: 24px;
 		margin: -3px 0 0 -1px;
+		position: absolute;
+		bottom: 0;
+		left: 50%;
+		right: 3px;
+		top: 3px;
 		width: 3px;
 		-webkit-transform: rotate(45deg);
 		-moz-transform: rotate(45deg);

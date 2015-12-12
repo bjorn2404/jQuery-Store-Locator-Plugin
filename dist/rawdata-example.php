@@ -56,10 +56,10 @@ $data = '<?xml version="1.0" encoding="utf-8"?>
 	</div>
 
 	<div id="bh-sl-map-container" class="bh-sl-map-container">
+		<div id="bh-sl-map" class="bh-sl-map"></div>
 		<div class="bh-sl-loc-list">
 			<ul class="list"></ul>
 		</div>
-		<div id="bh-sl-map" class="bh-sl-map"></div>
 	</div>
 </div>
 
