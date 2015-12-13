@@ -29,8 +29,10 @@ $tabletLarge: '(min-width: 1024px)';
 }
 
 /* Infowindow Roboto font override */
-.gm-style div, .gm-style span, .gm-style label, .gm-style a {
-	font-family: $arialFont;
+.gm-style {
+	div, span, label, a {
+		font-family: $arialFont;
+	}
 }
 
 .bh-sl-error {
@@ -96,8 +98,7 @@ $tabletLarge: '(min-width: 1024px)';
 			box-sizing: border-box;
 			border: 1px solid $gray;
 			border-radius: 4px;
-			font: normal 14px/18px $arialFont;
-			line-height: 16px;
+			font: normal 14px/1.4 $arialFont;
 			margin: 15px 0;
 			padding: 6px 12px;
 			width: 100%;
@@ -118,7 +119,7 @@ $tabletLarge: '(min-width: 1024px)';
 		color: $white;
 		cursor: pointer;
 		float: left;
-		font: bold 14px/18px $arialFont;
+		font: bold 14px/1.4 $arialFont;
 		margin-top: 3px;
 		padding: 6px 12px;
 		white-space: nowrap;
@@ -167,8 +168,7 @@ $tabletLarge: '(min-width: 1024px)';
 					box-sizing: border-box;
 					border: 1px solid $gray;
 					border-radius: 4px;
-					font: normal 14px/18px $arialFont;
-					line-height: 16px;
+					font: normal 14px/1.4 $arialFont;
 					padding: 6px 12px;
 					-webkit-border-radius: 4px;
 				}
@@ -190,10 +190,10 @@ $tabletLarge: '(min-width: 1024px)';
 		a {
 			color: $blue;
 			text-decoration: none;
-			
+
+			&:active,
 			&:focus,
-			&:hover,
-			&:active {
+			&:hover {
 				text-decoration: underline;
 			}
 		}
@@ -267,15 +267,37 @@ $tabletLarge: '(min-width: 1024px)';
 			height: 20px;
 			position: relative;
 			width: 100%;
+
+			.bh-sl-close-icon {
+				right: 6px;
+				top: 0;
+			}
+		}
+
+		.bh-sl-directions-panel {
+			margin: 0 2%;
 			
 			/* Avoid issues with table-layout */
 			table {
 				table-layout: auto;
 			}
 
-			.bh-sl-close-icon {
-				right: 6px;
-				top: 0;
+			table, td {
+				vertical-align: middle;
+				border-collapse: separate;
+			}
+
+			td {
+				padding: 1px;
+			}
+
+			.adp-placemark {
+				margin: 10px 0;
+				border: 1px solid #c0c0c0;
+			}
+
+			.adp-marker {
+				padding: 3px;
 			}
 		}
 

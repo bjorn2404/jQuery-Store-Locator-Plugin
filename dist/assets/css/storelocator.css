@@ -63,8 +63,7 @@
       box-sizing: border-box;
       border: 1px solid #cccccc;
       border-radius: 4px;
-      font: normal 14px/18px Arial, Helvetica, sans-serif;
-      line-height: 16px;
+      font: normal 14px/1.4 Arial, Helvetica, sans-serif;
       margin: 15px 0;
       padding: 6px 12px;
       width: 100%;
@@ -80,7 +79,7 @@
     color: white;
     cursor: pointer;
     float: left;
-    font: bold 14px/18px Arial, Helvetica, sans-serif;
+    font: bold 14px/1.4 Arial, Helvetica, sans-serif;
     margin-top: 3px;
     padding: 6px 12px;
     white-space: nowrap;
@@ -118,8 +117,7 @@
           box-sizing: border-box;
           border: 1px solid #cccccc;
           border-radius: 4px;
-          font: normal 14px/18px Arial, Helvetica, sans-serif;
-          line-height: 16px;
+          font: normal 14px/1.4 Arial, Helvetica, sans-serif;
           padding: 6px 12px;
           -webkit-border-radius: 4px; }
   .bh-sl-container .bh-sl-map-container {
@@ -133,7 +131,7 @@
     .bh-sl-container .bh-sl-map-container a {
       color: #005293;
       text-decoration: none; }
-      .bh-sl-container .bh-sl-map-container a:focus, .bh-sl-container .bh-sl-map-container a:hover, .bh-sl-container .bh-sl-map-container a:active {
+      .bh-sl-container .bh-sl-map-container a:active, .bh-sl-container .bh-sl-map-container a:focus, .bh-sl-container .bh-sl-map-container a:hover {
         text-decoration: underline; }
   .bh-sl-container .bh-sl-loc-list {
     font-size: 13px;
@@ -186,13 +184,25 @@
     .bh-sl-container .bh-sl-loc-list .bh-sl-close-directions-container {
       height: 20px;
       position: relative;
-      width: 100%;
-      /* Avoid issues with table-layout */ }
-      .bh-sl-container .bh-sl-loc-list .bh-sl-close-directions-container table {
-        table-layout: auto; }
+      width: 100%; }
       .bh-sl-container .bh-sl-loc-list .bh-sl-close-directions-container .bh-sl-close-icon {
         right: 6px;
         top: 0; }
+    .bh-sl-container .bh-sl-loc-list .bh-sl-directions-panel {
+      margin: 0 2%;
+      /* Avoid issues with table-layout */ }
+      .bh-sl-container .bh-sl-loc-list .bh-sl-directions-panel table {
+        table-layout: auto; }
+      .bh-sl-container .bh-sl-loc-list .bh-sl-directions-panel table, .bh-sl-container .bh-sl-loc-list .bh-sl-directions-panel td {
+        vertical-align: middle;
+        border-collapse: separate; }
+      .bh-sl-container .bh-sl-loc-list .bh-sl-directions-panel td {
+        padding: 1px; }
+      .bh-sl-container .bh-sl-loc-list .bh-sl-directions-panel .adp-placemark {
+        margin: 10px 0;
+        border: 1px solid #c0c0c0; }
+      .bh-sl-container .bh-sl-loc-list .bh-sl-directions-panel .adp-marker {
+        padding: 3px; }
     .bh-sl-container .bh-sl-loc-list .bh-sl-noresults-title {
       font-weight: bold;
       margin: 15px; }

@@ -27,6 +27,11 @@ for even faster loading.
 
 ## Changelog
 
+### Version 2.3.1
+
+* Added preventative styling to inline directions panel table.
+* Switched to unitless line-heights.
+
 ### Version 2.3.0
 
 * Added fullMapStartBlank option to show a blank map without any locations initially. Set this setting to an integer, 
