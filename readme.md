@@ -27,6 +27,10 @@ for even faster loading.
 
 ## Changelog
 
+### Version 2.3.2
+
+* Tweaked list label width styling.
+
 ### Version 2.3.1
 
 * Added preventative styling to inline directions panel table.

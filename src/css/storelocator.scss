@@ -234,12 +234,14 @@ $tabletLarge: '(min-width: 1024px)';
 			background: darken( $blue, 20% );
 			border-radius: 15px;
 			color: $white;
+			display: block;
 			float: left;
 			font-weight: bold;
 			margin: 10px 0 0 15px;
 			padding: 4px 7px;
 			text-align: center;
-			width: 13px;
+			width: auto;
+			min-width: 13px;
 		}
 
 		.list-details {
