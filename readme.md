@@ -25,7 +25,19 @@ Mustache templates, and the built-in helpers really come in handy. Depending on 
 want them in the default location. If you’re developing something for mobile devices the templates can be pre-compiled 
 for even faster loading.
 
+### WordPress version
+
+[Cardinal Store Locator plugin for WordPress](https://cardinalwp.com/) is now available, which uses this jQuery plugin 
+as a base and all of the settings can be set via a settings page in the WP dashboard. It also integrates with core 
+WordPress features such as custom post types for location data and custom taxonomies for location categorization and 
+filtering.
+
+
 ## Changelog
+
+### Version 2.3.3
+
+* Removed hide map and results when there are no results in favor of just displaying the no results message and empty map.
 
 ### Version 2.3.2
 

@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.3.2 - 2015-12-14
+/*! jQuery Google Maps Store Locator - v2.3.3 - 2015-12-21
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2015 Bjorn Holine; Licensed MIT */
 
@@ -1839,11 +1839,6 @@
 				// Callback
 				if (_this.settings.callbackNoResults) {
 					_this.settings.callbackNoResults.call(this);
-				}
-
-				// Hide the map and locations if they're showing
-				if ($mapDiv.hasClass('bh-sl-map-open')) {
-					$this.hide();
 				}
 
 				// Append the no results message

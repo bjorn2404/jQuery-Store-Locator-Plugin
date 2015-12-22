@@ -1838,11 +1838,6 @@
 					_this.settings.callbackNoResults.call(this);
 				}
 
-				// Hide the map and locations if they're showing
-				if ($mapDiv.hasClass('bh-sl-map-open')) {
-					$this.hide();
-				}
-
 				// Append the no results message
 				noResults = $('<li><div class="bh-sl-noresults-title">' + _this.settings.noResultsTitle +  '</div><br><div class="bh-sl-noresults-desc">' + _this.settings.noResultsDesc + '</li>').hide().fadeIn();
 
