@@ -37,7 +37,8 @@ filtering.
 
 ### Version 2.3.3
 
-* Removed hide map and results when there are no results in favor of just displaying the no results message and empty map.
+* Removed code that temporarily hid the map and results, when there are no results, in favor of just displaying the no 
+results message and empty map.
 
 ### Version 2.3.2
 
