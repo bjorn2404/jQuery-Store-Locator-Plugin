@@ -38,6 +38,7 @@ filtering.
 ### Version 2.3.4
 
 * Added new selected marker image options to highlight clicked marker.
+* Added Google Places autocomplete option and example.
 
 ### Version 2.3.3
 

@@ -53,6 +53,7 @@
 		'defaultLoc'               : false,
 		'defaultLat'               : null,
 		'defaultLng'               : null,
+		'autoComplete'             : false,
 		'autoGeocode'              : false,
 		'maxDistance'              : false,
 		'maxDistanceID'            : 'bh-sl-maxdistance',
@@ -176,6 +177,16 @@
 				$this.wrap('<div class="' + this.settings.overlay + '"><div class="' + this.settings.modalWindow + '"><div class="' + this.settings.modalContent + '">');
 				$('.' + this.settings.modalWindow).prepend('<div class="' + this.settings.closeIcon + '"></div>');
 				$('.' + this.settings.overlay).hide();
+			}
+
+			// Set up Google Places autocomplete if it's set to true
+			if (this.settings.autoComplete === true) {
+				var _this = this;
+				var searchInput = document.getElementById(this.settings.addressID);
+				var autoPlaces = new google.maps.places.Autocomplete(searchInput);
+				autoPlaces.addListener('place_changed', function(){
+					_this.processForm(null);
+				});
 			}
 
 			// Load the templates and continue from there
@@ -484,7 +495,7 @@
 			var _this = this,
 					doAutoGeo = this.settings.autoGeocode,
 					latlng;
-
+			
 			// Full map blank start
 			if (_this.settings.fullMapStartBlank !== false) {
 				var $mapDiv = $('#' + _this.settings.mapID);
