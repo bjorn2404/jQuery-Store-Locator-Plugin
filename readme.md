@@ -35,6 +35,10 @@ filtering.
 
 ## Changelog
 
+### Version 2.3.4
+
+* Added new selected marker image options to highlight clicked marker.
+
 ### Version 2.3.3
 
 * Removed code that temporarily hid the map and results, when there are no results, in favor of just displaying the no 

@@ -1,6 +1,6 @@
-/*! jQuery Google Maps Store Locator - v2.3.3 - 2015-12-22
+/*! jQuery Google Maps Store Locator - v2.3.4 - 2016-01-20
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
-* Copyright (c) 2015 Bjorn Holine; Licensed MIT */
+* Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
 ;(function ($, window, document, undefined) {
 	'use strict';
@@ -13,7 +13,7 @@
 	}
 
 	// Variables used across multiple methods
-	var $this, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom, dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService;
+	var $this, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom, dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService, prevSelectedMarkerBefore, prevSelectedMarkerAfter;
 	var featuredset = [], locationset = [], normalset = [], markers = [];
 	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {};
 
@@ -32,6 +32,8 @@
 		'markerImg'                : null,
 		'markerDim'                : null,
 		'catMarkers'               : null,
+		'selectedMarkerImg'        : null,
+		'selectedMarkerImgDim'     : null,
 		'lengthUnit'               : 'm',
 		'storeLimit'               : 26,
 		'distanceAlert'            : 60,
@@ -1032,6 +1034,35 @@
 		},
 
 		/**
+		 * Change the selected marker image
+		 * 
+		 * @param marker {Object} Google Maps marker object
+		 */
+		changeSelectedMarker: function (marker) {
+			var markerImg;
+
+			// Reset the previously selected marker
+			if ( typeof prevSelectedMarkerAfter !== 'undefined' ) {
+				prevSelectedMarkerAfter.setIcon( prevSelectedMarkerBefore );
+			}
+
+			// Change the selected marker icon
+			if(this.settings.selectedMarkerImgDim === null) {
+				markerImg = this.markerImage(this.settings.selectedMarkerImg);
+			} else {
+				markerImg = this.markerImage(this.settings.selectedMarkerImg, this.settings.selectedMarkerImgDim.width, this.settings.selectedMarkerImgDim.height);
+			}
+
+			// Save the marker before switching it
+			prevSelectedMarkerBefore = marker.icon;
+
+			marker.setIcon( markerImg );
+
+			// Save the marker to a variable so it can be reverted when another marker is clicked
+			prevSelectedMarkerAfter = marker;
+		},
+
+		/**
 		 * Create the infowindow
 		 *
 		 * @param marker {Object} Google Maps marker object
@@ -1076,6 +1107,11 @@
 					$container.animate({
 						scrollTop: $selectedLocation.offset().top - $container.offset().top + $container.scrollTop()
 					});
+
+					// Custom selected marker override
+					if(_this.settings.selectedMarkerImg !== null) {
+						_this.changeSelectedMarker(marker);
+					}
 				});
 			}
 		},
@@ -2107,6 +2143,11 @@
 				}
 				else {
 					_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
+				}
+
+				// Custom selected marker override
+				if(_this.settings.selectedMarkerImg !== null) {
+					_this.changeSelectedMarker(selectedMarker);
 				}
 			});
 

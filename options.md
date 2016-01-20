@@ -10,6 +10,8 @@
 | markerImg | null | Replacement marker image used for all locations |
 | markerDim | null | Replacement marker dimensions object - ex value: { height: 20, width: 20 } |
 | catMarkers | null | Multiple replacement marker images based on categories object. Value should be array with image path followed by dimensions - ex value: catMarkers : {'Restaurant' : ['img/red-marker.svg', 32, 32]}
+| selectedMarkerImg | null | Selected marker image. |
+| selectedMarkerImgDim | null | Selected marker image dimensions object - ex value: { height: 20, width: 20 } |
 | lengthUnit | 'm' | The unit of length. Default is m for miles, change to km for kilometers. |
 | storeLimit | 26 | The number of closest locations displayed at one time. Set to -1 for unlimited. |
 | distanceAlert | 60 | Displays alert if there are no locations with 60 m/km of the user's location. Set to -1 to disable. |
