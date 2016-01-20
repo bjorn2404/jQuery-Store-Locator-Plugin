@@ -35,10 +35,11 @@ filtering.
 
 ## Changelog
 
-### Version 2.3.4
+### Version 2.4.0
 
 * Added new selected marker image options to highlight clicked marker.
 * Added Google Places autocomplete option and example.
+* Added full map start location list limit setting.
 
 ### Version 2.3.3
 

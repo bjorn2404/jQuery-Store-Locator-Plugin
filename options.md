@@ -39,6 +39,7 @@
 | maxDistanceID | 'bh-sl-maxdistance' | ID of the select element for the maximum distance options. |
 | fullMapStart | false | Set to true if you want to immediately show a map of all locations. The map will center and zoom automatically. |
 | fullMapStartBlank | false | Set to a zoom integer if you want to immediately show a blank map without any locations. |
+| fullMapStartListLimit | false | Set to a number to limit the number of items displayed in the location list with full map start. |
 | noForm | false | Set to true if you aren't able to use form tags (ASP.net WebForms). |
 | loading | false | Set to true to display a loading animated gif next to the submit button. |
 | loadingContainer | 'bh-sl-loading' | Class of element container that displays the loading animated gif. |

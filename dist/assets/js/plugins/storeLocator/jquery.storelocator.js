@@ -62,6 +62,7 @@
 		'maxDistanceID'            : 'bh-sl-maxdistance',
 		'fullMapStart'             : false,
 		'fullMapStartBlank'        : false,
+		'fullMapStartListLimit'    : false,
 		'noForm'                   : false,
 		'loading'                  : false,
 		'loadingContainer'         : 'bh-sl-loading',
@@ -2122,10 +2123,18 @@
 				locList.append(noResults);
 			}
 			else {
-				$(markers).each(function (x) {
-					var currentMarker = markers[x];
-					_this.listSetup(currentMarker, storeStart, page);
-				});
+				// Set up the location list markup
+				if (_this.settings.fullMapStartListLimit !== false && ! isNaN(_this.settings.fullMapStartListLimit)) {
+					for (var m = 0; m < _this.settings.fullMapStartListLimit; m++) {
+						var currentMarker = markers[m];
+						_this.listSetup(currentMarker, storeStart, page);
+					}
+				} else {
+					$(markers).each(function (x) {
+						var currentMarker = markers[x];
+						_this.listSetup(currentMarker, storeStart, page);
+					});
+				}
 			}
 
 			// Handle clicks from the list
