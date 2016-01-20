@@ -34,6 +34,7 @@
 | defaultLoc | false | If true, the map will load with a default location immediately. Set slideMap to false if you want to use this. |
 | defaultLat | null | If using defaultLoc, set this to the default location latitude. |
 | defaultLng | null | If using defaultLoc, set this to the default location longitude. |
+| autoComplete | false | Set to true to enable Google Places autocomplete. Note the slight markup differences in the example file. |
 | autoGeocode | false | Set to true if you want to use the HTML5 geolocation API (good for mobile) to geocode the user's location. |
 | maxDistance | false | Set to true if you want to give users an option to limit the distance from their location to the markers. |
 | maxDistanceID | 'bh-sl-maxdistance' | ID of the select element for the maximum distance options. |
