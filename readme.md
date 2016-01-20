@@ -35,6 +35,11 @@ filtering.
 
 ## Changelog
 
+### Version 2.4.1
+
+* Changed new full map start list limit so that it's only applied on the initial load.
+* Fixed issue with new autocomplete setting where search was firing twice.
+
 ### Version 2.4.0
 
 * Added new selected marker image options to highlight clicked marker.

@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.4.0 - 2016-01-20
+/*! jQuery Google Maps Store Locator - v2.4.1 - 2016-01-20
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -185,12 +185,8 @@
 
 			// Set up Google Places autocomplete if it's set to true
 			if (this.settings.autoComplete === true) {
-				var _this = this;
 				var searchInput = document.getElementById(this.settings.addressID);
 				var autoPlaces = new google.maps.places.Autocomplete(searchInput);
-				autoPlaces.addListener('place_changed', function(){
-					_this.processForm(null);
-				});
 			}
 
 			// Load the templates and continue from there
@@ -2124,7 +2120,7 @@
 			}
 			else {
 				// Set up the location list markup
-				if (_this.settings.fullMapStartListLimit !== false && ! isNaN(_this.settings.fullMapStartListLimit)) {
+				if (_this.settings.fullMapStartListLimit !== false && ! isNaN(_this.settings.fullMapStartListLimit) && firstRun === true) {
 					for (var m = 0; m < _this.settings.fullMapStartListLimit; m++) {
 						var currentMarker = markers[m];
 						_this.listSetup(currentMarker, storeStart, page);
