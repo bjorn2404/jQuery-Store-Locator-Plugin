@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.4.1 - 2016-01-20
+/*! jQuery Google Maps Store Locator - v2.4.2 - 2016-01-20
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -1101,20 +1101,22 @@
 					// Focus on the list
 					var markerId = marker.get('id');
 					var $selectedLocation = $('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']');
+					
+					if ($selectedLocation.length > 0) {
+						// Marker click callback
+						if (_this.settings.callbackMarkerClick) {
+							_this.settings.callbackMarkerClick.call(this, marker, markerId, $selectedLocation);
+						}
 
-					// Marker click callback
-					if (_this.settings.callbackMarkerClick) {
-						_this.settings.callbackMarkerClick.call(this, marker, markerId, $selectedLocation);
+						$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
+						$selectedLocation.addClass('list-focus');
+
+						// Scroll list to selected marker
+						var $container = $('.' + _this.settings.locationList);
+						$container.animate({
+							scrollTop: $selectedLocation.offset().top - $container.offset().top + $container.scrollTop()
+						});
 					}
-
-					$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
-					$selectedLocation.addClass('list-focus');
-
-					// Scroll list to selected marker
-					var $container = $('.' + _this.settings.locationList);
-					$container.animate({
-						scrollTop: $selectedLocation.offset().top - $container.offset().top + $container.scrollTop()
-					});
 
 					// Custom selected marker override
 					if(_this.settings.selectedMarkerImg !== null) {
@@ -2120,7 +2122,7 @@
 			}
 			else {
 				// Set up the location list markup
-				if (_this.settings.fullMapStartListLimit !== false && ! isNaN(_this.settings.fullMapStartListLimit) && firstRun === true) {
+				if (_this.settings.fullMapStartListLimit !== false && ! isNaN(_this.settings.fullMapStartListLimit)) {
 					for (var m = 0; m < _this.settings.fullMapStartListLimit; m++) {
 						var currentMarker = markers[m];
 						_this.listSetup(currentMarker, storeStart, page);
