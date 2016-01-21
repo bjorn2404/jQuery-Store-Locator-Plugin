@@ -526,8 +526,8 @@
 					r.geocode({'latLng': latlng}, function (data) {
 						if (data !== null) {
 							var originAddress = data.address;
-							mappingObj.lat = _this.settings.defaultLat;
-							mappingObj.lng = _this.settings.defaultLng;
+							olat = mappingObj.lat = _this.settings.defaultLat;
+							olng = mappingObj.lng = _this.settings.defaultLng;
 							mappingObj.origin = originAddress;
 							_this.mapping(mappingObj);
 						} else {

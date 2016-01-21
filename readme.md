@@ -39,6 +39,7 @@ filtering.
 
 * Fixed issue with new full map start location list limit where clicking on a marker that didn't have a list item
 displayed caused an error.
+* Fixed issue with settings combination of inline directions and default location.
 * Reverted change to new list limit so that it's always applied with full map start enabled.
 
 ### Version 2.4.1
