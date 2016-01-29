@@ -2119,7 +2119,7 @@
 			}
 			else {
 				// Set up the location list markup
-				if (_this.settings.fullMapStartListLimit !== false && ! isNaN(_this.settings.fullMapStartListLimit)) {
+				if (firstRun && _this.settings.fullMapStartListLimit !== false && !isNaN(_this.settings.fullMapStartListLimit) && _this.settings.fullMapStartListLimit !== -1) {
 					for (var m = 0; m < _this.settings.fullMapStartListLimit; m++) {
 						var currentMarker = markers[m];
 						_this.listSetup(currentMarker, storeStart, page);
