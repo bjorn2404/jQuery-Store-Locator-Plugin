@@ -538,7 +538,7 @@
 				}
 
 				// If there is already have a value in the address bar
-				if ( $('#' + this.settings.addressID).val().trim() !== ''){
+				if ($.trim($('#' + this.settings.addressID).val()) !== ''){
 					_this.writeDebug('Using Address Field');
 					_this.processForm(null);
 					doAutoGeo = false; // No need for additional processing
