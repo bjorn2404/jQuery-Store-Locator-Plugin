@@ -10,7 +10,7 @@
 	}
 
 	// Variables used across multiple methods
-	var $this, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom, dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService, prevSelectedMarkerBefore, prevSelectedMarkerAfter;
+	var $this, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom, dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService, prevSelectedMarkerBefore, prevSelectedMarkerAfter, firstRun;
 	var featuredset = [], locationset = [], normalset = [], markers = [];
 	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {};
 
@@ -240,6 +240,7 @@
 			featuredset = [];
 			normalset = [];
 			markers = [];
+			firstRun = false;
 			$(document).off('click.'+pluginName, '.' + this.settings.locationList + ' li');
 			if( $('.' + this.settings.locationList + ' .bh-sl-close-directions-container').length ) {
 				$('.bh-sl-close-directions-container').remove();
@@ -938,7 +939,7 @@
 			}
 
 			// Create the default markers
-			if (this.settings.storeLimit === -1 || this.settings.storeLimit > 26 || this.settings.catMarkers !== null || this.settings.markerImg !== null) {
+			if (this.settings.storeLimit === -1 || this.settings.storeLimit > 26 || this.settings.catMarkers !== null || this.settings.markerImg !== null || (this.settings.fullMapStart === true && firstRun === true && (isNaN(this.settings.fullMapStartListLimit) || this.settings.fullMapStartListLimit > 26 || this.settings.fullMapStartListLimit === -1))) {
 				marker = new google.maps.Marker({
 					position : point,
 					map      : map,
@@ -998,7 +999,7 @@
 			// Set up alpha character
 			var markerId = currentMarker.get('id');
 			// Use dot markers instead of alpha if there are more than 26 locations
-			if (this.settings.storeLimit === -1 || this.settings.storeLimit > 26) {
+			if (this.settings.storeLimit === -1 || this.settings.storeLimit > 26 || (this.settings.fullMapStart === true && firstRun === true && (isNaN(this.settings.fullMapStartListLimit) || this.settings.fullMapStartListLimit > 26 || this.settings.fullMapStartListLimit === -1))) {
 				indicator = markerId + 1;
 			}
 			else {
@@ -1403,11 +1404,10 @@
 		 * @param data {Object} location data object
 		 * @param lat {number} origin latitude
 		 * @param lng {number} origin longitude
-		 * @param firstRun {boolean} initial load check
 		 * @param origin {string} origin address
 		 * @param maxDistance {number} maximum distance if set
 		 */
-		locationsSetup: function (data, lat, lng, firstRun, origin, maxDistance) {
+		locationsSetup: function (data, lat, lng, origin, maxDistance) {
 			this.writeDebug('locationsSetup',arguments);
 			if (typeof origin !== 'undefined') {
 				if (!data.distance) {
@@ -1762,7 +1762,7 @@
 			this.writeDebug('processData',mappingObject);
 			var _this = this;
 			var i = 0;
-			var orig_lat, orig_lng, origin, name, maxDistance, firstRun, marker, bounds, storeStart, storeNumToShow, myOptions, noResults, distError;
+			var orig_lat, orig_lng, origin, name, maxDistance, marker, bounds, storeStart, storeNumToShow, myOptions, noResults, distError;
 			if (!this.isEmptyObject(mappingObject)) {
 				orig_lat = mappingObject.lat;
 				orig_lng = mappingObject.lng;
@@ -1809,7 +1809,7 @@
 						}
 					}
 
-					_this.locationsSetup(locationData, orig_lat, orig_lng, firstRun, origin, maxDistance);
+					_this.locationsSetup(locationData, orig_lat, orig_lng, origin, maxDistance);
 
 					i++;
 				}
@@ -1824,7 +1824,7 @@
 						'description': $(this).find('description').text()
 					};
 
-					_this.locationsSetup(locationData, orig_lat, orig_lng, firstRun, origin, maxDistance);
+					_this.locationsSetup(locationData, orig_lat, orig_lng, origin, maxDistance);
 
 					i++;
 				});
@@ -1840,7 +1840,7 @@
 						}
 					}
 
-					_this.locationsSetup(locationData, orig_lat, orig_lng, firstRun, origin, maxDistance);
+					_this.locationsSetup(locationData, orig_lat, orig_lng, origin, maxDistance);
 
 					i++;
 				});
@@ -1967,7 +1967,7 @@
 			}
 
 			// Avoid error if number of locations is less than the default of 26
-			if (_this.settings.storeLimit === -1 || locationset.length < _this.settings.storeLimit) {
+			if (_this.settings.storeLimit === -1 || locationset.length < _this.settings.storeLimit || (this.settings.fullMapStart === true && firstRun === true && (isNaN(this.settings.fullMapStartListLimit) || this.settings.fullMapStartListLimit > 26 || this.settings.fullMapStartListLimit === -1))) {
 				storeNum = locationset.length;
 			}
 			else {
@@ -2121,7 +2121,7 @@
 			}
 			else {
 				// Set up the location list markup
-				if (_this.settings.fullMapStartListLimit !== false && ! isNaN(_this.settings.fullMapStartListLimit)) {
+				if (firstRun && _this.settings.fullMapStartListLimit !== false && !isNaN(_this.settings.fullMapStartListLimit) && _this.settings.fullMapStartListLimit !== -1) {
 					for (var m = 0; m < _this.settings.fullMapStartListLimit; m++) {
 						var currentMarker = markers[m];
 						_this.listSetup(currentMarker, storeStart, page);
