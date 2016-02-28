@@ -1325,7 +1325,7 @@
 					distance = this.getQueryString(this.settings.maxDistanceID);
 
 					// The form should override the query string parameters
-					if($('#' + this.settings.addressID).val() !== '') {
+					if($addressInput.val() !== '') {
 						addressInput = $addressInput.val();
 					}
 					if($searchInput.val() !== '') {
