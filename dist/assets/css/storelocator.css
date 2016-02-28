@@ -31,7 +31,7 @@
 
 .bh-sl-container {
   box-sizing: border-box;
-  color: #555555;
+  color: #555;
   float: left;
   font: normal 14px/1.4 Arial, Helvetica, sans-serif;
   padding: 0 15px;
@@ -61,7 +61,7 @@
           width: auto; } }
     .bh-sl-container .form-input input, .bh-sl-container .form-input select {
       box-sizing: border-box;
-      border: 1px solid #cccccc;
+      border: 1px solid #ccc;
       border-radius: 4px;
       font: normal 14px/1.4 Arial, Helvetica, sans-serif;
       margin: 15px 0;
@@ -73,10 +73,10 @@
           width: auto;
           margin: 0 15px 0 10px; } }
   .bh-sl-container button {
-    background: #004479;
+    background: #00447a;
     border: none;
     border-radius: 4px;
-    color: white;
+    color: #fff;
     cursor: pointer;
     float: left;
     font: bold 14px/1.4 Arial, Helvetica, sans-serif;
@@ -115,7 +115,7 @@
           margin-right: 8px; }
         .bh-sl-container .bh-sl-filters-container .bh-sl-filters li select {
           box-sizing: border-box;
-          border: 1px solid #cccccc;
+          border: 1px solid #ccc;
           border-radius: 4px;
           font: normal 14px/1.4 Arial, Helvetica, sans-serif;
           padding: 6px 12px;
@@ -150,7 +150,7 @@
       margin: 0;
       padding: 0; }
       .bh-sl-container .bh-sl-loc-list ul li {
-        border: 1px solid white;
+        border: 1px solid #fff;
         /* Adding this to prevent moving li elements when adding the list-focus class*/
         box-sizing: border-box;
         clear: left;
@@ -161,7 +161,7 @@
     .bh-sl-container .bh-sl-loc-list .list-label {
       background: #00192d;
       border-radius: 15px;
-      color: white;
+      color: #fff;
       display: block;
       float: left;
       font-weight: bold;
@@ -235,7 +235,7 @@
         font: bold 14px Arial, Helvetica, sans-serif;
         padding: 10px; }
       .bh-sl-container .bh-sl-pagination-container ol .bh-sl-current {
-        color: #555555;
+        color: #555;
         cursor: auto;
         text-decoration: none; }
 
@@ -249,7 +249,7 @@
   width: 100%;
   z-index: 10000; }
   .bh-sl-overlay .bh-sl-modal-window {
-    background: white;
+    background: #fff;
     border-radius: 10px;
     box-shadow: 0 0 10px #656565;
     position: absolute;
@@ -278,7 +278,7 @@
   position: absolute;
   width: 24px; }
   .bh-sl-close-icon:after, .bh-sl-close-icon:before {
-    background: #cccccc;
+    background: #ccc;
     content: '';
     display: block;
     height: 24px;
@@ -302,3 +302,5 @@
     -ms-transform: rotate(-45deg);
     -o-transform: rotate(-45deg);
     transform: rotate(-45deg); }
+
+/*# sourceMappingURL=storelocator.css.map */

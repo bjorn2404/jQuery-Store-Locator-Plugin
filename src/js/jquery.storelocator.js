@@ -2102,7 +2102,9 @@
 					bounds.extend(point);
 				}
 				// Pass variables to the pop-up infowindows
-				_this.createInfowindow(marker, null, infowindow, storeStart, page);
+				if (typeof noResults === 'undefined') {
+					_this.createInfowindow(marker, null, infowindow, storeStart, page);
+				}
 			}
 
 			// Center and zoom if no origin or zoom was provided, or distance of first marker is greater than distanceAlert

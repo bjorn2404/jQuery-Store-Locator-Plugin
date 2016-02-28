@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.4.2 - 2016-01-20
+/*! jQuery Google Maps Store Locator - v2.4.2 - 2016-02-21
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -2105,7 +2105,9 @@
 					bounds.extend(point);
 				}
 				// Pass variables to the pop-up infowindows
-				_this.createInfowindow(marker, null, infowindow, storeStart, page);
+				if (typeof noResults === 'undefined') {
+					_this.createInfowindow(marker, null, infowindow, storeStart, page);
+				}
 			}
 
 			// Center and zoom if no origin or zoom was provided, or distance of first marker is greater than distanceAlert
