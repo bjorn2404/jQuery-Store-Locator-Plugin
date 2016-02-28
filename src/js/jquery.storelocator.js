@@ -2135,38 +2135,40 @@
 			}
 
 			// Handle clicks from the list
-			$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li', function () {
-				var markerId = $(this).data('markerid');
-				var selectedMarker = markers[markerId];
+			if (typeof noResults === 'undefined') {
+				$(document).on('click.' + pluginName, '.' + _this.settings.locationList + ' li', function () {
+					var markerId = $(this).data('markerid');
+					var selectedMarker = markers[markerId];
 
-				// List click callback
-				if (_this.settings.callbackListClick) {
-					_this.settings.callbackListClick.call(this, markerId, selectedMarker);
-				}
+					// List click callback
+					if (_this.settings.callbackListClick) {
+						_this.settings.callbackListClick.call(this, markerId, selectedMarker);
+					}
 
-				// Focus on the list
-				$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
-				$('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']').addClass('list-focus');
+					// Focus on the list
+					$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
+					$('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']').addClass('list-focus');
 
-				map.panTo(selectedMarker.getPosition());
-				var listLoc = 'left';
-				if (_this.settings.bounceMarker === true) {
-					selectedMarker.setAnimation(google.maps.Animation.BOUNCE);
-					setTimeout(function () {
-							selectedMarker.setAnimation(null);
-							_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
-						}, 700
-					);
-				}
-				else {
-					_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
-				}
+					map.panTo(selectedMarker.getPosition());
+					var listLoc = 'left';
+					if (_this.settings.bounceMarker === true) {
+						selectedMarker.setAnimation(google.maps.Animation.BOUNCE);
+						setTimeout(function () {
+								selectedMarker.setAnimation(null);
+								_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
+							}, 700
+						);
+					}
+					else {
+						_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
+					}
 
-				// Custom selected marker override
-				if(_this.settings.selectedMarkerImg !== null) {
-					_this.changeSelectedMarker(selectedMarker);
-				}
-			});
+					// Custom selected marker override
+					if (_this.settings.selectedMarkerImg !== null) {
+						_this.changeSelectedMarker(selectedMarker);
+					}
+				});
+			}
 
 			// Prevent bubbling from list content links
 			$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li a', function (e) {
