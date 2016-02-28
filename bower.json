@@ -15,6 +15,10 @@
     "jquery": ">=1.7",
     "handlebars": ">=1.0"
   },
+  "main" : [
+    "dist/assets/js/plugins/storeLocator/jquery.storelocator.min.js",
+    "dist/assets/css/storelocator.min.css"
+  ],
   "devDependencies": {
     "grunt-contrib-jshint": "~0.6.0",
     "grunt-contrib-qunit": "~0.2.0",
