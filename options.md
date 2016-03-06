@@ -36,6 +36,7 @@
 | defaultLng | null | If using defaultLoc, set this to the default location longitude. |
 | autoComplete | false | Set to true to enable Google Places autocomplete. Note the slight markup differences in the example file. |
 | autoGeocode | false | Set to true if you want to use the HTML5 geolocation API (good for mobile) to geocode the user's location. |
+| geocodeID | null | Set to the ID of an element to connect the HTML5 geolocation API to a button instead of firing automatically. |
 | maxDistance | false | Set to true if you want to give users an option to limit the distance from their location to the markers. |
 | maxDistanceID | 'bh-sl-maxdistance' | ID of the select element for the maximum distance options. |
 | fullMapStart | false | Set to true if you want to immediately show a map of all locations. The map will center and zoom automatically. |
@@ -52,6 +53,7 @@
 | searchID | 'bh-sl-search' | ID of the search input form field for location name searching. |
 | nameAttribute | 'name' | If using nameSearch, the data attribute used for the location name in the data file. |
 | visibleMarkersList | false | Set to true to have the location list only show data from markers that are visible on the map. |
+| dragSearch | false | Set to true to perform a new search after the map is dragged. |
 | infowindowTemplatePath | 'assets/js/plugins/storeLocator/templates/infowindow-description.html' | Path to the default infowindow template. |
 | listTemplatePath | 'assets/js/plugins/storeLocator/templates/location-list-description.html' | Path to the default list template. |
 | KMLinfowindowTemplatePath | 'assets/js/plugins/storeLocator/templates/kml-infowindow-description.html' | Path to the KML infowindow template – used if dataType is set to kml. |

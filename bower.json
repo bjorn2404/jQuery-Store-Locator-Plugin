@@ -1,6 +1,6 @@
 {
   "name": "jquery-storelocator-plugin",
-  "version": "2.4.2",
+  "version": "2.5.0",
   "description": "This jQuery plugin takes advantage of Google Maps API version 3 to create an easy to implement store locator. No back-end programming is required, you just need to feed it KML, XML, or JSON data with all the location information.",
   "repository": {
     "type": "git",
@@ -16,7 +16,11 @@
     "handlebars": ">=1.0"
   },
   "main" : [
+    "dist/assets/js/plugins/storeLocator/jquery.storelocator.js",
     "dist/assets/js/plugins/storeLocator/jquery.storelocator.min.js",
+    "dist/assets/js/plugins/storeLocator/templates/infowindow-description.html",
+    "dist/assets/js/plugins/storeLocator/templates/location-list-description.html",
+    "dist/assets/css/storelocator.css",
     "dist/assets/css/storelocator.min.css"
   ],
   "devDependencies": {

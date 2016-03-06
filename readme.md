@@ -35,6 +35,15 @@ filtering.
 
 ## Changelog
 
+### Version 2.5.0
+
+* Added new dragSearch setting which peforms a new search when the map is dragged when enabled.
+* Added new geocodeID setting so that the HTML geocoding API can be triggered by a button instead of firing automatically.
+* Fixed issues with no results where clicking the marker would display data from the previous result and clicking the location list item would throw an error.
+* Merged in pull request from [hawkmeister](https://github.com/hawkmeister) with update to bower.json file with main property.
+* Merged in pull request from [hyperTwitch](https://github.com/hyperTwitch) with fixes for using fullMapStartListLimit in combination with a different store limit.
+* Updated jQuery references to the latest version.
+
 ### Version 2.4.2
 
 * Fixed issue with new full map start location list limit where clicking on a marker that didn't have a list item

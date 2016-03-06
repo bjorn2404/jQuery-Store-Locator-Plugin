@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.4.2 - 2016-02-28
+/*! jQuery Google Maps Store Locator - v2.5.0 - 2016-03-06
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -58,6 +58,7 @@
 		'defaultLng'               : null,
 		'autoComplete'             : false,
 		'autoGeocode'              : false,
+		'geocodeID'				   : null,
 		'maxDistance'              : false,
 		'maxDistanceID'            : 'bh-sl-maxdistance',
 		'fullMapStart'             : false,
@@ -74,6 +75,7 @@
 		'searchID'                 : 'bh-sl-search',
 		'nameAttribute'            : 'name',
 		'visibleMarkersList'       : false,
+		'dragSearch'			   : false,
 		'infowindowTemplatePath'   : 'assets/js/plugins/storeLocator/templates/infowindow-description.html',
 		'listTemplatePath'         : 'assets/js/plugins/storeLocator/templates/location-list-description.html',
 		'KMLinfowindowTemplatePath': 'assets/js/plugins/storeLocator/templates/kml-infowindow-description.html',
@@ -559,36 +561,55 @@
 					}
 				}
 
-				// HTML5 geolocation API option
+				// HTML5 auto geolocation API option
 				if (this.settings.autoGeocode === true && doAutoGeo === true) {
 					_this.writeDebug('Auto Geo');
-					// Saved geo location (saves around 3-5 seconds)
-					if (_this.settings.sessionStorage === true && window.sessionStorage && window.sessionStorage.getItem('myGeo')){
-						_this.writeDebug('Using Session Saved Values for GEO');
-						_this.autoGeocodeQuery(JSON.parse(window.sessionStorage.getItem('myGeo')));
-						return false;
-					}
-					else if (navigator.geolocation) {
-						navigator.geolocation.getCurrentPosition(function(position){
-							_this.writeDebug('Current Position Result');
-							// To not break autoGeocodeQuery then we create the obj to match the geolocation format
-							var pos = {
-								coords: {
-									latitude : position.coords.latitude,
-									longitude: position.coords.longitude,
-									accuracy : position.coords.accuracy
-								}
-							};
-							// Have to do this to get around scope issues
-							if (_this.settings.sessionStorage === true && window.sessionStorage) {
-								window.sessionStorage.setItem('myGeo',JSON.stringify(pos));
-							}
-							_this.autoGeocodeQuery(pos);
-						}, function(error){
-							_this._autoGeocodeError(error);
-						});
-					}
+
+					_this.htmlGeocode();
 				}
+
+				// HTML5 geolocation API button option
+				if (this.settings.autoGeocode !== null) {
+					_this.writeDebug('Button Geo');
+
+					$(document).on('click.'+pluginName, '#' + this.settings.geocodeID, function () {
+						_this.htmlGeocode();
+					});
+				}
+			}
+		},
+
+		/**
+		 * Geocode function used for auto geocode setting and geocodeID button
+         */
+		htmlGeocode: function() {
+			this.writeDebug('htmlGeocode',arguments);
+			var _this = this;
+
+			if (this.settings.sessionStorage === true && window.sessionStorage && window.sessionStorage.getItem('myGeo')){
+				this.writeDebug('Using Session Saved Values for GEO');
+				this.autoGeocodeQuery(JSON.parse(window.sessionStorage.getItem('myGeo')));
+				return false;
+			}
+			else if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(function(position){
+					_this.writeDebug('Current Position Result');
+					// To not break autoGeocodeQuery then we create the obj to match the geolocation format
+					var pos = {
+						coords: {
+							latitude : position.coords.latitude,
+							longitude: position.coords.longitude,
+							accuracy : position.coords.accuracy
+						}
+					};
+					// Have to do this to get around scope issues
+					if (_this.settings.sessionStorage === true && window.sessionStorage) {
+						window.sessionStorage.setItem('myGeo',JSON.stringify(pos));
+					}
+					_this.autoGeocodeQuery(pos);
+				}, function(error){
+					_this._autoGeocodeError(error);
+				});
 			}
 		},
 
@@ -1693,6 +1714,35 @@
 		},
 
 		/**
+		 * Performs a new search when the map is dragged to a new position
+		 *
+		 * @param map {Object} Google map
+         */
+		dragSearch: function(map) {
+			this.writeDebug('dragSearch',arguments);
+			var newCenter = map.getCenter(),
+				newCenterCoords,
+				_this = this;
+
+			mappingObj = {};
+			olat = mappingObj.lat = newCenter.lat();
+			olng = mappingObj.lng = newCenter.lng();
+
+			// Determine the new origin addresss
+			var newAddress = new this.reverseGoogleGeocode(this);
+			newCenterCoords = new google.maps.LatLng(mappingObj.lat, mappingObj.lng);
+			newAddress.geocode({'latLng': newCenterCoords}, function (data) {
+				if (data !== null) {
+					mappingObj.origin = data.address;
+					_this.mapping(mappingObj);
+				} else {
+					// Unable to geocode
+					_this.notify(_this.settings.addressErrorAlert);
+				}
+			});
+		},
+
+		/**
 		 * The primary mapping function that runs everything
 		 *
 		 * @param mappingObject {Object} all the potential mapping properties - latitude, longitude, origin, name, max distance, page
@@ -2026,6 +2076,14 @@
 				google.maps.event.trigger(map, 'resize');
 				map.setCenter(center);
 			});
+
+
+			// Add map drag listener if setting is enabled and re-search on drag end
+			if (_this.settings.dragSearch === true ) {
+				map.addListener('dragend', function() {
+					_this.dragSearch(map);
+				});
+			}
 
 			// Load the map
 			$this.data(_this.settings.mapID.replace('#', ''), map);
