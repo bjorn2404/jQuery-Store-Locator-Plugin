@@ -35,9 +35,13 @@ filtering.
 
 ## Changelog
 
+### Version 2.5.1
+
+* Fixed issues with visibleMarkersList and location list background colors and selection.
+
 ### Version 2.5.0
 
-* Added new dragSearch setting which peforms a new search when the map is dragged when enabled.
+* Added new dragSearch setting which performs a new search when the map is dragged when enabled.
 * Added new geocodeID setting so that the HTML geocoding API can be triggered by a button instead of firing automatically.
 * Fixed issues with no results where clicking the marker would display data from the previous result and clicking the location list item would throw an error.
 * Merged in pull request from [hawkmeister](https://github.com/hawkmeister) with update to bower.json file with main property.

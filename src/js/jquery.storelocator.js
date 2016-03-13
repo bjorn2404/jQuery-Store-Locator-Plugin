@@ -1708,6 +1708,10 @@
 					$('.' + _this.settings.locationList + ' ul').append(listHtml);
 				}
 			});
+
+			// Re-add the list background colors
+			$('.' + this.settings.locationList + ' ul li:even').css('background', this.settings.listColor1);
+			$('.' + this.settings.locationList + ' ul li:odd').css('background', this.settings.listColor2);
 		},
 
 		/**
@@ -2203,10 +2207,6 @@
 						_this.settings.callbackListClick.call(this, markerId, selectedMarker);
 					}
 
-					// Focus on the list
-					$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
-					$('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']').addClass('list-focus');
-
 					map.panTo(selectedMarker.getPosition());
 					var listLoc = 'left';
 					if (_this.settings.bounceMarker === true) {
@@ -2225,6 +2225,10 @@
 					if (_this.settings.selectedMarkerImg !== null) {
 						_this.changeSelectedMarker(selectedMarker);
 					}
+
+					// Focus on the list
+					$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
+					$('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']').addClass('list-focus');
 				});
 			}
 
