@@ -35,6 +35,11 @@ filtering.
 
 ## Changelog
 
+### Version 2.5.2
+
+* Fixed pagination bubbling issue.
+* Fixed pagination issues with autoGeocode and dragSearch combinations.
+
 ### Version 2.5.1
 
 * Fixed issues with visibleMarkersList and location list background colors and selection.

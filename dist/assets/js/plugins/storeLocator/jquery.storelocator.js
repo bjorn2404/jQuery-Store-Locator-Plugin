@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.5.1 - 2016-03-12
+/*! jQuery Google Maps Store Locator - v2.5.2 - 2016-03-15
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -259,6 +259,9 @@
 				}
 				$(document).off('click', '.' + this.settings.locationList + ' li .loc-directions a');
 			}
+			if(this.settings.pagination === true) {
+				$(document).off('click.'+pluginName, '.bh-sl-pagination li');
+			}
 		},
 
 		/**
@@ -497,7 +500,8 @@
 			this.writeDebug('_start');
 			var _this = this,
 					doAutoGeo = this.settings.autoGeocode,
-					latlng;
+					latlng,
+					originAddress;
 			
 			// Full map blank start
 			if (_this.settings.fullMapStartBlank !== false) {
@@ -531,7 +535,7 @@
 					latlng = new google.maps.LatLng(this.settings.defaultLat, this.settings.defaultLng);
 					r.geocode({'latLng': latlng}, function (data) {
 						if (data !== null) {
-							var originAddress = data.address;
+							originAddress = addressInput = data.address;
 							olat = mappingObj.lat = _this.settings.defaultLat;
 							olng = mappingObj.lng = _this.settings.defaultLng;
 							mappingObj.origin = originAddress;
@@ -1155,14 +1159,16 @@
 		 */
 		autoGeocodeQuery: function (position) {
 			this.writeDebug('autoGeocodeQuery',arguments);
-			var _this = this;
-			var mappingObj = {};
+			var _this = this,
+				originAddress;
+
+
 			// The address needs to be determined for the directions link
 			var r = new this.reverseGoogleGeocode(this);
 			var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 			r.geocode({'latLng': latlng}, function (data) {
 				if (data !== null) {
-					var originAddress = data.address;
+					originAddress = addressInput = data.address;
 					olat = mappingObj.lat = position.coords.latitude;
 					olng = mappingObj.lng = position.coords.longitude;
 					mappingObj.origin = originAddress;
@@ -1728,7 +1734,6 @@
 				newCenterCoords,
 				_this = this;
 
-			mappingObj = {};
 			olat = mappingObj.lat = newCenter.lat();
 			olng = mappingObj.lng = newCenter.lng();
 
@@ -1819,7 +1824,7 @@
 			this.writeDebug('processData',mappingObject);
 			var _this = this;
 			var i = 0;
-			var orig_lat, orig_lng, origin, name, maxDistance, marker, bounds, storeStart, storeNumToShow, myOptions, noResults, distError;
+			var orig_lat, orig_lng, origin, name, maxDistance, marker, bounds, storeStart, storeNumToShow, myOptions, noResults, distError, openMap;
 			if (!this.isEmptyObject(mappingObject)) {
 				orig_lat = mappingObject.lat;
 				orig_lng = mappingObject.lng;
@@ -1834,15 +1839,23 @@
 
 			// Save data and origin separately so we can potentially avoid multiple AJAX requests
 			originalData = dataRequest;
-			originalOrigin = origin;
+			if ( typeof origin !== 'undefined' ) {
+				originalOrigin = origin;
+			}
 
 			// Callback
 			if (_this.settings.callbackSuccess) {
 				_this.settings.callbackSuccess.call(this);
 			}
 
+			openMap = $mapDiv.hasClass('bh-sl-map-open');
+
 			// Set a variable for fullMapStart so we can detect the first run
-			if (_this.settings.fullMapStart === true && $mapDiv.hasClass('bh-sl-map-open') === false) {
+			if (
+				( _this.settings.fullMapStart === true && openMap === false ) ||
+				( _this.settings.autoGeocode === true && openMap === false ) ||
+				( _this.settings.defaultLoc === true && openMap === false )
+			) {
 				firstRun = true;
 			}
 			else {
@@ -2128,7 +2141,8 @@
 			}
 
 			// Handle pagination
-			$(document).on('click.'+pluginName, '.bh-sl-pagination li', function () {
+			$(document).on('click.'+pluginName, '.bh-sl-pagination li', function (e) {
+				e.preventDefault();
 				// Run paginationChange
 				_this.paginationChange($(this).attr('data-page'));
 			});
