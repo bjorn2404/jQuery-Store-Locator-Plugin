@@ -282,6 +282,7 @@ $tabletLarge: '(min-width: 1024px)';
 			/* Avoid issues with table-layout */
 			table {
 				table-layout: auto;
+				width: 100%;
 			}
 
 			table, td {

@@ -194,7 +194,8 @@
       margin: 0 2%;
       /* Avoid issues with table-layout */ }
       .bh-sl-container .bh-sl-loc-list .bh-sl-directions-panel table {
-        table-layout: auto; }
+        table-layout: auto;
+        width: 100%; }
       .bh-sl-container .bh-sl-loc-list .bh-sl-directions-panel table, .bh-sl-container .bh-sl-loc-list .bh-sl-directions-panel td {
         vertical-align: middle;
         border-collapse: separate; }
