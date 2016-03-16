@@ -1739,7 +1739,7 @@
 			newCenterCoords = new google.maps.LatLng(mappingObj.lat, mappingObj.lng);
 			newAddress.geocode({'latLng': newCenterCoords}, function (data) {
 				if (data !== null) {
-					mappingObj.origin = data.address;
+					mappingObj.origin = addressInput = data.address;
 					_this.mapping(mappingObj);
 				} else {
 					// Unable to geocode

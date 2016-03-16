@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.5.2 - 2016-03-15
+/*! jQuery Google Maps Store Locator - v2.5.2 - 2016-03-16
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -1742,7 +1742,7 @@
 			newCenterCoords = new google.maps.LatLng(mappingObj.lat, mappingObj.lng);
 			newAddress.geocode({'latLng': newCenterCoords}, function (data) {
 				if (data !== null) {
-					mappingObj.origin = data.address;
+					mappingObj.origin = addressInput = data.address;
 					_this.mapping(mappingObj);
 				} else {
 					// Unable to geocode
