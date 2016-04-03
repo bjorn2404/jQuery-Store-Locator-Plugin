@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.5.2 - 2016-03-16
+/*! jQuery Google Maps Store Locator - v2.5.2 - 2016-04-03
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -530,21 +530,7 @@
 			else {
 				// If a default location is set
 				if (this.settings.defaultLoc === true) {
-					// The address needs to be determined for the directions link
-					var r = new this.reverseGoogleGeocode(this);
-					latlng = new google.maps.LatLng(this.settings.defaultLat, this.settings.defaultLng);
-					r.geocode({'latLng': latlng}, function (data) {
-						if (data !== null) {
-							originAddress = addressInput = data.address;
-							olat = mappingObj.lat = _this.settings.defaultLat;
-							olng = mappingObj.lng = _this.settings.defaultLng;
-							mappingObj.origin = originAddress;
-							_this.mapping(mappingObj);
-						} else {
-							// Unable to geocode
-							_this.notify(_this.settings.addressErrorAlert);
-						}
-					});
+					this.defaultLocation();
 				}
 
 				// If there is already have a value in the address bar
@@ -928,11 +914,6 @@
 			var marker, markerImg, letterMarkerImg;
 			var categories = [];
 
-			// Remove any spaces from category value
-			if(typeof category !== 'undefined' && category.length) {
-				category = category.replace(/\s+/g, '');
-			}
-
 			// Custom multi-marker image override (different markers for different categories
 			if(this.settings.catMarkers !== null) {
 				if(typeof category !== 'undefined') {
@@ -943,14 +924,14 @@
 						// With multiple categories the color will be determined by the last matched category in the data
 						for(var i = 0; i < categories.length; i++) {
 							if(categories[i] in this.settings.catMarkers) {
-								markerImg = this.markerImage(this.settings.catMarkers[categories[i]][0], this.settings.catMarkers[categories[i]][1], this.settings.catMarkers[categories[i]][2]);
+								markerImg = this.markerImage(this.settings.catMarkers[categories[i]][0], parseInt(this.settings.catMarkers[categories[i]][1]), parseInt(this.settings.catMarkers[categories[i]][2]));
 							}
 						}
 					}
 					// Single category
 					else {
 						if(category in this.settings.catMarkers) {
-							markerImg = this.markerImage(this.settings.catMarkers[category][0], this.settings.catMarkers[category][1], this.settings.catMarkers[category][2]);
+							markerImg = this.markerImage(this.settings.catMarkers[category][0], parseInt(this.settings.catMarkers[category][1]), parseInt(this.settings.catMarkers[category][2]));
 						}
 					}
 				}
@@ -1160,8 +1141,33 @@
 		autoGeocodeQuery: function (position) {
 			this.writeDebug('autoGeocodeQuery',arguments);
 			var _this = this,
+				distance = null,
+				$distanceInput = $('#' + this.settings.maxDistanceID),
 				originAddress;
 
+			// Query string parameters
+			if(this.settings.querystringParams === true) {
+				// Check for distance query string parameters
+				if(this.getQueryString(this.settings.maxDistanceID)){
+					distance = this.getQueryString(this.settings.maxDistanceID);
+
+					if($distanceInput.val() !== '') {
+						distance = $distanceInput.val();
+					}
+				}
+				else{
+					// Get the distance if set
+					if (this.settings.maxDistance === true) {
+						distance = $distanceInput.val() || '';
+					}
+				}
+			}
+			else {
+				// Get the distance if set
+				if (this.settings.maxDistance === true) {
+					distance = $distanceInput.val() || '';
+				}
+			}
 
 			// The address needs to be determined for the directions link
 			var r = new this.reverseGoogleGeocode(this);
@@ -1172,6 +1178,7 @@
 					olat = mappingObj.lat = position.coords.latitude;
 					olng = mappingObj.lng = position.coords.longitude;
 					mappingObj.origin = originAddress;
+					mappingObj.distance = distance;
 					_this.mapping(mappingObj);
 				} else {
 					// Unable to geocode
@@ -1188,6 +1195,58 @@
 			this.writeDebug('_autoGeocodeError');
 			// If automatic detection doesn't work show an error
 			this.notify(this.settings.autoGeocodeErrorAlert);
+		},
+
+		/**
+		 * Default location method
+		 */
+		defaultLocation: function() {
+			this.writeDebug('defaultLocation');
+			var _this = this,
+				distance = null,
+				$distanceInput = $('#' + this.settings.maxDistanceID),
+				originAddress;
+
+			// Query string parameters
+			if(this.settings.querystringParams === true) {
+				// Check for distance query string parameters
+				if(this.getQueryString(this.settings.maxDistanceID)){
+					distance = this.getQueryString(this.settings.maxDistanceID);
+
+					if($distanceInput.val() !== '') {
+						distance = $distanceInput.val();
+					}
+				}
+				else{
+					// Get the distance if set
+					if (this.settings.maxDistance === true) {
+						distance = $distanceInput.val() || '';
+					}
+				}
+			}
+			else {
+				// Get the distance if set
+				if (this.settings.maxDistance === true) {
+					distance = $distanceInput.val() || '';
+				}
+			}
+
+			// The address needs to be determined for the directions link
+			var r = new this.reverseGoogleGeocode(this);
+			var latlng = new google.maps.LatLng(this.settings.defaultLat, this.settings.defaultLng);
+			r.geocode({'latLng': latlng}, function (data) {
+				if (data !== null) {
+					originAddress = addressInput = data.address;
+					olat = mappingObj.lat = _this.settings.defaultLat;
+					olng = mappingObj.lng = _this.settings.defaultLng;
+					mappingObj.distance = distance;
+					mappingObj.origin = originAddress;
+					_this.mapping(mappingObj);
+				} else {
+					// Unable to geocode
+					_this.notify(_this.settings.addressErrorAlert);
+				}
+			});
 		},
 
 		/**
@@ -1446,7 +1505,7 @@
 			}
 
 			// Create the array
-			if (this.settings.maxDistance === true && firstRun !== true && typeof maxDistance !== 'undefined' && maxDistance !== null) {
+			if (this.settings.maxDistance === true && typeof maxDistance !== 'undefined' && maxDistance !== null) {
 				if (data.distance <= maxDistance) {
 					locationset.push( data );
 				}
