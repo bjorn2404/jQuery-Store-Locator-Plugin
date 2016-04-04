@@ -38,6 +38,7 @@ filtering.
 ### Version 2.5.3
 
 * Removed check from createMarker method that removed spaces from categories - created issues with categories that have spaces.
+* Re-worked handling of no results.
 * Updated createMarker method to ensure custom category marker images are converted to integers if strings are passed for dimensions.
 * Updated autoGeocode and default location functionality so that max distance is applied on initial load.
 
