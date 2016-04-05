@@ -1796,6 +1796,7 @@
 			// Determine the new origin addresss
 			var newAddress = new this.reverseGoogleGeocode(this);
 			newCenterCoords = new google.maps.LatLng(mappingObj.lat, mappingObj.lng);
+			newCenterCoords.setZoom(map.getZoom());
 			newAddress.geocode({'latLng': newCenterCoords}, function (data) {
 				if (data !== null) {
 					mappingObj.origin = addressInput = data.address;
