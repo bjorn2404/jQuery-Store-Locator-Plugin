@@ -1786,6 +1786,10 @@
          */
 		dragSearch: function(map) {
 			this.writeDebug('dragSearch',arguments);
+			
+			// Save the new zoom setting
+			this.settings.mapSettings.zoom = map.getZoom();
+			
 			var newCenter = map.getCenter(),
 				newCenterCoords,
 				_this = this;
