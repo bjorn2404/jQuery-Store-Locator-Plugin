@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.5.3 - 2016-04-03
+/*! jQuery Google Maps Store Locator - v2.5.3 - 2016-06-05
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -1792,6 +1792,9 @@
 			var newCenter = map.getCenter(),
 				newCenterCoords,
 				_this = this;
+
+			// Save the new zoom setting
+			this.settings.mapSettings.zoom = map.getZoom();
 
 			olat = mappingObj.lat = newCenter.lat();
 			olng = mappingObj.lng = newCenter.lng();
