@@ -63,9 +63,9 @@ $data = '<?xml version="1.0" encoding="utf-8"?>
 	</div>
 </div>
 
-<script src="http://code.jquery.com/jquery-1.12.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 <script src="assets/js/libs/handlebars.min.js"></script>
-<script src="http://maps.google.com/maps/api/js"></script>
+<script src="https://maps.google.com/maps/api/js"></script>
 <script src="assets/js/plugins/storeLocator/jquery.storelocator.js"></script>
 <script>
 	$(function() {
