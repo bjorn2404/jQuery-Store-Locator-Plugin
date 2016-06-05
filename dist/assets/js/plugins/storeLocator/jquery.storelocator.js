@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.5.3 - 2016-06-05
+/*! jQuery Google Maps Store Locator - v2.5.4 - 2016-06-05
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -428,15 +428,26 @@
 		 * @param lat {number} latitude
 		 * @param lng {number} longitude
 		 * @param address {string} street address
+		 * @param geocodeData {object} full Google geocode results object
 		 * @returns {Object} deferred object
 		 */
-		_getData: function (lat, lng, address) {
+		_getData: function (lat, lng, address, geocodeData ) {
 			this.writeDebug('_getData',arguments);
-			var _this = this;
+			var _this = this,
+				northEast = '',
+				southWest = '',
+				formattedAddress = '';
+
+			// Define extra geocode result info
+			if ( typeof geocodeData !== 'undefined' ) {
+				formattedAddress = geocodeData.formatted_address;
+				northEast = JSON.stringify( geocodeData.geometry.bounds.getNorthEast() );
+				southWest = JSON.stringify( geocodeData.geometry.bounds.getSouthWest() );
+			}
 
 			// Before send callback
 			if (this.settings.callbackBeforeSend) {
-				this.settings.callbackBeforeSend.call(this, lat, lng, address);
+				this.settings.callbackBeforeSend.call(this, lat, lng, address, formattedAddress, northEast, southWest);
 			}
 
 			// Raw data
@@ -473,11 +484,14 @@
 				$.ajax({
 					type         : 'GET',
 					url          : this.settings.dataLocation + (this.settings.dataType === 'jsonp' ? (this.settings.dataLocation.match(/\?/) ? '&' : '?') + 'callback=?' : ''),
-					// Passing the lat, lng, and address with the AJAX request so they can optionally be used by back-end languages
+					// Passing the lat, lng, address, formatted address and bounds with the AJAX request so they can optionally be used by back-end languages
 					data: {
 						'origLat' : lat,
 						'origLng' : lng,
-						'origAddress': address
+						'origAddress': address,
+						'formattedAddress': formattedAddress,
+						'boundsNorthEast' : northEast,
+						'boundsSouthWest' : southWest
 					},
 					dataType     : dataTypeRead,
 					jsonpCallback: (this.settings.dataType === 'jsonp' ? this.settings.callbackJsonp : null)
@@ -616,6 +630,7 @@
 						var result = {};
 						result.latitude = results[0].geometry.location.lat();
 						result.longitude = results[0].geometry.location.lng();
+						result.geocodeResult = results[0];
 						callbackFunction(result);
 					} else {
 						callbackFunction(null);
@@ -1473,6 +1488,7 @@
 							mappingObj.origin = addressInput;
 							mappingObj.name = searchInput;
 							mappingObj.distance = distance;
+							mappingObj.geocodeResult = data.geocodeResult;
 							_this.mapping(mappingObj);
 						} else {
 							// Unable to geocode
@@ -1860,10 +1876,11 @@
 		mapping: function (mappingObject) {
 			this.writeDebug('mapping',mappingObject);
 			var _this = this;
-			var orig_lat, orig_lng, origin, originPoint, page;
+			var orig_lat, orig_lng, geocodeData, origin, originPoint, page;
 			if (!this.isEmptyObject(mappingObject)) {
 				orig_lat = mappingObject.lat;
 				orig_lng = mappingObject.lng;
+				geocodeData = mappingObject.geocodeResult;
 				origin = mappingObject.origin;
 				page = mappingObject.page;
 			}
@@ -1890,7 +1907,7 @@
 				}
 				else {
 					// Do the data request - doing this in mapping so the lat/lng and address can be passed over and used if needed
-					dataRequest = _this._getData(olat, olng, origin);
+					dataRequest = _this._getData(olat, olng, origin, geocodeData);
 				}
 			}
 
