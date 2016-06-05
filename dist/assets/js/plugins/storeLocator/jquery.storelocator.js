@@ -2202,11 +2202,7 @@
 			if (_this.settings.originMarker === true) {
 				var originImg = '';
 
-				// If fullMapStart is on and it's the first run there is no origin
-				if(_this.settings.fullMapStart === false && firstRun === true) {
-					return;
-				}
-				else{
+				if ( typeof origin !== 'undefined' ) {
 					if(_this.settings.originMarkerImg !== null) {
 						if(_this.settings.originMarkerDim === null) {
 							originImg = _this.markerImage(_this.settings.originMarkerImg);

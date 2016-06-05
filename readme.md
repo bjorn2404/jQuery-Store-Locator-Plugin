@@ -35,6 +35,13 @@ filtering.
 
 ## Changelog
 
+### Version 2.5.4
+
+* Fixed issue with combination of autoGeocode and originMarker settings.
+* Merged in pull request from [drcomix](https://github.com/drcomix) that fixed zoom issue with dragSearch setting.
+* Switched included remote scripts in example files to https.
+* Updated jQuery references to the latest version.
+
 ### Version 2.5.3
 
 * Removed check from createMarker method that removed spaces from categories - created issues with categories that have spaces.
