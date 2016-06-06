@@ -66,6 +66,7 @@
 | querystringParams | false | Set to true to enable query string support for passing input variables from page to page. |
 | debug | false | Set to true to enable console.log helper function that can be used for debugging. |
 | sessionStorage | false | Set to true to enable Window.sessionStorage for user's location when autoGeocode is enabled. |
+| markerCluster | null | Marker Clusterer settings object. [See docs](https://googlemaps.github.io/js-marker-clusterer/docs/reference.html). |
 | callbackNotify | null | Callback that can override the notify method. |
 | callbackBeforeSend | null | Callback that fires before the AJAX request. |
 | callbackSuccess | null | Callback that fires on successful AJAX request. |

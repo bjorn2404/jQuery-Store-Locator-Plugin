@@ -35,9 +35,10 @@ filtering.
 
 ## Changelog
 
-### Version 2.5.4
+### Version 2.6.0
 
 * Added bounds and formatted address info from geocoding API to AJAX data parameters.
+* Added Marker Clusterer library support, setting and example file.
 * Fixed issue with combination of autoGeocode and originMarker settings.
 * Merged in pull request from [drcomix](https://github.com/drcomix) that fixed zoom issue with dragSearch setting.
 * Switched included remote scripts in example files to https.

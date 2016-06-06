@@ -85,6 +85,7 @@
 		'querystringParams'        : false,
 		'debug'                    : false,
 		'sessionStorage'           : false,
+		'markerCluster'            : null,
 		'callbackNotify'           : null,
 		'callbackBeforeSend'       : null,
 		'callbackSuccess'          : null,
@@ -2304,6 +2305,11 @@
 					var currentMarker = markers[x];
 					_this.listSetup(currentMarker, storeStart, page);
 				});
+			}
+
+			// MarkerClusterer setup
+			if ( typeof MarkerClusterer !== 'undefined' && _this.settings.markerCluster !== null ) {
+				var markerCluster = new MarkerClusterer(map, markers, _this.settings.markerCluster);
 			}
 
 			// Handle clicks from the list

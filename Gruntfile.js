@@ -36,12 +36,13 @@ module.exports = function (grunt) {
 				dest: 'dist/assets/js/plugins/storeLocator/jquery.<%= pkg.name %>.js'
 			}
 		},
-		uglify   : {
+		uglify: {
 			dist: {
 				files: {
 					'dist/assets/js/plugins/storeLocator/jquery.<%= pkg.name %>.min.js': '<%= concat.dist.dest %>',
-					'dist/assets/js/libs/handlebars.min.js'            : 'libs/handlebars/*.js',
-					'dist/assets/js/geocode.min.js'               : 'src/js/geocode.js'
+					'dist/assets/js/libs/handlebars.min.js'                            : 'libs/handlebars/*.js',
+					'dist/assets/js/geocode.min.js'                                    : 'src/js/geocode.js',
+					'dist/assets/js/libs/markerclusterer.min.js'                       : 'libs/markerclusterer/*.js',
 				}
 			}
 		},

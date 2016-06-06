@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.5.4 - 2016-06-05
+/*! jQuery Google Maps Store Locator - v2.6.0 - 2016-06-05
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -88,6 +88,7 @@
 		'querystringParams'        : false,
 		'debug'                    : false,
 		'sessionStorage'           : false,
+		'markerCluster'            : null,
 		'callbackNotify'           : null,
 		'callbackBeforeSend'       : null,
 		'callbackSuccess'          : null,
@@ -2307,6 +2308,11 @@
 					var currentMarker = markers[x];
 					_this.listSetup(currentMarker, storeStart, page);
 				});
+			}
+
+			// MarkerClusterer setup
+			if ( typeof MarkerClusterer !== 'undefined' && _this.settings.markerCluster !== null ) {
+				var markerCluster = new MarkerClusterer(map, markers, _this.settings.markerCluster);
 			}
 
 			// Handle clicks from the list
