@@ -39,6 +39,7 @@ filtering.
 
 * Added bounds and formatted address info from geocoding API to AJAX data parameters.
 * Added Marker Clusterer library support, setting and example file.
+* Added disableAlphaMarkers setting to completely disable displaying markers and location list indicators with alpha characters.
 * Fixed issue with combination of autoGeocode and originMarker settings.
 * Merged in pull request from [drcomix](https://github.com/drcomix) that fixed zoom issue with dragSearch setting.
 * Switched included remote scripts in example files to https.

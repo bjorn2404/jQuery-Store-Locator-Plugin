@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.6.0 - 2016-06-05
+/*! jQuery Google Maps Store Locator - v2.6.0 - 2016-06-08
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -34,6 +34,7 @@
 		'catMarkers'               : null,
 		'selectedMarkerImg'        : null,
 		'selectedMarkerImgDim'     : null,
+		'disableAlphaMarkers'      : false,
 		'lengthUnit'               : 'm',
 		'storeLimit'               : 26,
 		'distanceAlert'            : 60,
@@ -964,7 +965,7 @@
 			}
 
 			// Create the default markers
-			if (this.settings.storeLimit === -1 || this.settings.storeLimit > 26 || this.settings.catMarkers !== null || this.settings.markerImg !== null || (this.settings.fullMapStart === true && firstRun === true && (isNaN(this.settings.fullMapStartListLimit) || this.settings.fullMapStartListLimit > 26 || this.settings.fullMapStartListLimit === -1))) {
+			if (this.settings.disableAlphaMarkers === true || this.settings.storeLimit === -1 || this.settings.storeLimit > 26 || this.settings.catMarkers !== null || this.settings.markerImg !== null || (this.settings.fullMapStart === true && firstRun === true && (isNaN(this.settings.fullMapStartListLimit) || this.settings.fullMapStartListLimit > 26 || this.settings.fullMapStartListLimit === -1))) {
 				marker = new google.maps.Marker({
 					position : point,
 					map      : map,
