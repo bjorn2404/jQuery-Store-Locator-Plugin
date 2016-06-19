@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.6.0 - 2016-06-08
+/*! jQuery Google Maps Store Locator - v2.6.0 - 2016-06-19
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -1025,7 +1025,7 @@
 			// Set up alpha character
 			var markerId = currentMarker.get('id');
 			// Use dot markers instead of alpha if there are more than 26 locations
-			if (this.settings.storeLimit === -1 || this.settings.storeLimit > 26 || (this.settings.fullMapStart === true && firstRun === true && (isNaN(this.settings.fullMapStartListLimit) || this.settings.fullMapStartListLimit > 26 || this.settings.fullMapStartListLimit === -1))) {
+			if (this.settings.disableAlphaMarkers === true || this.settings.storeLimit === -1 || this.settings.storeLimit > 26 || (this.settings.fullMapStart === true && firstRun === true && (isNaN(this.settings.fullMapStartListLimit) || this.settings.fullMapStartListLimit > 26 || this.settings.fullMapStartListLimit === -1))) {
 				indicator = markerId + 1;
 			}
 			else {
