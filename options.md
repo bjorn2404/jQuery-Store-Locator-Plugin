@@ -36,6 +36,7 @@
 | defaultLat | null | If using defaultLoc, set this to the default location latitude. |
 | defaultLng | null | If using defaultLoc, set this to the default location longitude. |
 | autoComplete | false | Set to true to enable Google Places autocomplete. Note the slight markup differences in the example file. |
+| autoCompleteOptions | {} | Google Places autocomplete [options object](https://developers.google.com/maps/documentation/javascript/places-autocomplete#add_autocomplete). |
 | autoGeocode | false | Set to true if you want to use the HTML5 geolocation API (good for mobile) to geocode the user's location. |
 | geocodeID | null | Set to the ID of an element to connect the HTML5 geolocation API to a button instead of firing automatically. |
 | maxDistance | false | Set to true if you want to give users an option to limit the distance from their location to the markers. |

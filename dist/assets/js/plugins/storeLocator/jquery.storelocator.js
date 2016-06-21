@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.6.0 - 2016-06-19
+/*! jQuery Google Maps Store Locator - v2.6.0 - 2016-06-21
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -58,6 +58,7 @@
 		'defaultLat'               : null,
 		'defaultLng'               : null,
 		'autoComplete'             : false,
+		'autoCompleteOptions'      : {},
 		'autoGeocode'              : false,
 		'geocodeID'                : null,
 		'maxDistance'              : false,
@@ -190,7 +191,7 @@
 			// Set up Google Places autocomplete if it's set to true
 			if (this.settings.autoComplete === true) {
 				var searchInput = document.getElementById(this.settings.addressID);
-				var autoPlaces = new google.maps.places.Autocomplete(searchInput);
+				var autoPlaces = new google.maps.places.Autocomplete(searchInput, this.settings.autoCompleteOptions);
 			}
 
 			// Load the templates and continue from there
@@ -470,7 +471,7 @@
 					else {
 						return [];
 					}
-						
+
 				}
 			}
 			// Remote data
@@ -518,14 +519,14 @@
 					doAutoGeo = this.settings.autoGeocode,
 					latlng,
 					originAddress;
-			
+
 			// Full map blank start
 			if (_this.settings.fullMapStartBlank !== false) {
 				var $mapDiv = $('#' + _this.settings.mapID);
 				$mapDiv.addClass('bh-sl-map-open');
 				var myOptions = _this.settings.mapSettings;
 				myOptions.zoom = _this.settings.fullMapStartBlank;
-				
+
 				latlng = new google.maps.LatLng(this.settings.defaultLat, this.settings.defaultLng);
 				myOptions.center = latlng;
 
@@ -1067,7 +1068,7 @@
 
 		/**
 		 * Change the selected marker image
-		 * 
+		 *
 		 * @param marker {Object} Google Maps marker object
 		 */
 		changeSelectedMarker: function (marker) {
@@ -1125,7 +1126,7 @@
 					// Focus on the list
 					var markerId = marker.get('id');
 					var $selectedLocation = $('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']');
-					
+
 					if ($selectedLocation.length > 0) {
 						// Marker click callback
 						if (_this.settings.callbackMarkerClick) {
@@ -1309,14 +1310,14 @@
 		clearMarkers: function() {
 			this.writeDebug('clearMarkers');
 			var locationsLimit = null;
-			
+
 			if (locationset.length < this.settings.storeLimit) {
 				locationsLimit = locationset.length;
 			}
 			else {
 				locationsLimit = this.settings.storeLimit;
 			}
-			
+
 			for (var i = 0; i < locationsLimit; i++) {
 				markers[i].setMap(null);
 			}
@@ -1344,7 +1345,7 @@
 				$('.' + this.settings.locationList + ' ul').hide();
 				// Remove the markers
 				this.clearMarkers();
-				
+
 				// Clear the previous directions request
 				if(directionsDisplay !== null && typeof directionsDisplay !== 'undefined') {
 					directionsDisplay.setMap(null);
@@ -1353,7 +1354,7 @@
 
 				directionsDisplay = new google.maps.DirectionsRenderer();
 				directionsService = new google.maps.DirectionsService();
-				
+
 				// Directions request
 				directionsDisplay.setMap(map);
 				directionsDisplay.setPanel($('.bh-sl-directions-panel').get(0));
@@ -1388,7 +1389,7 @@
 
 			// Remove the close icon, remove the directions, add the list back
 			this.reset();
-			
+
 			if ((olat) && (olng)) {
 				if (this.countFilters() === 0) {
 					this.settings.mapSettings.zoom = originalZoom;
@@ -1886,7 +1887,7 @@
 				origin = mappingObject.origin;
 				page = mappingObject.page;
 			}
-			
+
 			// Set the initial page to zero if not set
 			if ( _this.settings.pagination === true ) {
 				if (typeof page === 'undefined' || originalOrigin !== addressInput ) {
@@ -2390,7 +2391,7 @@
 
 		/**
 		 * console.log helper function
-		 * 
+		 *
 		 * http://www.briangrinstead.com/blog/console-log-helper-function
 		 */
 		writeDebug: function () {
