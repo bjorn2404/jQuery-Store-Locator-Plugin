@@ -133,6 +133,7 @@
 		 * Init function
 		 */
 		init: function () {
+			var _this = this;
 			this.writeDebug('init');
 			// Calculate geocode distance functions
 			if (this.settings.lengthUnit === 'km') {
@@ -189,6 +190,13 @@
 			if (this.settings.autoComplete === true) {
 				var searchInput = document.getElementById(this.settings.addressID);
 				var autoPlaces = new google.maps.places.Autocomplete(searchInput, this.settings.autoCompleteOptions);
+
+				// Add listener when autoComplete selection changes.
+				if (this.settings.autoComplete === true) {
+					autoPlaces.addListener('place_changed', function(e) {
+						_this.processForm(e);
+					});
+				}
 			}
 
 			// Load the templates and continue from there
@@ -2095,9 +2103,14 @@
 					}
 				}
 				else {
-					if (_this.settings.distanceAlert !== -1 && locationset[0].distance > _this.settings.distanceAlert) {
-						_this.notify(_this.settings.distanceErrorAlert + _this.settings.distanceAlert + ' ' + distUnit);
-						distError = true;
+					if (typeof locationset[0] !== 'undefined') {
+						if (_this.settings.distanceAlert !== -1 && locationset[0].distance > _this.settings.distanceAlert) {
+							_this.notify(_this.settings.distanceErrorAlert + _this.settings.distanceAlert + ' ' + distUnit);
+							distError = true;
+						}
+					}
+					else {
+						throw new Error('No locations found. Please check the dataLocation setting and path.');
 					}
 				}
 			}

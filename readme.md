@@ -35,6 +35,12 @@ filtering.
 
 ## Changelog
 
+### Version 2.6.1
+
+* Added additional error handling when the plugin checks the closest location.
+* Added listener for autoComplete change so that the search processes when a new place is selected.
+* Merged in pull request from [noclat](https://github.com/noclat) that added autoCompleteOptions setting.
+
 ### Version 2.6.0
 
 * Added bounds and formatted address info from geocoding API to AJAX data parameters.
