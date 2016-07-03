@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.6.1 - 2016-06-26
+/*! jQuery Google Maps Store Locator - v2.6.1 - 2016-07-02
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -450,7 +450,7 @@
 				formattedAddress = '';
 
 			// Define extra geocode result info
-			if ( typeof geocodeData !== 'undefined' ) {
+			if ( typeof geocodeData !== 'undefined' && typeof geocodeData.geometry.bounds !== 'undefined') {
 				formattedAddress = geocodeData.formatted_address;
 				northEast = JSON.stringify( geocodeData.geometry.bounds.getNorthEast() );
 				southWest = JSON.stringify( geocodeData.geometry.bounds.getSouthWest() );

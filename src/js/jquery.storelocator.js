@@ -447,7 +447,7 @@
 				formattedAddress = '';
 
 			// Define extra geocode result info
-			if ( typeof geocodeData !== 'undefined' ) {
+			if ( typeof geocodeData !== 'undefined' && typeof geocodeData.geometry.bounds !== 'undefined') {
 				formattedAddress = geocodeData.formatted_address;
 				northEast = JSON.stringify( geocodeData.geometry.bounds.getNorthEast() );
 				southWest = JSON.stringify( geocodeData.geometry.bounds.getSouthWest() );

@@ -39,6 +39,7 @@ filtering.
 
 * Added additional error handling when the plugin checks the closest location.
 * Added listener for autoComplete change so that the search processes when a new place is selected.
+* Fixed [issue with new boundary search](https://github.com/bjorn2404/jQuery-Store-Locator-Plugin/issues/127) AJAX params after a full address search was made.
 * Merged in pull request from [noclat](https://github.com/noclat) that added autoCompleteOptions setting.
 
 ### Version 2.6.0
