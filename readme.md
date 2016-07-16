@@ -35,6 +35,10 @@ filtering.
 
 ## Changelog
 
+### Version 2.6.2
+* Added callbackMapSet callback that fires after the map has been set up.
+* Fixed issue where locations without attributes could get those attribute values from prior locations.
+
 ### Version 2.6.1
 
 * Added additional error handling when the plugin checks the closest location.

@@ -83,6 +83,7 @@
 | callbackListClick | null | Callback that fires when a list element is clicked in the location list. |
 | callbackMarkerClick | null | Callback that fires when a map marker is clicked. |
 | callbackFilters | null | Callback that fires when a filter is changed. |
+| callbackMapSet | null | Callback that fires after the map is set up. |
 | addressErrorAlert | 'Unable to find address' | Language setting |
 | autoGeocodeErrorAlert | 'Automatic location detection failed. Please fill in your address or zip code.' | Language setting |
 | distanceErrorAlert | 'Unfortunately, our closest location is more than ' | Language setting |

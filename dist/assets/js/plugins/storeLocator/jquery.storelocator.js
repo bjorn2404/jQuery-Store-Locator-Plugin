@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.6.1 - 2016-07-02
+/*! jQuery Google Maps Store Locator - v2.6.2 - 2016-07-16
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -105,6 +105,7 @@
 		'callbackListClick'        : null,
 		'callbackMarkerClick'      : null,
 		'callbackFilters'          : null,
+		'callbackMapSet'           : null,
 		// Language options
 		'addressErrorAlert'        : 'Unable to find address',
 		'autoGeocodeErrorAlert'    : 'Automatic location detection failed. Please fill in your address or zip code.',
@@ -752,6 +753,7 @@
 		_createLocationVariables: function (loopcount) {
 			this.writeDebug('_createLocationVariables',arguments);
 			var value;
+			locationData = {};
 
 			for (var key in locationset[loopcount]) {
 				if (locationset[loopcount].hasOwnProperty(key)) {
@@ -2227,6 +2229,11 @@
 
 			// Load the map
 			$this.data(_this.settings.mapID.replace('#', ''), map);
+
+			// Map set callback.
+			if (_this.settings.callbackMapSet) {
+				_this.settings.callbackMapSet.call(this, map, originPoint, originalZoom, myOptions);
+			}
 
 			// Initialize the infowondow
 			var infowindow = new google.maps.InfoWindow();
