@@ -38,6 +38,7 @@ filtering.
 ### Version 2.6.2
 * Added callbackMapSet callback that fires after the map has been set up.
 * Fixed issue where locations without attributes could get those attribute values from prior locations.
+* Removed form markup from initial query string example index file as it's not needed until the submission page.
 
 ### Version 2.6.1
 
