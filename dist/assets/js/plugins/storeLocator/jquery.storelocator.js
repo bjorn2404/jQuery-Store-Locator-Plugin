@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.6.2 - 2016-07-16
+/*! jQuery Google Maps Store Locator - v2.6.2 - 2016-07-19
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -869,8 +869,15 @@
 		paginationSetup: function (currentPage) {
 			this.writeDebug('paginationSetup',arguments);
 			var pagesOutput = '';
-			var totalPages = locationset.length / this.settings.locationsPerPage;
+			var totalPages;
 			var $paginationList = $('.bh-sl-pagination-container .bh-sl-pagination');
+
+			// Total pages
+			if ( this.settings.storeLimit === -1 || locationset.length < this.settings.storeLimit ) {
+				totalPages = locationset.length / this.settings.locationsPerPage;
+			} else {
+				totalPages = this.settings.storeLimit / this.settings.locationsPerPage;
+			}
 
 			// Current page check
 			if (typeof currentPage === 'undefined') {
@@ -2377,8 +2384,8 @@
 			});
 
 			// Add the list li background colors - this wil be dropped in a future version in favor of CSS
-			$('.' + _this.settings.locationList + ' ul li:even').css('background', _this.settings.listColor1);
-			$('.' + _this.settings.locationList + ' ul li:odd').css('background', _this.settings.listColor2);
+			$('.' + _this.settings.locationList + ' ul > li:even').css('background', _this.settings.listColor1);
+			$('.' + _this.settings.locationList + ' ul > li:odd').css('background', _this.settings.listColor2);
 
 			// Visible markers list
 			if(_this.settings.visibleMarkersList === true) {

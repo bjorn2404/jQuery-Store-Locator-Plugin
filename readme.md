@@ -36,8 +36,10 @@ filtering.
 ## Changelog
 
 ### Version 2.6.2
+
 * Added callbackMapSet callback that fires after the map has been set up.
-* Fixed issue where locations without attributes could get those attribute values from prior locations.
+* Fixed issue where locations without attributes set could get the attribute values from prior locations.
+* Fixed issue where pagination total number of pages was based on the full location set total instead of the storeLimit setting.
 * Removed form markup from initial query string example index file as it's not needed until the submission page.
 
 ### Version 2.6.1
