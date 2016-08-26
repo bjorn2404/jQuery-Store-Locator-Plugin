@@ -14,6 +14,10 @@
 .gm-style div, .gm-style span, .gm-style label, .gm-style a {
   font-family: Arial, Helvetica, sans-serif; }
 
+/* InfoBubble font size */
+.bh-sl-window {
+  font-size: 13px; }
+
 .bh-sl-error {
   clear: both;
   color: #ae2118;

@@ -35,6 +35,10 @@ filtering.
 
 ## Changelog
 
+### Version 2.6.3
+
+* Added [InfoBubble](https://github.com/googlemaps/js-info-bubble) support and example file.
+
 ### Version 2.6.2
 
 * Added callbackMapSet callback that fires after the map has been set up.

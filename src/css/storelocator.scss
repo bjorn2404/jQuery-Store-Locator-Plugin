@@ -35,6 +35,11 @@ $tabletLarge: '(min-width: 1024px)';
 	}
 }
 
+/* InfoBubble font size */
+.bh-sl-window {
+	font-size: 13px;
+}
+
 .bh-sl-error {
 	clear: both;
 	color: $red;

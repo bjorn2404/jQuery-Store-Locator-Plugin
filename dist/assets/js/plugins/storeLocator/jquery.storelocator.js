@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.6.2 - 2016-07-19
+/*! jQuery Google Maps Store Locator - v2.6.2 - 2016-08-26
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -91,6 +91,7 @@
 		'debug'                    : false,
 		'sessionStorage'           : false,
 		'markerCluster'            : null,
+		'infoBubble' : null,
 		'callbackNotify'           : null,
 		'callbackBeforeSend'       : null,
 		'callbackSuccess'          : null,
@@ -1962,7 +1963,7 @@
 			this.writeDebug('processData',mappingObject);
 			var _this = this;
 			var i = 0;
-			var orig_lat, orig_lng, origin, name, maxDistance, marker, bounds, storeStart, storeNumToShow, myOptions, distError, openMap;
+			var orig_lat, orig_lng, origin, name, maxDistance, marker, bounds, storeStart, storeNumToShow, myOptions, distError, openMap, infowindow;
 			var taxFilters = {};
 			if (!this.isEmptyObject(mappingObject)) {
 				orig_lat = mappingObject.lat;
@@ -2243,7 +2244,15 @@
 			}
 
 			// Initialize the infowondow
-			var infowindow = new google.maps.InfoWindow();
+			if ( typeof InfoBubble !== 'undefined' && _this.settings.infoBubble !== null ) {
+				var infoBubbleSettings = _this.settings.infoBubble;
+				infoBubbleSettings.map = map;
+
+				infowindow = new InfoBubble(infoBubbleSettings);
+			} else {
+				infowindow = new google.maps.InfoWindow();
+			}
+
 
 			// Add origin marker if the setting is set
 			if (_this.settings.originMarker === true) {
