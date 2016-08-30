@@ -1637,7 +1637,6 @@
 
 		/**
 		 * Check for existing filter selections
-		 *
 		 */
 		checkFilters: function () {
 			this.writeDebug('checkFilters');
@@ -1651,6 +1650,24 @@
 
 					// Find the existing value for each radio button filter
 					this._existingRadioFilters(key);
+				}
+			}
+		},
+
+		/**
+		 * Check query string parameters for filter values.
+		 */
+		checkQueryStringFilters: function () {
+			this.writeDebug('checkQueryStringFilters',arguments);
+			// Loop through the filters.
+			for(var key in filters) {
+				if(filters.hasOwnProperty(key)) {
+					var filterVal = this.getQueryString(key);
+
+					// Only add the taxonomy id if it doesn't already exist
+					if (typeof filterVal !== 'undefined' && filterVal !== '' && filters[key].indexOf(filterVal) === -1) {
+						filters[key] = [filterVal];
+					}
 				}
 			}
 		},
@@ -1686,6 +1703,9 @@
 					filters[key] = [];
 				}
 			}
+			
+			// Check query string for taxonomy parameter keys.
+			_this.checkQueryStringFilters();
 
 			// Handle filter updates
 			$('.' + this.settings.taxonomyFiltersContainer).on('change.'+pluginName, 'input, select', function (e) {
