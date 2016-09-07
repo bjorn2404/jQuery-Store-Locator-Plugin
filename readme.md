@@ -38,6 +38,7 @@ filtering.
 ### Version 2.6.3
 
 * Added [InfoBubble](https://github.com/googlemaps/js-info-bubble) support and example file.
+* Added markerAlphaColor setting to change the marker letter color.
 * Added query string parameter filter check so that results can be filtered with URL query strings.
 
 ### Version 2.6.2

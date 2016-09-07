@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.6.3 - 2016-08-30
+/*! jQuery Google Maps Store Locator - v2.6.3 - 2016-09-07
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -31,6 +31,7 @@
 		},
 		'markerImg'                : null,
 		'markerDim'                : null,
+		'markerAlphaColor'         : '#000000',
 		'catMarkers'               : null,
 		'selectedMarkerImg'        : null,
 		'selectedMarkerImgDim'     : null,
@@ -91,7 +92,7 @@
 		'debug'                    : false,
 		'sessionStorage'           : false,
 		'markerCluster'            : null,
-		'infoBubble' : null,
+		'infoBubble'               : null,
 		'callbackNotify'           : null,
 		'callbackBeforeSend'       : null,
 		'callbackSuccess'          : null,
@@ -949,6 +950,7 @@
 			this.writeDebug('createMarker',arguments);
 			var marker, markerImg, letterMarkerImg;
 			var categories = [];
+			var _this = this;
 
 			// Custom multi-marker image override (different markers for different categories
 			if(this.settings.catMarkers !== null) {
@@ -984,7 +986,11 @@
 			}
 
 			// Create the default markers
-			if (this.settings.disableAlphaMarkers === true || this.settings.storeLimit === -1 || this.settings.storeLimit > 26 || this.settings.catMarkers !== null || this.settings.markerImg !== null || (this.settings.fullMapStart === true && firstRun === true && (isNaN(this.settings.fullMapStartListLimit) || this.settings.fullMapStartListLimit > 26 || this.settings.fullMapStartListLimit === -1))) {
+			if (this.settings.disableAlphaMarkers === true ||
+				this.settings.storeLimit === -1 ||
+				this.settings.storeLimit > 26 ||
+				this.settings.catMarkers !== null ||
+				(this.settings.fullMapStart === true && firstRun === true && (isNaN(this.settings.fullMapStartListLimit) || this.settings.fullMapStartListLimit > 26 || this.settings.fullMapStartListLimit === -1))) {
 				marker = new google.maps.Marker({
 					position : point,
 					map      : map,
@@ -993,17 +999,16 @@
 				});
 			}
 			else {
-				// Letter markers image
-				letterMarkerImg = {
-					url: 'https://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-waypoint-b.png&text=' + letter + '&psize=16&font=fonts/Roboto-Regular.ttf&color=ff333333&ax=44&ay=48'
-				};
-
 				// Letter markers
 				marker = new google.maps.Marker({
-					position : point,
+					draggable: false,
+					icon: markerImg, // Reverts to default marker if nothing is passed
 					map      : map,
-					icon     : letterMarkerImg,
-					draggable: false
+					label : {
+						text: letter,
+						color: _this.settings.markerAlphaColor
+					},
+					position : point
 				});
 			}
 
