@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.6.3 - 2016-09-07
+/*! jQuery Google Maps Store Locator - v2.6.3 - 2016-09-22
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -93,6 +93,7 @@
 		'sessionStorage'           : false,
 		'markerCluster'            : null,
 		'infoBubble'               : null,
+		// Callbacks
 		'callbackNotify'           : null,
 		'callbackBeforeSend'       : null,
 		'callbackSuccess'          : null,
@@ -252,6 +253,7 @@
 
 		/**
 		 * Reset function
+		 * This method clears out all the variables and removes events. It does not reload the map.
 		 */
 		reset: function () {
 			this.writeDebug('reset');
@@ -275,6 +277,57 @@
 			}
 			if(this.settings.pagination === true) {
 				$(document).off('click.'+pluginName, '.bh-sl-pagination li');
+			}
+		},
+
+		/**
+		 * Reset the form filters
+		 */
+		formFiltersReset: function () {
+			this.writeDebug('formFiltersReset');
+			if (this.settings.taxonomyFilters === null) {
+				return;
+			}
+
+			var $inputs = $('.' + this.settings.taxonomyFiltersContainer + ' input'),
+				$selects = $('.' + this.settings.taxonomyFiltersContainer + ' select');
+
+			if ( typeof($inputs) !== 'object') {
+				return;
+			}
+
+			// Loop over the input fields
+			$inputs.each(function() {
+				if ($(this).is('input[type="checkbox"]') || $(this).is('input[type="radio"]')) {
+					$(this).prop('checked',false);
+				}
+			});
+
+			// Loop over select fields
+			$selects.each(function() {
+				$(this).prop('selectedIndex',0);
+			});
+		},
+
+		/**
+		 * Reload everything
+		 * This method does a reset of everything and reloads the map as it would first appear.
+		 */
+		mapReload: function() {
+			this.writeDebug('mapReload');
+			this.reset();
+
+			if ( this.settings.taxonomyFilters !== null ) {
+				this.formFiltersReset();
+				this.taxonomyFiltersInit();
+			}
+
+			if ((olat) && (olng)) {
+				this.settings.mapSettings.zoom = originalZoom;
+				this.processForm();
+			}
+			else {
+				this.mapping(mappingObj);
 			}
 		},
 
@@ -432,6 +485,13 @@
 			else {
 				$(document).on('submit.'+pluginName, '#' + this.settings.formID, function (e) {
 					_this.processForm(e);
+				});
+			}
+
+			// Reset button trigger
+			if ($('.bh-sl-reset').length && $('#' + this.settings.mapID).length) {
+				$(document).on('click.' + pluginName, '.bh-sl-reset', function () {
+					_this.mapReload();
 				});
 			}
 		},
@@ -1649,6 +1709,7 @@
 		checkFilters: function () {
 			this.writeDebug('checkFilters');
 			for(var key in this.settings.taxonomyFilters) {
+
 				if(this.settings.taxonomyFilters.hasOwnProperty(key)) {
 					// Find the existing checked boxes for each checkbox filter
 					this._existingCheckedFilters(key);
@@ -1699,11 +1760,10 @@
 		},
 
 		/**
-		 * Taxonomy filtering
+		 * Initialize or reset the filters object to its original state
 		 */
-		taxonomyFiltering: function() {
-			this.writeDebug('taxonomyFiltering');
-			var _this = this;
+		taxonomyFiltersInit: function () {
+			this.writeDebug('taxonomyFiltersInit');
 
 			// Set up the filters
 			for(var key in this.settings.taxonomyFilters) {
@@ -1711,6 +1771,17 @@
 					filters[key] = [];
 				}
 			}
+		},
+
+		/**
+		 * Taxonomy filtering
+		 */
+		taxonomyFiltering: function() {
+			this.writeDebug('taxonomyFiltering');
+			var _this = this;
+
+			// Set up the filters
+			_this.taxonomyFiltersInit();
 			
 			// Check query string for taxonomy parameter keys.
 			_this.checkQueryStringFilters();
@@ -2135,7 +2206,7 @@
 
 			// Check the closest marker
 			if (_this.isEmptyObject(taxFilters)) {
-				if (_this.settings.maxDistance === true && firstRun !== true && maxDistance) {
+				if (_this.settings.maxDistance === true && maxDistance) {
 					if (typeof locationset[0] === 'undefined' || locationset[0].distance > maxDistance) {
 						_this.notify(_this.settings.distanceErrorAlert + maxDistance + ' ' + distUnit);
 					}
