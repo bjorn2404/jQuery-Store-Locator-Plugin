@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.6.3 - 2016-09-22
+/*! jQuery Google Maps Store Locator - v2.6.3 - 2016-09-23
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -1615,7 +1615,7 @@
 					return;
 				}
 			}
-			else if(this.settings.maxDistance === true && this.settings.querystringParams === true && this.settings.maxDistance === true && typeof maxDistance !== 'undefined' && maxDistance !== null) {
+			else if(this.settings.maxDistance === true && this.settings.querystringParams === true && typeof maxDistance !== 'undefined' && maxDistance !== null) {
 				if (data.distance <= maxDistance) {
 					locationset.push( data );
 				}
@@ -1985,13 +1985,217 @@
 			}
 		},
 
+
+		/**
+		 * Origin marker setup
+		 *
+		 * @param map {Object} Google map
+		 * @param origin {string} Origin address
+		 * @param originPoint {Object} LatLng of origin point
+		 */
+		originMarker: function(map, origin, originPoint) {
+			this.writeDebug('originMarker',arguments);
+
+			if (this.settings.originMarker !== true) {
+				return;
+			}
+
+			var marker,
+				originImg = '';
+
+			if (typeof origin !== 'undefined') {
+				if(this.settings.originMarkerImg !== null) {
+					if(this.settings.originMarkerDim === null) {
+						originImg = this.markerImage(this.settings.originMarkerImg);
+					}
+					else {
+						originImg = this.markerImage(this.settings.originMarkerImg, this.settings.originMarkerDim.width, this.settings.originMarkerDim.height);
+					}
+				}
+				else {
+					originImg = {
+						url: 'https://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-waypoint-a.png'
+					};
+				}
+
+				marker = new google.maps.Marker({
+					position : originPoint,
+					map      : map,
+					icon     : originImg,
+					draggable: false
+				});
+			}
+		},
+
+		/**
+		 * Modal window setup
+		 */
+		modalWindow: function() {
+			this.writeDebug('modalWindow');
+
+			if (this.settings.modal !== true) {
+				return;
+			}
+
+			var _this = this;
+
+			// Callback
+			if (_this.settings.callbackModalOpen) {
+				_this.settings.callbackModalOpen.call(this);
+			}
+
+			// Pop up the modal window
+			$('.' + _this.settings.overlay).fadeIn();
+			// Close modal when close icon is clicked and when background overlay is clicked
+			$(document).on('click.'+pluginName, '.' + _this.settings.closeIcon + ', .' + _this.settings.overlay, function () {
+				_this.modalClose();
+			});
+			// Prevent clicks within the modal window from closing the entire thing
+			$(document).on('click.'+pluginName, '.' + _this.settings.modalWindow, function (e) {
+				e.stopPropagation();
+			});
+			// Close modal when escape key is pressed
+			$(document).on('keyup.'+pluginName, function (e) {
+				if (e.keyCode === 27) {
+					_this.modalClose();
+				}
+			});
+		},
+
+		/**
+		 * Handle clicks from the location list
+		 *
+		 * @param map {Object} Google map
+		 * @param infowindow
+		 * @param storeStart
+		 * @param page
+		 */
+		listClick: function(map, infowindow, storeStart, page) {
+			this.writeDebug('listClick',arguments);
+			var _this = this;
+
+			$(document).on('click.' + pluginName, '.' + _this.settings.locationList + ' li', function () {
+				var markerId = $(this).data('markerid');
+				var selectedMarker = markers[markerId];
+
+				// List click callback
+				if (_this.settings.callbackListClick) {
+					_this.settings.callbackListClick.call(this, markerId, selectedMarker);
+				}
+
+				map.panTo(selectedMarker.getPosition());
+				var listLoc = 'left';
+				if (_this.settings.bounceMarker === true) {
+					selectedMarker.setAnimation(google.maps.Animation.BOUNCE);
+					setTimeout(function () {
+							selectedMarker.setAnimation(null);
+							_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
+						}, 700
+					);
+				}
+				else {
+					_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
+				}
+
+				// Custom selected marker override
+				if (_this.settings.selectedMarkerImg !== null) {
+					_this.changeSelectedMarker(selectedMarker);
+				}
+
+				// Focus on the list
+				$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
+				$('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']').addClass('list-focus');
+			});
+
+			// Prevent bubbling from list content links
+			$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li a', function(e) {
+				e.stopPropagation();
+			});
+		},
+
+		/**
+		 * Output total results count if HTML element with .bh-sl-total-results class exists
+		 *
+		 * @param locCount
+		 */
+		resultsTotalCount: function(locCount) {
+			this.writeDebug('resultsTotalCount',arguments);
+
+			var $resultsContainer = $('.bh-sl-total-results');
+
+			if (typeof locCount === 'undefined' || locCount <= 0 || $resultsContainer.length === 0) {
+				return;
+			}
+
+			$resultsContainer.text(locCount);
+		},
+
+		/**
+		 * Inline directions setup
+		 *
+		 * @param map {Object} Google map
+		 * @param origin {string} Origin address
+		 */
+		inlineDirections: function(map, origin) {
+			this.writeDebug('inlineDirections',arguments);
+
+			if(this.settings.inlineDirections !== true || typeof origin === 'undefined') {
+				return;
+			}
+
+			var _this = this;
+
+			// Open directions
+			$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li .loc-directions a', function (e) {
+				e.preventDefault();
+				var locID = $(this).closest('li').attr('data-markerid');
+				_this.directionsRequest(origin, locID, map);
+
+				// Close directions
+				$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' .bh-sl-close-icon', function () {
+					_this.closeDirections();
+				});
+			});
+		},
+
+		/**
+		 * Visible markers list setup
+		 *
+		 * @param map {Object} Google map
+		 * @param markers {Object} Map markers
+		 */
+		visibleMarkersList: function(map, markers) {
+			this.writeDebug('visibleMarkersList',arguments);
+
+			if(this.settings.visibleMarkersList !== true) {
+				return;
+			}
+
+			var _this = this;
+
+			// Add event listener to filter the list when the map is fully loaded
+			google.maps.event.addListenerOnce(map, 'idle', function(){
+				_this.checkVisibleMarkers(markers, map);
+			});
+
+			// Add event listener for center change
+			google.maps.event.addListener(map, 'center_changed', function() {
+				_this.checkVisibleMarkers(markers, map);
+			});
+
+			// Add event listener for zoom change
+			google.maps.event.addListener(map, 'zoom_changed', function() {
+				_this.checkVisibleMarkers(markers, map);
+			});
+		},
+
 		/**
 		 * The primary mapping function that runs everything
 		 *
 		 * @param mappingObject {Object} all the potential mapping properties - latitude, longitude, origin, name, max distance, page
 		 */
 		mapping: function (mappingObject) {
-			this.writeDebug('mapping',mappingObject);
+			this.writeDebug('mapping',arguments);
 			var _this = this;
 			var orig_lat, orig_lng, geocodeData, origin, originPoint, page;
 			if (!this.isEmptyObject(mappingObject)) {
@@ -2056,7 +2260,7 @@
 		 * @param page {number} current page number
 		 */
 		processData: function (mappingObject, originPoint, data, page) {
-			this.writeDebug('processData',mappingObject);
+			this.writeDebug('processData',arguments);
 			var _this = this;
 			var i = 0;
 			var orig_lat, orig_lng, origin, name, maxDistance, marker, bounds, storeStart, storeNumToShow, myOptions, distError, openMap, infowindow;
@@ -2241,29 +2445,7 @@
 			}
 
 			// Set up the modal window
-			if (_this.settings.modal === true) {
-				// Callback
-				if (_this.settings.callbackModalOpen) {
-					_this.settings.callbackModalOpen.call(this);
-				}
-
-				// Pop up the modal window
-				$('.' + _this.settings.overlay).fadeIn();
-				// Close modal when close icon is clicked and when background overlay is clicked
-				$(document).on('click.'+pluginName, '.' + _this.settings.closeIcon + ', .' + _this.settings.overlay, function () {
-					_this.modalClose();
-				});
-				// Prevent clicks within the modal window from closing the entire thing
-				$(document).on('click.'+pluginName, '.' + _this.settings.modalWindow, function (e) {
-					e.stopPropagation();
-				});
-				// Close modal when escape key is pressed
-				$(document).on('keyup.'+pluginName, function (e) {
-					if (e.keyCode === 27) {
-						_this.modalClose();
-					}
-				});
-			}
+			_this.modalWindow();
 
 			// Avoid error if number of locations is less than the default of 26
 			if (_this.settings.storeLimit === -1 || locationset.length < _this.settings.storeLimit || (this.settings.fullMapStart === true && firstRun === true && (isNaN(this.settings.fullMapStartListLimit) || this.settings.fullMapStartListLimit > 26 || this.settings.fullMapStartListLimit === -1))) {
@@ -2289,6 +2471,9 @@
 				storeNumToShow = storeNum;
 				storeStart = 0;
 			}
+
+			// Output location results count
+			_this.resultsTotalCount(locationset.length);
 
 			// Google maps settings
 			if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined') || (distError === true)) {
@@ -2351,32 +2536,7 @@
 
 
 			// Add origin marker if the setting is set
-			if (_this.settings.originMarker === true) {
-				var originImg = '';
-
-				if ( typeof origin !== 'undefined' ) {
-					if(_this.settings.originMarkerImg !== null) {
-						if(_this.settings.originMarkerDim === null) {
-							originImg = _this.markerImage(_this.settings.originMarkerImg);
-						}
-						else {
-							originImg = _this.markerImage(_this.settings.originMarkerImg, _this.settings.originMarkerDim.width, _this.settings.originMarkerDim.height);
-						}
-					}
-					else {
-						originImg = {
-							url: 'https://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-waypoint-a.png'
-						};
-					}
-
-					marker = new google.maps.Marker({
-						position : originPoint,
-						map      : map,
-						icon     : originImg,
-						draggable: false
-					});
-				}
-			}
+			_this.originMarker(origin,originPoint,map);
 
 			// Handle pagination
 			$(document).on('click.'+pluginName, '.bh-sl-pagination li', function (e) {
@@ -2386,19 +2546,7 @@
 			});
 
 			// Inline directions
-			if(_this.settings.inlineDirections === true && typeof origin !== 'undefined') {
-				// Open directions
-				$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li .loc-directions a', function (e) {
-					e.preventDefault();
-					var locID = $(this).closest('li').attr('data-markerid');
-					_this.directionsRequest(origin, locID, map);
-
-					// Close directions
-					$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' .bh-sl-close-icon', function () {
-						_this.closeDirections();
-					});
-				});
-			}
+			_this.inlineDirections(map, origin);
 
 			// Add markers and infowindows loop
 			for (var y = 0; y <= storeNumToShow - 1; y++) {
@@ -2450,65 +2598,14 @@
 			}
 
 			// Handle clicks from the list
-			$(document).on('click.' + pluginName, '.' + _this.settings.locationList + ' li', function () {
-				var markerId = $(this).data('markerid');
-				var selectedMarker = markers[markerId];
-
-				// List click callback
-				if (_this.settings.callbackListClick) {
-					_this.settings.callbackListClick.call(this, markerId, selectedMarker);
-				}
-
-				map.panTo(selectedMarker.getPosition());
-				var listLoc = 'left';
-				if (_this.settings.bounceMarker === true) {
-					selectedMarker.setAnimation(google.maps.Animation.BOUNCE);
-					setTimeout(function () {
-							selectedMarker.setAnimation(null);
-							_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
-						}, 700
-					);
-				}
-				else {
-					_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
-				}
-
-				// Custom selected marker override
-				if (_this.settings.selectedMarkerImg !== null) {
-					_this.changeSelectedMarker(selectedMarker);
-				}
-
-				// Focus on the list
-				$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
-				$('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']').addClass('list-focus');
-			});
-
-			// Prevent bubbling from list content links
-			$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li a', function(e) {
-				e.stopPropagation();
-			});
+			_this.listClick(map, infowindow, storeStart, page);
 
 			// Add the list li background colors - this wil be dropped in a future version in favor of CSS
 			$('.' + _this.settings.locationList + ' ul > li:even').css('background', _this.settings.listColor1);
 			$('.' + _this.settings.locationList + ' ul > li:odd').css('background', _this.settings.listColor2);
 
 			// Visible markers list
-			if(_this.settings.visibleMarkersList === true) {
-				// Add event listener to filter the list when the map is fully loaded
-				google.maps.event.addListenerOnce(map, 'idle', function(){
-					_this.checkVisibleMarkers(markers, map);
-				});
-
-				// Add event listener for center change
-				google.maps.event.addListener(map, 'center_changed', function() {
-					_this.checkVisibleMarkers(markers, map);
-				});
-
-				// Add event listener for zoom change
-				google.maps.event.addListener(map, 'zoom_changed', function() {
-					_this.checkVisibleMarkers(markers, map);
-				});
-			}
+			_this.visibleMarkersList(map, markers);
 
 			// Modal ready callback
 			if (_this.settings.modal === true && _this.settings.callbackModalReady) {
