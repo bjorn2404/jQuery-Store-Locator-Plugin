@@ -8,7 +8,6 @@
 | regionID | 'bh-sl-region' | ID of the region select form field for country region biasing. |
 | mapSettings | { zoom : 12, mapTypeId: google.maps.MapTypeId.ROADMAP } | Google maps settings object. Add all settings including zoom and map type if overriding. Set zoom to 0 to automatically center and zoom to show all display markers on the map |
 | markerImg | null | Replacement marker image used for all locations |
-| markerAlphaColor | '#000000' | Marker letter color. |
 | markerDim | null | Replacement marker dimensions object - ex value: { height: 20, width: 20 } |
 | catMarkers | null | Multiple replacement marker images based on categories object. Value should be array with image path followed by dimensions - ex value: catMarkers : {'Restaurant' : ['img/red-marker.svg', 32, 32]}
 | selectedMarkerImg | null | Selected marker image. |

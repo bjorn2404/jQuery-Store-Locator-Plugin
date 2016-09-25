@@ -28,7 +28,6 @@
 		},
 		'markerImg'                : null,
 		'markerDim'                : null,
-		'markerAlphaColor'         : '#000000',
 		'catMarkers'               : null,
 		'selectedMarkerImg'        : null,
 		'selectedMarkerImgDim'     : null,
@@ -1007,7 +1006,6 @@
 			this.writeDebug('createMarker',arguments);
 			var marker, markerImg, letterMarkerImg;
 			var categories = [];
-			var _this = this;
 
 			// Custom multi-marker image override (different markers for different categories
 			if(this.settings.catMarkers !== null) {
@@ -1034,20 +1032,16 @@
 
 			// Custom single marker image override
 			if(this.settings.markerImg !== null) {
-					if(this.settings.markerDim === null) {
-						markerImg = this.markerImage(this.settings.markerImg);
-					}
-					else {
-						markerImg = this.markerImage(this.settings.markerImg, this.settings.markerDim.width, this.settings.markerDim.height);
-					}
+				if(this.settings.markerDim === null) {
+					markerImg = this.markerImage(this.settings.markerImg);
+				}
+				else {
+					markerImg = this.markerImage(this.settings.markerImg, this.settings.markerDim.width, this.settings.markerDim.height);
+				}
 			}
 
 			// Create the default markers
-			if (this.settings.disableAlphaMarkers === true ||
-				this.settings.storeLimit === -1 ||
-				this.settings.storeLimit > 26 ||
-				this.settings.catMarkers !== null ||
-				(this.settings.fullMapStart === true && firstRun === true && (isNaN(this.settings.fullMapStartListLimit) || this.settings.fullMapStartListLimit > 26 || this.settings.fullMapStartListLimit === -1))) {
+			if (this.settings.disableAlphaMarkers === true || this.settings.storeLimit === -1 || this.settings.storeLimit > 26 || this.settings.catMarkers !== null || this.settings.markerImg !== null || (this.settings.fullMapStart === true && firstRun === true && (isNaN(this.settings.fullMapStartListLimit) || this.settings.fullMapStartListLimit > 26 || this.settings.fullMapStartListLimit === -1))) {
 				marker = new google.maps.Marker({
 					position : point,
 					map      : map,
@@ -1056,16 +1050,17 @@
 				});
 			}
 			else {
+				// Letter markers image
+				letterMarkerImg = {
+					url: 'https://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-waypoint-b.png&text=' + letter + '&psize=16&font=fonts/Roboto-Regular.ttf&color=ff333333&ax=44&ay=48'
+				};
+
 				// Letter markers
 				marker = new google.maps.Marker({
-					draggable: false,
-					icon: markerImg, // Reverts to default marker if nothing is passed
+					position : point,
 					map      : map,
-					label : {
-						text: letter,
-						color: _this.settings.markerAlphaColor
-					},
-					position : point
+					icon     : letterMarkerImg,
+					draggable: false
 				});
 			}
 
@@ -2431,7 +2426,7 @@
 			}
 
 			// Handle no results
-			if (_this.isEmptyObject(locationset)) {
+			if (_this.isEmptyObject(locationset) || locationset[0].result === 'none') {
 				_this.emptyResult();
 				return;
 			}
