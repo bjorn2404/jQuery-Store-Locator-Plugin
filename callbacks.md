@@ -35,6 +35,7 @@ $('#bh-sl-map-container').storeLocator({
 | [callbackCloseDirections](callbacks/callback-closedirections.md) | Close directions callback |
 | [callbackNoResults](callbacks/callback-noresults.md) | No results callback |
 | [callbackJsonp](callbacks/callback-jsonp.md) | JSONP callback |
+| [callbackCreateMarker](callbacks/callback-createmarker.md) | Create marker override callback |
 | [callbackSuccess](callbacks/callback-success.md) | Success callback |
 | [callbackMapSet](callbacks/callback-mapset.md) | Map set callback |
 | [callbackModalOpen](callbacks/callback-modalopen.md) | Modal open callback |

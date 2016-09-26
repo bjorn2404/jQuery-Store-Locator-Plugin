@@ -77,6 +77,7 @@
 | callbackModalReady | null | Callback that fires when the content of the modal is generated. |
 | callbackModalClose | null | Callback that fires when a modal closes. |
 | callbackJsonp | null | Callback that can specify the callback function name of a JSONP request. |
+| callbackCreateMarker | null | Callback that will override the markers. This must return the marker object. |
 | callbackPageChange | null | Callback that fires when the page changes if pagination is enabled. |
 | callbackDirectionsRequest | null | Callback that fires upon a directions request when using the inline directions option. |
 | callbackCloseDirections | null | Callback that fires when the directions panel closes. |
