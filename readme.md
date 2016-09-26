@@ -37,6 +37,7 @@ filtering.
 
 ### Version 2.6.3
 
+* Added [callback documentation](callbacks.md).
 * Added callbackCreateMarker for custom marker overrides.
 * Added [InfoBubble](https://github.com/googlemaps/js-info-bubble) support and example file.
 * Added location results total count if HTML element with .bh-sl-total-results class exists.
