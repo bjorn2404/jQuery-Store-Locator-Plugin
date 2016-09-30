@@ -859,7 +859,7 @@
 						var exclusiveTest = [];
 
 						for(var l = 0; l < filterTests.length; l++) {
-							exclusiveTest[l] = new RegExp(filterTests[l], 'i').test(data[k]);
+							exclusiveTest[l] = new RegExp(filterTests[l], 'i').test(data[k].replace(/[^\x00-\x7F]/g, ''));
 						}
 
 						if(exclusiveTest.indexOf(true) === -1) {
@@ -868,7 +868,7 @@
 					}
 					// Inclusive filtering
 					else {
-						if (!(new RegExp(filters[k].join(''), 'i').test(data[k]))) {
+						if (!(new RegExp(filters[k].join(''), 'i').test(data[k].replace(/[^\x00-\x7F]/g, '')))) {
 							filterTest = false;
 						}
 					}
@@ -2374,7 +2374,7 @@
 							if (!taxFilters[k]) {
 								taxFilters[k] = [];
 							}
-							taxFilters[k][z] = '(?=.*\\b' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1") + '\\b)';
+							taxFilters[k][z] = '(?=.*\\b' + filters[k][z].replace(/([^\x00-\x7F]|[.*+?^=!:${}()|\[\]\/\\])/g, '') + '\\b)';
 						}
 					}
 				}

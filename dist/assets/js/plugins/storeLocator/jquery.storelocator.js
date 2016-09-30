@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.6.3 - 2016-09-25
+/*! jQuery Google Maps Store Locator - v2.7.0 - 2016-09-29
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -862,7 +862,7 @@
 						var exclusiveTest = [];
 
 						for(var l = 0; l < filterTests.length; l++) {
-							exclusiveTest[l] = new RegExp(filterTests[l], 'i').test(data[k]);
+							exclusiveTest[l] = new RegExp(filterTests[l], 'i').test(data[k].replace(/[^\x00-\x7F]/g, ''));
 						}
 
 						if(exclusiveTest.indexOf(true) === -1) {
@@ -871,7 +871,7 @@
 					}
 					// Inclusive filtering
 					else {
-						if (!(new RegExp(filters[k].join(''), 'i').test(data[k]))) {
+						if (!(new RegExp(filters[k].join(''), 'i').test(data[k].replace(/[^\x00-\x7F]/g, '')))) {
 							filterTest = false;
 						}
 					}
@@ -2377,7 +2377,7 @@
 							if (!taxFilters[k]) {
 								taxFilters[k] = [];
 							}
-							taxFilters[k][z] = '(?=.*\\b' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1") + '\\b)';
+							taxFilters[k][z] = '(?=.*\\b' + filters[k][z].replace(/([^\x00-\x7F]|[.*+?^=!:${}()|\[\]\/\\])/g, '') + '\\b)';
 						}
 					}
 				}
