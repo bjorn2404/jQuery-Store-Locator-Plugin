@@ -868,7 +868,7 @@
 					}
 					// Inclusive filtering
 					else {
-						if (!(new RegExp(filters[k].join(''), 'i').test(data[k].replace(/[^\x00-\x7F]/g, '')))) {
+						if (typeof data[k] === 'undefined' || !(new RegExp(filters[k].join(''), 'i').test(data[k].replace(/[^\x00-\x7F]/g, '')))) {
 							filterTest = false;
 						}
 					}

@@ -35,6 +35,10 @@ filtering.
 
 ## Changelog
 
+### Version 2.7.1
+
+* Hotfix to prevent potential error with updated filterData method if the category of a location is undefined.
+
 ### Version 2.7.0
 
 * Added [callback documentation](callbacks.md).
