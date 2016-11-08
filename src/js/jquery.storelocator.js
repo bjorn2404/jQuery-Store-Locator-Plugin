@@ -377,6 +377,17 @@
 		},
 
 		/**
+		 * Get google.maps.Map instance
+		 *
+		 * @returns {Object} google.maps.Map instance
+		 */
+		getMap: function() {
+			var myOptions = this.settings.mapSettings;
+			var map = new google.maps.Map(document.getElementById(this.settings.mapID), myOptions);
+			return map;
+		},
+
+		/**
 		 * Load templates via Handlebars templates in /templates or inline via IDs - private
 		 */
 		_loadTemplates: function () {
