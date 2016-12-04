@@ -2545,7 +2545,7 @@
 
 
 			// Add origin marker if the setting is set
-			_this.originMarker(origin,originPoint,_this.map);
+			_this.originMarker(_this.map, origin, originPoint);
 
 			// Handle pagination
 			$(document).on('click.'+pluginName, '.bh-sl-pagination li', function (e) {

@@ -35,6 +35,11 @@ filtering.
 
 ## Changelog
 
+### Version 2.7.2
+
+* Fixed incorrect origin marker parameter order.
+* Merged pull-request from []ollea](https://github.com/ollea) that adds "getMap" function that returns a google.maps.Map instance.
+
 ### Version 2.7.1
 
 * Hotfix to prevent potential error with updated filterData method if the category of a location is undefined.

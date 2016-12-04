@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.7.1 - 2016-10-01
+/*! jQuery Google Maps Store Locator - v2.7.2 - 2016-11-28
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2016 Bjorn Holine; Licensed MIT */
 
@@ -13,7 +13,7 @@
 	}
 
 	// Variables used across multiple methods
-	var $this, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom, dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService, prevSelectedMarkerBefore, prevSelectedMarkerAfter, firstRun;
+	var $this, map, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom, dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService, prevSelectedMarkerBefore, prevSelectedMarkerAfter, firstRun;
 	var featuredset = [], locationset = [], normalset = [], markers = [];
 	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {};
 
@@ -380,6 +380,15 @@
 		},
 
 		/**
+		 * Get google.maps.Map instance
+		 *
+		 * @returns {Object} google.maps.Map instance
+		 */
+		getMap: function() {
+			return this.map;
+		},
+
+		/**
 		 * Load templates via Handlebars templates in /templates or inline via IDs - private
 		 */
 		_loadTemplates: function () {
@@ -602,13 +611,13 @@
 				myOptions.center = latlng;
 
 				// Create the map
-				var map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
+				_this.map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
 
 				// Re-center the map when the browser is re-sized
 				google.maps.event.addDomListener(window, 'resize', function() {
-					var center = map.getCenter();
-					google.maps.event.trigger(map, 'resize');
-					map.setCenter(center);
+					var center = _this.map.getCenter();
+					google.maps.event.trigger(_this.map, 'resize');
+					_this.map.setCenter(center);
 				});
 
 				// Only do this once
@@ -1960,11 +1969,11 @@
 				noResults;
 
 			// Create the map
-			var map = new google.maps.Map(document.getElementById(this.settings.mapID), myOptions);
+			this.map = new google.maps.Map(document.getElementById(this.settings.mapID), myOptions);
 
 			// Callback
 			if (this.settings.callbackNoResults) {
-				this.settings.callbackNoResults.call(this, map, myOptions);
+				this.settings.callbackNoResults.call(this, this.map, myOptions);
 			}
 
 			// Empty the location list
@@ -1981,10 +1990,10 @@
 				center = new google.maps.LatLng(0, 0);
 			}
 
-			map.setCenter(center);
+			this.map.setCenter(center);
 
 			if (originalZoom) {
-				map.setZoom(originalZoom);
+				this.map.setZoom(originalZoom);
 			}
 		},
 
@@ -2502,35 +2511,35 @@
 			}
 
 			// Create the map
-			var map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
+			_this.map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
 
 			// Re-center the map when the browser is re-sized
 			google.maps.event.addDomListener(window, 'resize', function() {
-				var center = map.getCenter();
-				google.maps.event.trigger(map, 'resize');
-				map.setCenter(center);
+				var center = _this.map.getCenter();
+				google.maps.event.trigger(_this.map, 'resize');
+				_this.map.setCenter(center);
 			});
 
 
 			// Add map drag listener if setting is enabled and re-search on drag end
 			if (_this.settings.dragSearch === true ) {
-				map.addListener('dragend', function() {
+				_this.map.addListener('dragend', function() {
 					_this.dragSearch(map);
 				});
 			}
 
 			// Load the map
-			$this.data(_this.settings.mapID.replace('#', ''), map);
+			$this.data(_this.settings.mapID.replace('#', ''), _this.map);
 
 			// Map set callback.
 			if (_this.settings.callbackMapSet) {
-				_this.settings.callbackMapSet.call(this, map, originPoint, originalZoom, myOptions);
+				_this.settings.callbackMapSet.call(this, _this.map, originPoint, originalZoom, myOptions);
 			}
 
 			// Initialize the infowondow
 			if ( typeof InfoBubble !== 'undefined' && _this.settings.infoBubble !== null ) {
 				var infoBubbleSettings = _this.settings.infoBubble;
-				infoBubbleSettings.map = map;
+				infoBubbleSettings.map = _this.map;
 
 				infowindow = new InfoBubble(infoBubbleSettings);
 			} else {
@@ -2539,7 +2548,7 @@
 
 
 			// Add origin marker if the setting is set
-			_this.originMarker(origin,originPoint,map);
+			_this.originMarker(_this.map, origin, originPoint);
 
 			// Handle pagination
 			$(document).on('click.'+pluginName, '.bh-sl-pagination li', function (e) {
@@ -2549,7 +2558,7 @@
 			});
 
 			// Inline directions
-			_this.inlineDirections(map, origin);
+			_this.inlineDirections(_this.map, origin);
 
 			// Add markers and infowindows loop
 			for (var y = 0; y <= storeNumToShow - 1; y++) {
@@ -2563,7 +2572,7 @@
 				}
 
 				var point = new google.maps.LatLng(locationset[y].lat, locationset[y].lng);
-				marker = _this.createMarker(point, locationset[y].name, locationset[y].address, letter, map, locationset[y].category);
+				marker = _this.createMarker(point, locationset[y].name, locationset[y].address, letter, _this.map, locationset[y].category);
 				marker.set('id', y);
 				markers[y] = marker;
 				if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined') || (distError === true)) {
@@ -2575,7 +2584,7 @@
 
 			// Center and zoom if no origin or zoom was provided, or distance of first marker is greater than distanceAlert
 			if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined') || (distError === true)) {
-				map.fitBounds(bounds);
+				_this.map.fitBounds(bounds);
 			}
 
 			// Create the links that focus on the related marker
@@ -2597,18 +2606,18 @@
 
 			// MarkerClusterer setup
 			if ( typeof MarkerClusterer !== 'undefined' && _this.settings.markerCluster !== null ) {
-				var markerCluster = new MarkerClusterer(map, markers, _this.settings.markerCluster);
+				var markerCluster = new MarkerClusterer(_this.map, markers, _this.settings.markerCluster);
 			}
 
 			// Handle clicks from the list
-			_this.listClick(map, infowindow, storeStart, page);
+			_this.listClick(_this.map, infowindow, storeStart, page);
 
 			// Add the list li background colors - this wil be dropped in a future version in favor of CSS
 			$('.' + _this.settings.locationList + ' ul > li:even').css('background', _this.settings.listColor1);
 			$('.' + _this.settings.locationList + ' ul > li:odd').css('background', _this.settings.listColor2);
 
 			// Visible markers list
-			_this.visibleMarkersList(map, markers);
+			_this.visibleMarkersList(_this.map, markers);
 
 			// Modal ready callback
 			if (_this.settings.modal === true && _this.settings.callbackModalReady) {
