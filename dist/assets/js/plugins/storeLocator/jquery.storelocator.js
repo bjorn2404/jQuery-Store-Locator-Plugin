@@ -94,6 +94,7 @@
 		'infoBubble'               : null,
 		// Callbacks
 		'callbackNotify'           : null,
+		'callbackRegion'           : null,
 		'callbackBeforeSend'       : null,
 		'callbackSuccess'          : null,
 		'callbackModalOpen'        : null,
@@ -1505,11 +1506,12 @@
 		 */
 		processForm: function (e) {
 			this.writeDebug('processForm',arguments);
-			var _this = this;
-			var distance = null;
-			var $addressInput = $('#' + this.settings.addressID);
-			var $searchInput = $('#' + this.settings.searchID);
-			var $distanceInput = $('#' + this.settings.maxDistanceID);
+			var _this = this,
+				distance = null,
+				$addressInput = $('#' + this.settings.addressID),
+				$searchInput = $('#' + this.settings.searchID),
+				$distanceInput = $('#' + this.settings.maxDistanceID),
+				region = '';
 
 			// Stop the form submission
 			if(typeof e !== 'undefined' && e !== null) {
@@ -1555,8 +1557,14 @@
 				}
 			}
 
-			// Get the region setting if set
-			var region = $('#' + this.settings.regionID).val();
+			// Region
+			if (this.settings.callbackRegion) {
+				// Region override callback
+				region = this.settings.callbackRegion.call(this, addressInput, searchInput, distance);
+			} else {
+				// Region setting
+				region = $('#' + this.settings.regionID).val();
+			}
 
 			if (addressInput === '' && searchInput === '') {
 				this._start();
