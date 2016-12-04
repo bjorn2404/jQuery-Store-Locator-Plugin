@@ -37,8 +37,9 @@ filtering.
 
 ### Version 2.7.2
 
-* Fixed incorrect origin marker parameter order.
-* Merged pull-request from []ollea](https://github.com/ollea) that adds "getMap" function that returns a google.maps.Map instance.
+* Fixed incorrect origin marker parameter order after code restructure.
+* Fixed [issue](https://github.com/bjorn2404/jQuery-Store-Locator-Plugin/issues/160) where searching by name after searching by address, without a new address, didn't reset the origin.
+* Merged pull-request from [ollea](https://github.com/ollea) that adds "getMap" function that returns a google.maps.Map instance.
 
 ### Version 2.7.1
 

@@ -1593,6 +1593,11 @@
 				}
 			}
 			else if(searchInput !== '') {
+				// Check for existing origin and remove if address input is blank.
+				if ( addressInput === '' ) {
+					delete mappingObj.origin;
+				}
+
 				mappingObj.name = searchInput;
 				_this.mapping(mappingObj);
 			}
