@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.7.3 - 2017-04-12
+/*! jQuery Google Maps Store Locator - v2.7.3 - 2017-04-26
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2017 Bjorn Holine; Licensed MIT */
 
@@ -26,7 +26,6 @@
         'addressID'                  : 'bh-sl-address',
         'regionID'                   : 'bh-sl-region',
         'mapSettings'                : {
-            gestureHandling: 'cooperative',
             mapTypeId      : google.maps.MapTypeId.ROADMAP,
             zoom           : 12
         },
@@ -1229,7 +1228,7 @@
 					if ($selectedLocation.length > 0) {
 						// Marker click callback
 						if (_this.settings.callbackMarkerClick) {
-							_this.settings.callbackMarkerClick.call(this, marker, markerId, $selectedLocation);
+							_this.settings.callbackMarkerClick.call(this, marker, markerId, $selectedLocation, locationset[markerId]);
 						}
 
 						$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
@@ -2108,7 +2107,7 @@
 
 				// List click callback
 				if (_this.settings.callbackListClick) {
-					_this.settings.callbackListClick.call(this, markerId, selectedMarker);
+					_this.settings.callbackListClick.call(this, markerId, selectedMarker, locationset[markerId]);
 				}
 
 				map.panTo(selectedMarker.getPosition());

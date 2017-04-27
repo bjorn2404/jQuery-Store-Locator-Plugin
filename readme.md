@@ -38,8 +38,9 @@ filtering.
 ### Version 2.7.3
 
 * Added autoCompleteDisableListener setting to disable the listener that immediately triggers a search when an auto complete location option is selected.
+* Added location details object to callbackListClick and callbackMarkerClick objects.
 * Fixed Handlebars targeting issue triggered by placing an unordered list within the location list template.
-* Updated callbackListClick documentation to include second market object paremter.
+* Updated callbackListClick documentation to include second market object parameter.
 
 ### Version 2.7.2
 
