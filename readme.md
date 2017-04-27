@@ -371,7 +371,7 @@ a duplicate locationset declaration on line 328.
 
 This is a large update that has many updates and improvements. It’s very important to note that the plugin now requires the [Handlebars](http://handlebarsjs.com) template engine. I made this change so that the data that’s displayed in the location list and the infowindows can be easily customized. I also wanted to separate the bulk of the layout additions from the main plugin file. Handlebars pretty slick, will read Mustache templates, and the built-in helpers can really come in handy. Depending on what your data source is, 2 of the 4 total templates will be used (KML vs XML or JSON) and there are options to set the paths of each template if you don’t want them in the default location. If you’re developing something for mobile devices the templates can be pre-compiled for even faster loading. Additionally, I’d also like to note that it probably makes more sense to use KML now as the data source over the other options but I’m definitely leaving XML and JSON support in. XML is still the default datatype but I may switch it to KML in the future.
 
-####New features:####
+#### New features: ####
 
 **Kilometers option**  
 This was a no-brainer. You could make the change without too much trouble before but I thought I’d make it easier for the rest of the world.
