@@ -38,8 +38,8 @@ filtering.
 ### Version 2.7.3
 
 * Added autoCompleteDisableListener setting to disable the listener that immediately triggers a search when an auto complete location option is selected.
-* Added gestureHandling to mapSettings with cooperative as the default for mobile scrolling.
 * Fixed Handlebars targeting issue triggered by placing an unordered list within the location list template.
+* Updated callbackListClick documentation to include second market object paremter.
 
 ### Version 2.7.2
 

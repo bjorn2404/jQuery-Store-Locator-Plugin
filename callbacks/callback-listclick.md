@@ -9,3 +9,4 @@ Fires after a location list item is clicked.
 | Name | Type | Description |
 |---|---|---|
 | markerId | int | Corresponding marker ID |
+| selectedMarker | object | Corresponding marker object | 
