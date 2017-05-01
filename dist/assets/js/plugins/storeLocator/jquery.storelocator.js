@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.7.3 - 2017-04-26
+/*! jQuery Google Maps Store Locator - v2.7.3 - 2017-04-30
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2017 Bjorn Holine; Licensed MIT */
 
@@ -1750,22 +1750,71 @@
 			}
 		},
 
+        /**
+		 * Select the indicated values from query string parameters.
+		 *
+         * @param taxonomy {string} Current taxonomy.
+         * @param value {array} Query string array values.
+         */
+		selectQueryStringFilters: function( taxonomy, value ) {
+            this.writeDebug('selectQueryStringFilters', arguments);
+
+			var $taxGroupContainer = $('#' + this.settings.taxonomyFilters[taxonomy]);
+
+			// Handle checkboxes.
+			if ( $taxGroupContainer.find('input[type="checkbox"]').length ) {
+
+				for ( var i = 0; i < value.length; i++ ) {
+                    $taxGroupContainer.find('input:checkbox[value=' + value[i] + ']').prop('checked', true);
+				}
+
+            }
+
+            // Handle select fields.
+            if ( $taxGroupContainer.find('select').length ) {
+                // Only expecting one value for select fields.
+				$taxGroupContainer.find('option[value=' + value[0] + ']').prop('selected', true);
+            }
+
+            // Handle radio buttons.
+            if ( $taxGroupContainer.find('input[type="radio"]').length ) {
+				// Only one value for radio button.
+                $taxGroupContainer.find('input:radio[value=' + value[0] + ']').prop('checked', true);
+            }
+		},
+
 		/**
 		 * Check query string parameters for filter values.
 		 */
 		checkQueryStringFilters: function () {
 			this.writeDebug('checkQueryStringFilters',arguments);
+
 			// Loop through the filters.
 			for(var key in filters) {
 				if(filters.hasOwnProperty(key)) {
 					var filterVal = this.getQueryString(key);
 
+					// Check for multiple values separated by comma.
+					if ( filterVal.indexOf( ',' ) !== -1 ) {
+						filterVal = filterVal.split( ',' );
+					}
+
 					// Only add the taxonomy id if it doesn't already exist
 					if (typeof filterVal !== 'undefined' && filterVal !== '' && filters[key].indexOf(filterVal) === -1) {
-						filters[key] = [filterVal];
+						if ( Array.isArray( filterVal ) ) {
+                            filters[key] = filterVal;
+						} else {
+                            filters[key] = [filterVal];
+						}
+					}
+
+					// Select the filters indicated in the query string.
+					if ( filters[key].length ) {
+                        this.selectQueryStringFilters( key, filters[key] );
 					}
 				}
 			}
+
 		},
 
 		/**
