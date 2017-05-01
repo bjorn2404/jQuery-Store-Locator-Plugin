@@ -2588,7 +2588,7 @@
 			// Add map drag listener if setting is enabled and re-search on drag end
 			if (_this.settings.dragSearch === true ) {
 				_this.map.addListener('dragend', function() {
-					_this.dragSearch(map);
+					_this.dragSearch(_this.map);
 				});
 			}
 

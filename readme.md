@@ -41,6 +41,7 @@ filtering.
 * Added autoCompleteDisableListener setting to disable the listener that immediately triggers a search when an auto complete location option is selected.
 * Added functionality to select/check filters on load from query string parameter values.
 * Added location details object to callbackListClick and callbackMarkerClick objects.
+* Fixed broken dragSearch functionality that was introduced after map scope pull request was merged.
 * Fixed Handlebars targeting issue triggered by placing an unordered list within the location list template.
 * Updated callbackListClick documentation to include second market object parameter.
 
