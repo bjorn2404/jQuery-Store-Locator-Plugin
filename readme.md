@@ -39,6 +39,7 @@ filtering.
 
 * Added ability to indicate multiple query string parameter values (for checkboxes) with a comma separated list value.
 * Added autoCompleteDisableListener setting to disable the listener that immediately triggers a search when an auto complete location option is selected.
+* Added blur to primary location input field after form submission to hide mobile keyboards.
 * Added functionality to select/check filters on load from query string parameter values.
 * Added location details object to callbackListClick and callbackMarkerClick objects.
 * Fixed broken dragSearch functionality that was introduced after map scope pull request was merged.

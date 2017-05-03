@@ -1517,6 +1517,9 @@
 				e.preventDefault();
 			}
 
+			// Blur the input field to hide mobile keyboards.
+            $addressInput.blur();
+
 			// Query string parameters
 			if(this.settings.querystringParams === true) {
 				// Check for query string parameters
