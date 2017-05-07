@@ -2,10 +2,6 @@
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2017 Bjorn Holine; Licensed MIT */
 
-/*! jQuery Google Maps Store Locator - v2.7.3 - 2017-05-07
-* http://www.bjornblog.com/web/jquery-store-locator-plugin
-* Copyright (c) 2017 Bjorn Holine; Licensed MIT */
-
 ;(function ($, window, document, undefined) {
 	'use strict';
 
@@ -17,118 +13,120 @@
 	}
 
 	// Variables used across multiple methods
-	var $this, map, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom, dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService, prevSelectedMarkerBefore, prevSelectedMarkerAfter, firstRun;
+	var $this, map, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom,
+		dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService,
+		prevSelectedMarkerBefore, prevSelectedMarkerAfter, firstRun;
 	var featuredset = [], locationset = [], normalset = [], markers = [];
 	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {};
 
 	// Create the defaults once. DO NOT change these settings in this file - settings should be overridden in the plugin call
-    var defaults = {
-        'mapID'                      : 'bh-sl-map',
-        'locationList'               : 'bh-sl-loc-list',
-        'formContainer'              : 'bh-sl-form-container',
-        'formID'                     : 'bh-sl-user-location',
-        'addressID'                  : 'bh-sl-address',
-        'regionID'                   : 'bh-sl-region',
-        'mapSettings'                : {
-            mapTypeId      : google.maps.MapTypeId.ROADMAP,
-            zoom           : 12
-        },
-        'markerImg'                  : null,
-        'markerDim'                  : null,
-        'catMarkers'                 : null,
-        'selectedMarkerImg'          : null,
-        'selectedMarkerImgDim'       : null,
-        'disableAlphaMarkers'        : false,
-        'lengthUnit'                 : 'm',
-        'storeLimit'                 : 26,
-        'distanceAlert'              : 60,
-        'dataType'                   : 'xml',
-        'dataLocation'               : 'data/locations.xml',
-        'dataRaw'                    : null,
-        'xmlElement'                 : 'marker',
-        'listColor1'                 : '#ffffff',
-        'listColor2'                 : '#eeeeee',
-        'originMarker'               : false,
-        'originMarkerImg'            : null,
-        'originMarkerDim'            : null,
-        'bounceMarker'               : true,
-        'slideMap'                   : true,
-        'modal'                      : false,
-        'overlay'                    : 'bh-sl-overlay',
-        'modalWindow'                : 'bh-sl-modal-window',
-        'modalContent'               : 'bh-sl-modal-content',
-        'closeIcon'                  : 'bh-sl-close-icon',
-        'defaultLoc'                 : false,
-        'defaultLat'                 : null,
-        'defaultLng'                 : null,
-        'autoComplete'               : false,
-        'autoCompleteOptions'        : {},
-        'autoCompleteDisableListener': false,
-        'autoGeocode'                : false,
-        'geocodeID'                  : null,
-        'maxDistance'                : false,
-        'maxDistanceID'              : 'bh-sl-maxdistance',
-        'fullMapStart'               : false,
-        'fullMapStartBlank'          : false,
-        'fullMapStartListLimit'      : false,
-        'noForm'                     : false,
-        'loading'                    : false,
-        'loadingContainer'           : 'bh-sl-loading',
-        'featuredLocations'          : false,
-        'pagination'                 : false,
-        'locationsPerPage'           : 10,
-        'inlineDirections'           : false,
-        'nameSearch'                 : false,
-        'searchID'                   : 'bh-sl-search',
-        'nameAttribute'              : 'name',
-        'visibleMarkersList'         : false,
-        'dragSearch'                 : false,
-        'infowindowTemplatePath'     : 'assets/js/plugins/storeLocator/templates/infowindow-description.html',
-        'listTemplatePath'           : 'assets/js/plugins/storeLocator/templates/location-list-description.html',
-        'KMLinfowindowTemplatePath'  : 'assets/js/plugins/storeLocator/templates/kml-infowindow-description.html',
-        'KMLlistTemplatePath'        : 'assets/js/plugins/storeLocator/templates/kml-location-list-description.html',
-        'listTemplateID'             : null,
-        'infowindowTemplateID'       : null,
-        'taxonomyFilters'            : null,
-        'taxonomyFiltersContainer'   : 'bh-sl-filters-container',
-        'exclusiveFiltering'         : false,
-        'exclusiveTax'               : null,
-        'querystringParams'          : false,
-        'debug'                      : false,
-        'sessionStorage'             : false,
-        'markerCluster'              : null,
-        'infoBubble'                 : null,
-        // Callbacks
-        'callbackNotify'             : null,
-        'callbackRegion'             : null,
-        'callbackBeforeSend'         : null,
-        'callbackSuccess'            : null,
-        'callbackModalOpen'          : null,
-        'callbackModalReady'         : null,
-        'callbackModalClose'         : null,
-        'callbackJsonp'              : null,
-        'callbackCreateMarker'       : null,
-        'callbackPageChange'         : null,
-        'callbackDirectionsRequest'  : null,
-        'callbackCloseDirections'    : null,
-        'callbackNoResults'          : null,
-        'callbackListClick'          : null,
-        'callbackMarkerClick'        : null,
-        'callbackFilters'            : null,
-        'callbackMapSet'             : null,
-        // Language options
-        'addressErrorAlert'          : 'Unable to find address',
-        'autoGeocodeErrorAlert'      : 'Automatic location detection failed. Please fill in your address or zip code.',
-        'distanceErrorAlert'         : 'Unfortunately, our closest location is more than ',
-        'mileLang'                   : 'mile',
-        'milesLang'                  : 'miles',
-        'kilometerLang'              : 'kilometer',
-        'kilometersLang'             : 'kilometers',
-        'noResultsTitle'             : 'No results',
-        'noResultsDesc'              : 'No locations were found with the given criteria. Please modify your selections or input.',
-        'nextPage'                   : 'Next &raquo;',
-        'prevPage'                   : '&laquo; Prev'
-    };
+	var defaults = {
+		'mapID'                      : 'bh-sl-map',
+		'locationList'               : 'bh-sl-loc-list',
+		'formContainer'              : 'bh-sl-form-container',
+		'formID'                     : 'bh-sl-user-location',
+		'addressID'                  : 'bh-sl-address',
+		'regionID'                   : 'bh-sl-region',
+		'mapSettings'                : {
+			mapTypeId: google.maps.MapTypeId.ROADMAP,
+			zoom     : 12
+		},
+		'markerImg'                  : null,
+		'markerDim'                  : null,
+		'catMarkers'                 : null,
+		'selectedMarkerImg'          : null,
+		'selectedMarkerImgDim'       : null,
+		'disableAlphaMarkers'        : false,
+		'lengthUnit'                 : 'm',
+		'storeLimit'                 : 26,
+		'distanceAlert'              : 60,
+		'dataType'                   : 'xml',
+		'dataLocation'               : 'data/locations.xml',
+		'dataRaw'                    : null,
+		'xmlElement'                 : 'marker',
+		'listColor1'                 : '#ffffff',
+		'listColor2'                 : '#eeeeee',
+		'originMarker'               : false,
+		'originMarkerImg'            : null,
+		'originMarkerDim'            : null,
+		'bounceMarker'               : true,
+		'slideMap'                   : true,
+		'modal'                      : false,
+		'overlay'                    : 'bh-sl-overlay',
+		'modalWindow'                : 'bh-sl-modal-window',
+		'modalContent'               : 'bh-sl-modal-content',
+		'closeIcon'                  : 'bh-sl-close-icon',
+		'defaultLoc'                 : false,
+		'defaultLat'                 : null,
+		'defaultLng'                 : null,
+		'autoComplete'               : false,
+		'autoCompleteOptions'        : {},
+		'autoCompleteDisableListener': false,
+		'autoGeocode'                : false,
+		'geocodeID'                  : null,
+		'maxDistance'                : false,
+		'maxDistanceID'              : 'bh-sl-maxdistance',
+		'fullMapStart'               : false,
+		'fullMapStartBlank'          : false,
+		'fullMapStartListLimit'      : false,
+		'noForm'                     : false,
+		'loading'                    : false,
+		'loadingContainer'           : 'bh-sl-loading',
+		'featuredLocations'          : false,
+		'pagination'                 : false,
+		'locationsPerPage'           : 10,
+		'inlineDirections'           : false,
+		'nameSearch'                 : false,
+		'searchID'                   : 'bh-sl-search',
+		'nameAttribute'              : 'name',
+		'visibleMarkersList'         : false,
+		'dragSearch'                 : false,
+		'infowindowTemplatePath'     : 'assets/js/plugins/storeLocator/templates/infowindow-description.html',
+		'listTemplatePath'           : 'assets/js/plugins/storeLocator/templates/location-list-description.html',
+		'KMLinfowindowTemplatePath'  : 'assets/js/plugins/storeLocator/templates/kml-infowindow-description.html',
+		'KMLlistTemplatePath'        : 'assets/js/plugins/storeLocator/templates/kml-location-list-description.html',
+		'listTemplateID'             : null,
+		'infowindowTemplateID'       : null,
+		'taxonomyFilters'            : null,
+		'taxonomyFiltersContainer'   : 'bh-sl-filters-container',
+		'exclusiveFiltering'         : false,
+		'exclusiveTax'               : null,
+		'querystringParams'          : false,
+		'debug'                      : false,
+		'sessionStorage'             : false,
+		'markerCluster'              : null,
+		'infoBubble'                 : null,
+		// Callbacks
+		'callbackNotify'             : null,
+		'callbackRegion'             : null,
+		'callbackBeforeSend'         : null,
+		'callbackSuccess'            : null,
+		'callbackModalOpen'          : null,
+		'callbackModalReady'         : null,
+		'callbackModalClose'         : null,
+		'callbackJsonp'              : null,
+		'callbackCreateMarker'       : null,
+		'callbackPageChange'         : null,
+		'callbackDirectionsRequest'  : null,
+		'callbackCloseDirections'    : null,
+		'callbackNoResults'          : null,
+		'callbackListClick'          : null,
+		'callbackMarkerClick'        : null,
+		'callbackFilters'            : null,
+		'callbackMapSet'             : null,
+		// Language options
+		'addressErrorAlert'          : 'Unable to find address',
+		'autoGeocodeErrorAlert'      : 'Automatic location detection failed. Please fill in your address or zip code.',
+		'distanceErrorAlert'         : 'Unfortunately, our closest location is more than ',
+		'mileLang'                   : 'mile',
+		'milesLang'                  : 'miles',
+		'kilometerLang'              : 'kilometer',
+		'kilometersLang'             : 'kilometers',
+		'noResultsTitle'             : 'No results',
+		'noResultsDesc'              : 'No locations were found with the given criteria. Please modify your selections or input.',
+		'nextPage'                   : 'Next &raquo;',
+		'prevPage'                   : '&laquo; Prev'
+	};
 
 	// Plugin constructor
 	function Plugin(element, options) {
@@ -168,7 +166,7 @@
 			}
 
 			// Add directions panel if enabled
-			if(this.settings.inlineDirections === true) {
+			if (this.settings.inlineDirections === true) {
 				$('.' + this.settings.locationList).prepend('<div class="bh-sl-directions-panel"></div>');
 			}
 
@@ -176,8 +174,8 @@
 			originalZoom = this.settings.mapSettings.zoom;
 
 			// Add Handlebars helper for handling URL output
-			Handlebars.registerHelper('niceURL', function(url) {
-				if(url){
+			Handlebars.registerHelper('niceURL', function (url) {
+				if (url) {
 					return url.replace('https://', '').replace('http://', '');
 				}
 			});
@@ -207,7 +205,7 @@
 
 				// Add listener when autoComplete selection changes.
 				if (this.settings.autoComplete === true && this.settings.autoCompleteDisableListener !== true) {
-					autoPlaces.addListener('place_changed', function(e) {
+					autoPlaces.addListener('place_changed', function (e) {
 						_this.processForm(e);
 					});
 				}
@@ -228,15 +226,15 @@
 			var $mapDiv = $('#' + this.settings.mapID);
 
 			// Remove marker event listeners
-			if(markers.length) {
-				for(var i = 0; i <= markers.length; i++) {
+			if (markers.length) {
+				for (var i = 0; i <= markers.length; i++) {
 					google.maps.event.removeListener(markers[i]);
 				}
 			}
 
 			// Remove markup
 			$('.' + this.settings.locationList + ' ul').empty();
-			if($mapDiv.hasClass('bh-sl-map-open')) {
+			if ($mapDiv.hasClass('bh-sl-map-open')) {
 				$mapDiv.empty().removeClass('bh-sl-map-open');
 			}
 
@@ -269,21 +267,21 @@
 			normalset = [];
 			markers = [];
 			firstRun = false;
-			$(document).off('click.'+pluginName, '.' + this.settings.locationList + ' li');
-			if( $('.' + this.settings.locationList + ' .bh-sl-close-directions-container').length ) {
+			$(document).off('click.' + pluginName, '.' + this.settings.locationList + ' li');
+			if ($('.' + this.settings.locationList + ' .bh-sl-close-directions-container').length) {
 				$('.bh-sl-close-directions-container').remove();
 			}
-			if(this.settings.inlineDirections === true) {
+			if (this.settings.inlineDirections === true) {
 				// Remove directions panel if it's there
 				var $adp = $('.' + this.settings.locationList + ' .adp');
-				if ( $adp.length > 0 ) {
+				if ($adp.length > 0) {
 					$adp.remove();
 					$('.' + this.settings.locationList + ' ul').fadeIn();
 				}
 				$(document).off('click', '.' + this.settings.locationList + ' li .loc-directions a');
 			}
-			if(this.settings.pagination === true) {
-				$(document).off('click.'+pluginName, '.bh-sl-pagination li');
+			if (this.settings.pagination === true) {
+				$(document).off('click.' + pluginName, '.bh-sl-pagination li');
 			}
 		},
 
@@ -299,20 +297,20 @@
 			var $inputs = $('.' + this.settings.taxonomyFiltersContainer + ' input'),
 				$selects = $('.' + this.settings.taxonomyFiltersContainer + ' select');
 
-			if ( typeof($inputs) !== 'object') {
+			if (typeof($inputs) !== 'object') {
 				return;
 			}
 
 			// Loop over the input fields
-			$inputs.each(function() {
+			$inputs.each(function () {
 				if ($(this).is('input[type="checkbox"]') || $(this).is('input[type="radio"]')) {
-					$(this).prop('checked',false);
+					$(this).prop('checked', false);
 				}
 			});
 
 			// Loop over select fields
-			$selects.each(function() {
-				$(this).prop('selectedIndex',0);
+			$selects.each(function () {
+				$(this).prop('selectedIndex', 0);
 			});
 		},
 
@@ -320,11 +318,11 @@
 		 * Reload everything
 		 * This method does a reset of everything and reloads the map as it would first appear.
 		 */
-		mapReload: function() {
+		mapReload: function () {
 			this.writeDebug('mapReload');
 			this.reset();
 
-			if ( this.settings.taxonomyFilters !== null ) {
+			if (this.settings.taxonomyFilters !== null) {
 				this.formFiltersReset();
 				this.taxonomyFiltersInit();
 			}
@@ -345,7 +343,7 @@
 		 * @param notifyText {string} the notification message
 		 */
 		notify: function (notifyText) {
-			this.writeDebug('notify',notifyText);
+			this.writeDebug('notify', notifyText);
 			if (this.settings.callbackNotify) {
 				this.settings.callbackNotify.call(this, notifyText);
 			}
@@ -357,16 +355,16 @@
 		/**
 		 * Distance calculations
 		 */
-		geoCodeCalcToRadian: function (v) {
-			this.writeDebug('geoCodeCalcToRadian',v);
+		geoCodeCalcToRadian    : function (v) {
+			this.writeDebug('geoCodeCalcToRadian', v);
 			return v * (Math.PI / 180);
 		},
-		geoCodeCalcDiffRadian: function (v1, v2) {
-			this.writeDebug('geoCodeCalcDiffRadian',arguments);
+		geoCodeCalcDiffRadian  : function (v1, v2) {
+			this.writeDebug('geoCodeCalcDiffRadian', arguments);
 			return this.geoCodeCalcToRadian(v2) - this.geoCodeCalcToRadian(v1);
 		},
 		geoCodeCalcCalcDistance: function (lat1, lng1, lat2, lng2, radius) {
-			this.writeDebug('geoCodeCalcCalcDistance',arguments);
+			this.writeDebug('geoCodeCalcCalcDistance', arguments);
 			return radius * 2 * Math.asin(Math.min(1, Math.sqrt(( Math.pow(Math.sin((this.geoCodeCalcDiffRadian(lat1, lat2)) / 2.0), 2.0) + Math.cos(this.geoCodeCalcToRadian(lat1)) * Math.cos(this.geoCodeCalcToRadian(lat2)) * Math.pow(Math.sin((this.geoCodeCalcDiffRadian(lng1, lng2)) / 2.0), 2.0) ))));
 		},
 
@@ -376,9 +374,9 @@
 		 * @param param {string} query string parameter to test
 		 * @returns {string} query string value
 		 */
-		getQueryString: function(param) {
-			this.writeDebug('getQueryString',param);
-			if(param) {
+		getQueryString: function (param) {
+			this.writeDebug('getQueryString', param);
+			if (param) {
 				param = param.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
 				var regex = new RegExp('[\\?&]' + param + '=([^&#]*)'),
 					results = regex.exec(location.search);
@@ -391,7 +389,7 @@
 		 *
 		 * @returns {Object} google.maps.Map instance
 		 */
-		getMap: function() {
+		getMap: function () {
 			return this.map;
 		},
 
@@ -489,17 +487,17 @@
 			var _this = this;
 			// ASP.net or regular submission?
 			if (this.settings.noForm === true) {
-				$(document).on('click.'+pluginName, '.' + this.settings.formContainer + ' button', function (e) {
+				$(document).on('click.' + pluginName, '.' + this.settings.formContainer + ' button', function (e) {
 					_this.processForm(e);
 				});
-				$(document).on('keydown.'+pluginName, function (e) {
+				$(document).on('keydown.' + pluginName, function (e) {
 					if (e.keyCode === 13 && $('#' + _this.settings.addressID).is(':focus')) {
 						_this.processForm(e);
 					}
 				});
 			}
 			else {
-				$(document).on('submit.'+pluginName, '#' + this.settings.formID, function (e) {
+				$(document).on('submit.' + pluginName, '#' + this.settings.formID, function (e) {
 					_this.processForm(e);
 				});
 			}
@@ -521,18 +519,18 @@
 		 * @param geocodeData {object} full Google geocode results object
 		 * @returns {Object} deferred object
 		 */
-		_getData: function (lat, lng, address, geocodeData ) {
-			this.writeDebug('_getData',arguments);
+		_getData: function (lat, lng, address, geocodeData) {
+			this.writeDebug('_getData', arguments);
 			var _this = this,
 				northEast = '',
 				southWest = '',
 				formattedAddress = '';
 
 			// Define extra geocode result info
-			if ( typeof geocodeData !== 'undefined' && typeof geocodeData.geometry.bounds !== 'undefined') {
+			if (typeof geocodeData !== 'undefined' && typeof geocodeData.geometry.bounds !== 'undefined') {
 				formattedAddress = geocodeData.formatted_address;
-				northEast = JSON.stringify( geocodeData.geometry.bounds.getNorthEast() );
-				southWest = JSON.stringify( geocodeData.geometry.bounds.getSouthWest() );
+				northEast = JSON.stringify(geocodeData.geometry.bounds.getNorthEast());
+				southWest = JSON.stringify(geocodeData.geometry.bounds.getSouthWest());
 			}
 
 			// Before send callback
@@ -541,14 +539,14 @@
 			}
 
 			// Raw data
-			if( _this.settings.dataRaw !== null ) {
+			if (_this.settings.dataRaw !== null) {
 				// XML
-				if( dataTypeRead === 'xml' ) {
+				if (dataTypeRead === 'xml') {
 					return $.parseXML(_this.settings.dataRaw);
 				}
 
 				// JSON
-				else if( dataTypeRead === 'json' ) {
+				else if (dataTypeRead === 'json') {
 					if (Array.isArray && Array.isArray(_this.settings.dataRaw)) {
 						return _this.settings.dataRaw;
 					}
@@ -566,8 +564,8 @@
 				var d = $.Deferred();
 
 				// Loading
-				if(this.settings.loading === true){
-					$('.' + this.settings.formContainer).append('<div class="' + this.settings.loadingContainer +'"></div>');
+				if (this.settings.loading === true) {
+					$('.' + this.settings.formContainer).append('<div class="' + this.settings.loadingContainer + '"></div>');
 				}
 
 				// AJAX request
@@ -575,21 +573,21 @@
 					type         : 'GET',
 					url          : this.settings.dataLocation + (this.settings.dataType === 'jsonp' ? (this.settings.dataLocation.match(/\?/) ? '&' : '?') + 'callback=?' : ''),
 					// Passing the lat, lng, address, formatted address and bounds with the AJAX request so they can optionally be used by back-end languages
-					data: {
-						'origLat' : lat,
-						'origLng' : lng,
-						'origAddress': address,
+					data         : {
+						'origLat'         : lat,
+						'origLng'         : lng,
+						'origAddress'     : address,
 						'formattedAddress': formattedAddress,
 						'boundsNorthEast' : northEast,
 						'boundsSouthWest' : southWest
 					},
 					dataType     : dataTypeRead,
 					jsonpCallback: (this.settings.dataType === 'jsonp' ? this.settings.callbackJsonp : null)
-				}).done(function(p) {
+				}).done(function (p) {
 					d.resolve(p);
 
 					// Loading remove
-					if(_this.settings.loading === true){
+					if (_this.settings.loading === true) {
 						$('.' + _this.settings.formContainer + ' .' + _this.settings.loadingContainer).remove();
 					}
 				}).fail(d.reject);
@@ -603,9 +601,9 @@
 		_start: function () {
 			this.writeDebug('_start');
 			var _this = this,
-					doAutoGeo = this.settings.autoGeocode,
-					latlng,
-					originAddress;
+				doAutoGeo = this.settings.autoGeocode,
+				latlng,
+				originAddress;
 
 			// Full map blank start
 			if (_this.settings.fullMapStartBlank !== false) {
@@ -621,7 +619,7 @@
 				_this.map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
 
 				// Re-center the map when the browser is re-sized
-				google.maps.event.addDomListener(window, 'resize', function() {
+				google.maps.event.addDomListener(window, 'resize', function () {
 					var center = _this.map.getCenter();
 					google.maps.event.trigger(_this.map, 'resize');
 					_this.map.setCenter(center);
@@ -638,14 +636,14 @@
 				}
 
 				// If there is already have a value in the address bar
-				if ($.trim($('#' + this.settings.addressID).val()) !== ''){
+				if ($.trim($('#' + this.settings.addressID).val()) !== '') {
 					_this.writeDebug('Using Address Field');
 					_this.processForm(null);
 					doAutoGeo = false; // No need for additional processing
 				}
 				// If show full map option is true
 				else if (this.settings.fullMapStart === true) {
-					if((this.settings.querystringParams === true && this.getQueryString(this.settings.addressID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.searchID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.maxDistanceID))) {
+					if ((this.settings.querystringParams === true && this.getQueryString(this.settings.addressID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.searchID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.maxDistanceID))) {
 						_this.writeDebug('Using Query String');
 						this.processForm(null);
 						doAutoGeo = false; // No need for additional processing
@@ -666,7 +664,7 @@
 				if (this.settings.autoGeocode !== null) {
 					_this.writeDebug('Button Geo');
 
-					$(document).on('click.'+pluginName, '#' + this.settings.geocodeID, function () {
+					$(document).on('click.' + pluginName, '#' + this.settings.geocodeID, function () {
 						_this.htmlGeocode();
 					});
 				}
@@ -675,18 +673,18 @@
 
 		/**
 		 * Geocode function used for auto geocode setting and geocodeID button
-         */
-		htmlGeocode: function() {
-			this.writeDebug('htmlGeocode',arguments);
+		 */
+		htmlGeocode: function () {
+			this.writeDebug('htmlGeocode', arguments);
 			var _this = this;
 
-			if (this.settings.sessionStorage === true && window.sessionStorage && window.sessionStorage.getItem('myGeo')){
+			if (this.settings.sessionStorage === true && window.sessionStorage && window.sessionStorage.getItem('myGeo')) {
 				this.writeDebug('Using Session Saved Values for GEO');
 				this.autoGeocodeQuery(JSON.parse(window.sessionStorage.getItem('myGeo')));
 				return false;
 			}
 			else if (navigator.geolocation) {
-				navigator.geolocation.getCurrentPosition(function(position){
+				navigator.geolocation.getCurrentPosition(function (position) {
 					_this.writeDebug('Current Position Result');
 					// To not break autoGeocodeQuery then we create the obj to match the geolocation format
 					var pos = {
@@ -698,10 +696,10 @@
 					};
 					// Have to do this to get around scope issues
 					if (_this.settings.sessionStorage === true && window.sessionStorage) {
-						window.sessionStorage.setItem('myGeo',JSON.stringify(pos));
+						window.sessionStorage.setItem('myGeo', JSON.stringify(pos));
 					}
 					_this.autoGeocodeQuery(pos);
-				}, function(error){
+				}, function (error) {
 					_this._autoGeocodeError(error);
 				});
 			}
@@ -711,7 +709,7 @@
 		 * Geocode function used to geocode the origin (entered location)
 		 */
 		googleGeocode: function (thisObj) {
-			thisObj.writeDebug('googleGeocode',arguments);
+			thisObj.writeDebug('googleGeocode', arguments);
 			var _this = thisObj;
 			var geocoder = new google.maps.Geocoder();
 			this.geocode = function (request, callbackFunction) {
@@ -734,7 +732,7 @@
 		 * Reverse geocode to get address for automatic options needed for directions link
 		 */
 		reverseGoogleGeocode: function (thisObj) {
-			thisObj.writeDebug('reverseGoogleGeocode',arguments);
+			thisObj.writeDebug('reverseGoogleGeocode', arguments);
 			var _this = thisObj;
 			var geocoder = new google.maps.Geocoder();
 			this.geocode = function (request, callbackFunction) {
@@ -761,7 +759,7 @@
 		 * @returns {number}
 		 */
 		roundNumber: function (num, dec) {
-			this.writeDebug('roundNumber',arguments);
+			this.writeDebug('roundNumber', arguments);
 			return Math.round(num * Math.pow(10, dec)) / Math.pow(10, dec);
 		},
 
@@ -772,7 +770,7 @@
 		 * @returns {boolean}
 		 */
 		isEmptyObject: function (obj) {
-			this.writeDebug('isEmptyObject',arguments);
+			this.writeDebug('isEmptyObject', arguments);
 			for (var key in obj) {
 				if (obj.hasOwnProperty(key)) {
 					return false;
@@ -788,18 +786,18 @@
 		 * @returns {boolean}
 		 */
 		hasEmptyObjectVals: function (obj) {
-			this.writeDebug('hasEmptyObjectVals',arguments);
-				var objTest = true;
+			this.writeDebug('hasEmptyObjectVals', arguments);
+			var objTest = true;
 
-				for(var key in obj) {
-					if(obj.hasOwnProperty(key)) {
-						if(obj[key] !== '' && obj[key].length !== 0) {
-							objTest = false;
-						}
+			for (var key in obj) {
+				if (obj.hasOwnProperty(key)) {
+					if (obj[key] !== '' && obj[key].length !== 0) {
+						objTest = false;
 					}
 				}
+			}
 
-				return objTest;
+			return objTest;
 		},
 
 		/**
@@ -829,7 +827,7 @@
 		 * @param loopcount {number} current marker id
 		 */
 		_createLocationVariables: function (loopcount) {
-			this.writeDebug('_createLocationVariables',arguments);
+			this.writeDebug('_createLocationVariables', arguments);
 			var value;
 			locationData = {};
 
@@ -852,7 +850,7 @@
 		 * @param locationsarray {array} locationset array
 		 */
 		sortNumerically: function (locationsarray) {
-			this.writeDebug('sortNumerically',arguments);
+			this.writeDebug('sortNumerically', arguments);
 			locationsarray.sort(function (a, b) {
 				return ((a.distance < b.distance) ? -1 : ((a.distance > b.distance) ? 1 : 0));
 			});
@@ -866,22 +864,24 @@
 		 * @returns {boolean}
 		 */
 		filterData: function (data, filters) {
-			this.writeDebug('filterData',arguments);
+			this.writeDebug('filterData', arguments);
 			var filterTest = true;
 
 			for (var k in filters) {
 				if (filters.hasOwnProperty(k)) {
 
 					// Exclusive filtering
-					if(this.settings.exclusiveFiltering === true || (this.settings.exclusiveTax !== null && Array.isArray(this.settings.exclusiveTax) && this.settings.exclusiveTax.indexOf(k) !== -1)) {
+					if (this.settings.exclusiveFiltering === true || (this.settings.exclusiveTax !== null && Array.isArray(this.settings.exclusiveTax) && this.settings.exclusiveTax.indexOf(k) !== -1)) {
 						var filterTests = filters[k];
 						var exclusiveTest = [];
 
-						for(var l = 0; l < filterTests.length; l++) {
-							exclusiveTest[l] = new RegExp(filterTests[l], 'i').test(data[k].replace(/[^\x00-\x7F]/g, ''));
+						if (typeof data[k] !== 'undefined') {
+							for (var l = 0; l < filterTests.length; l++) {
+								exclusiveTest[l] = new RegExp(filterTests[l], 'i').test(data[k].replace(/[^\x00-\x7F]/g, ''));
+							}
 						}
 
-						if(exclusiveTest.indexOf(true) === -1) {
+						if (exclusiveTest.indexOf(true) === -1) {
 							filterTest = false;
 						}
 					}
@@ -906,8 +906,8 @@
 		 * @param totalPages {number}
 		 * @returns {string}
 		 */
-		_paginationOutput: function(currentPage, totalPages) {
-			this.writeDebug('_paginationOutput',arguments);
+		_paginationOutput: function (currentPage, totalPages) {
+			this.writeDebug('_paginationOutput', arguments);
 
 			currentPage = parseFloat(currentPage);
 			var output = '';
@@ -915,7 +915,7 @@
 			var prevPage = currentPage - 1;
 
 			// Previous page
-			if( currentPage > 0 ) {
+			if (currentPage > 0) {
 				output += '<li class="bh-sl-next-prev" data-page="' + prevPage + '">' + this.settings.prevPage + '</li>';
 			}
 
@@ -932,7 +932,7 @@
 			}
 
 			// Next page
-			if( nextPage < totalPages ) {
+			if (nextPage < totalPages) {
 				output += '<li class="bh-sl-next-prev" data-page="' + nextPage + '">' + this.settings.nextPage + '</li>';
 			}
 
@@ -945,13 +945,13 @@
 		 * @param currentPage {number} optional current page
 		 */
 		paginationSetup: function (currentPage) {
-			this.writeDebug('paginationSetup',arguments);
+			this.writeDebug('paginationSetup', arguments);
 			var pagesOutput = '';
 			var totalPages;
 			var $paginationList = $('.bh-sl-pagination-container .bh-sl-pagination');
 
 			// Total pages
-			if ( this.settings.storeLimit === -1 || locationset.length < this.settings.storeLimit ) {
+			if (this.settings.storeLimit === -1 || locationset.length < this.settings.storeLimit) {
 				totalPages = locationset.length / this.settings.locationsPerPage;
 			} else {
 				totalPages = this.settings.storeLimit / this.settings.locationsPerPage;
@@ -988,22 +988,22 @@
 		 * @returns {Object} Google Maps icon object
 		 */
 		markerImage: function (markerUrl, markerWidth, markerHeight) {
-			this.writeDebug('markerImage',arguments);
+			this.writeDebug('markerImage', arguments);
 			var markerImg;
 
 			// User defined marker dimensions
-			if(typeof markerWidth !== 'undefined' && typeof markerHeight !== 'undefined') {
+			if (typeof markerWidth !== 'undefined' && typeof markerHeight !== 'undefined') {
 				markerImg = {
-					url: markerUrl,
-					size: new google.maps.Size(markerWidth, markerHeight),
+					url       : markerUrl,
+					size      : new google.maps.Size(markerWidth, markerHeight),
 					scaledSize: new google.maps.Size(markerWidth, markerHeight)
 				};
 			}
 			// Default marker dimensions: 32px x 32px
 			else {
 				markerImg = {
-					url: markerUrl,
-					size: new google.maps.Size(32, 32),
+					url       : markerUrl,
+					size      : new google.maps.Size(32, 32),
 					scaledSize: new google.maps.Size(32, 32)
 				};
 			}
@@ -1023,27 +1023,27 @@
 		 * @returns {Object} Google Maps marker
 		 */
 		createMarker: function (point, name, address, letter, map, category) {
-			this.writeDebug('createMarker',arguments);
+			this.writeDebug('createMarker', arguments);
 			var marker, markerImg, letterMarkerImg;
 			var categories = [];
 
 			// Custom multi-marker image override (different markers for different categories
-			if(this.settings.catMarkers !== null) {
-				if(typeof category !== 'undefined') {
+			if (this.settings.catMarkers !== null) {
+				if (typeof category !== 'undefined') {
 					// Multiple categories
-					if(category.indexOf(',') !== -1) {
+					if (category.indexOf(',') !== -1) {
 						// Break the category variable into an array if there are multiple categories for the location
 						categories = category.split(',');
 						// With multiple categories the color will be determined by the last matched category in the data
-						for(var i = 0; i < categories.length; i++) {
-							if(categories[i] in this.settings.catMarkers) {
+						for (var i = 0; i < categories.length; i++) {
+							if (categories[i] in this.settings.catMarkers) {
 								markerImg = this.markerImage(this.settings.catMarkers[categories[i]][0], parseInt(this.settings.catMarkers[categories[i]][1]), parseInt(this.settings.catMarkers[categories[i]][2]));
 							}
 						}
 					}
 					// Single category
 					else {
-						if(category in this.settings.catMarkers) {
+						if (category in this.settings.catMarkers) {
 							markerImg = this.markerImage(this.settings.catMarkers[category][0], parseInt(this.settings.catMarkers[category][1]), parseInt(this.settings.catMarkers[category][2]));
 						}
 					}
@@ -1051,8 +1051,8 @@
 			}
 
 			// Custom single marker image override
-			if(this.settings.markerImg !== null) {
-				if(this.settings.markerDim === null) {
+			if (this.settings.markerImg !== null) {
+				if (this.settings.markerDim === null) {
 					markerImg = this.markerImage(this.settings.markerImg);
 				}
 				else {
@@ -1072,7 +1072,7 @@
 						position : point,
 						map      : map,
 						draggable: false,
-						icon: markerImg // Reverts to default marker if nothing is passed
+						icon     : markerImg // Reverts to default marker if nothing is passed
 					});
 				}
 				else {
@@ -1103,7 +1103,7 @@
 		 * @returns {Object} extended location data object
 		 */
 		_defineLocationData: function (currentMarker, storeStart, page) {
-			this.writeDebug('_defineLocationData',arguments);
+			this.writeDebug('_defineLocationData', arguments);
 			var indicator = '';
 			this._createLocationVariables(currentMarker.get('id'));
 
@@ -1159,7 +1159,7 @@
 		 * @param page {number} optional current page
 		 */
 		listSetup: function (marker, storeStart, page) {
-			this.writeDebug('listSetup',arguments);
+			this.writeDebug('listSetup', arguments);
 			// Define the location data
 			var locations = this._defineLocationData(marker, storeStart, page);
 
@@ -1177,12 +1177,12 @@
 			var markerImg;
 
 			// Reset the previously selected marker
-			if ( typeof prevSelectedMarkerAfter !== 'undefined' ) {
-				prevSelectedMarkerAfter.setIcon( prevSelectedMarkerBefore );
+			if (typeof prevSelectedMarkerAfter !== 'undefined') {
+				prevSelectedMarkerAfter.setIcon(prevSelectedMarkerBefore);
 			}
 
 			// Change the selected marker icon
-			if(this.settings.selectedMarkerImgDim === null) {
+			if (this.settings.selectedMarkerImgDim === null) {
 				markerImg = this.markerImage(this.settings.selectedMarkerImg);
 			} else {
 				markerImg = this.markerImage(this.settings.selectedMarkerImg, this.settings.selectedMarkerImgDim.width, this.settings.selectedMarkerImgDim.height);
@@ -1191,7 +1191,7 @@
 			// Save the marker before switching it
 			prevSelectedMarkerBefore = marker.icon;
 
-			marker.setIcon( markerImg );
+			marker.setIcon(markerImg);
 
 			// Save the marker to a variable so it can be reverted when another marker is clicked
 			prevSelectedMarkerAfter = marker;
@@ -1207,7 +1207,7 @@
 		 * @param page {number}
 		 */
 		createInfowindow: function (marker, location, infowindow, storeStart, page) {
-			this.writeDebug('createInfowindow',arguments);
+			this.writeDebug('createInfowindow', arguments);
 			var _this = this;
 			// Define the location data
 			var locations = this._defineLocationData(marker, storeStart, page);
@@ -1246,7 +1246,7 @@
 					}
 
 					// Custom selected marker override
-					if(_this.settings.selectedMarkerImg !== null) {
+					if (_this.settings.selectedMarkerImg !== null) {
 						_this.changeSelectedMarker(marker);
 					}
 				});
@@ -1259,23 +1259,23 @@
 		 * @param position {Object} coordinates
 		 */
 		autoGeocodeQuery: function (position) {
-			this.writeDebug('autoGeocodeQuery',arguments);
+			this.writeDebug('autoGeocodeQuery', arguments);
 			var _this = this,
 				distance = null,
 				$distanceInput = $('#' + this.settings.maxDistanceID),
 				originAddress;
 
 			// Query string parameters
-			if(this.settings.querystringParams === true) {
+			if (this.settings.querystringParams === true) {
 				// Check for distance query string parameters
-				if(this.getQueryString(this.settings.maxDistanceID)){
+				if (this.getQueryString(this.settings.maxDistanceID)) {
 					distance = this.getQueryString(this.settings.maxDistanceID);
 
-					if($distanceInput.val() !== '') {
+					if ($distanceInput.val() !== '') {
 						distance = $distanceInput.val();
 					}
 				}
-				else{
+				else {
 					// Get the distance if set
 					if (this.settings.maxDistance === true) {
 						distance = $distanceInput.val() || '';
@@ -1320,7 +1320,7 @@
 		/**
 		 * Default location method
 		 */
-		defaultLocation: function() {
+		defaultLocation: function () {
 			this.writeDebug('defaultLocation');
 			var _this = this,
 				distance = null,
@@ -1328,16 +1328,16 @@
 				originAddress;
 
 			// Query string parameters
-			if(this.settings.querystringParams === true) {
+			if (this.settings.querystringParams === true) {
 				// Check for distance query string parameters
-				if(this.getQueryString(this.settings.maxDistanceID)){
+				if (this.getQueryString(this.settings.maxDistanceID)) {
 					distance = this.getQueryString(this.settings.maxDistanceID);
 
-					if($distanceInput.val() !== '') {
+					if ($distanceInput.val() !== '') {
 						distance = $distanceInput.val();
 					}
 				}
-				else{
+				else {
 					// Get the distance if set
 					if (this.settings.maxDistance === true) {
 						distance = $distanceInput.val() || '';
@@ -1375,7 +1375,7 @@
 		 * @param newPage {number} page to change to
 		 */
 		paginationChange: function (newPage) {
-			this.writeDebug('paginationChange',arguments);
+			this.writeDebug('paginationChange', arguments);
 
 			// Page change callback
 			if (this.settings.callbackPageChange) {
@@ -1392,16 +1392,28 @@
 		 * @param markerID {number} location ID
 		 * @returns {string} formatted address
 		 */
-		getAddressByMarker: function(markerID) {
-			this.writeDebug('getAddressByMarker',arguments);
+		getAddressByMarker: function (markerID) {
+			this.writeDebug('getAddressByMarker', arguments);
 			var formattedAddress = "";
 			// Set up formatted address
-			if(locationset[markerID].address){ formattedAddress += locationset[markerID].address + ' '; }
-			if(locationset[markerID].address2){ formattedAddress += locationset[markerID].address2 + ' '; }
-			if(locationset[markerID].city){ formattedAddress += locationset[markerID].city + ', '; }
-			if(locationset[markerID].state){ formattedAddress += locationset[markerID].state + ' '; }
-			if(locationset[markerID].postal){ formattedAddress += locationset[markerID].postal + ' '; }
-			if(locationset[markerID].country){ formattedAddress += locationset[markerID].country + ' '; }
+			if (locationset[markerID].address) {
+				formattedAddress += locationset[markerID].address + ' ';
+			}
+			if (locationset[markerID].address2) {
+				formattedAddress += locationset[markerID].address2 + ' ';
+			}
+			if (locationset[markerID].city) {
+				formattedAddress += locationset[markerID].city + ', ';
+			}
+			if (locationset[markerID].state) {
+				formattedAddress += locationset[markerID].state + ' ';
+			}
+			if (locationset[markerID].postal) {
+				formattedAddress += locationset[markerID].postal + ' ';
+			}
+			if (locationset[markerID].country) {
+				formattedAddress += locationset[markerID].country + ' ';
+			}
 
 			return formattedAddress;
 		},
@@ -1409,7 +1421,7 @@
 		/**
 		 * Clear the markers from the map
 		 */
-		clearMarkers: function() {
+		clearMarkers: function () {
 			this.writeDebug('clearMarkers');
 			var locationsLimit = null;
 
@@ -1432,8 +1444,8 @@
 		 * @param locID {number} location ID
 		 * @param map {Object} Google Map
 		 */
-		directionsRequest: function(origin, locID, map) {
-			this.writeDebug('directionsRequest',arguments);
+		directionsRequest: function (origin, locID, map) {
+			this.writeDebug('directionsRequest', arguments);
 
 			// Directions request callback
 			if (this.settings.callbackDirectionsRequest) {
@@ -1442,14 +1454,14 @@
 
 			var destination = this.getAddressByMarker(locID);
 
-			if(destination) {
+			if (destination) {
 				// Hide the location list
 				$('.' + this.settings.locationList + ' ul').hide();
 				// Remove the markers
 				this.clearMarkers();
 
 				// Clear the previous directions request
-				if(directionsDisplay !== null && typeof directionsDisplay !== 'undefined') {
+				if (directionsDisplay !== null && typeof directionsDisplay !== 'undefined') {
 					directionsDisplay.setMap(null);
 					directionsDisplay = null;
 				}
@@ -1462,11 +1474,11 @@
 				directionsDisplay.setPanel($('.bh-sl-directions-panel').get(0));
 
 				var request = {
-					origin: origin,
+					origin     : origin,
 					destination: destination,
-					travelMode: google.maps.TravelMode.DRIVING
+					travelMode : google.maps.TravelMode.DRIVING
 				};
-				directionsService.route(request, function(response, status) {
+				directionsService.route(request, function (response, status) {
 					if (status === google.maps.DirectionsStatus.OK) {
 						directionsDisplay.setDirections(response);
 					}
@@ -1481,7 +1493,7 @@
 		/**
 		 * Close the directions panel and reset the map with the original locationset and zoom
 		 */
-		closeDirections: function() {
+		closeDirections: function () {
 			this.writeDebug('closeDirections');
 
 			// Close directions callback
@@ -1502,7 +1514,7 @@
 				this.processForm(null);
 			}
 
-			$(document).off('click.'+pluginName, '.' + this.settings.locationList + ' .bh-sl-close-icon');
+			$(document).off('click.' + pluginName, '.' + this.settings.locationList + ' .bh-sl-close-icon');
 		},
 
 		/**
@@ -1511,7 +1523,7 @@
 		 * @param e {Object} event
 		 */
 		processForm: function (e) {
-			this.writeDebug('processForm',arguments);
+			this.writeDebug('processForm', arguments);
 			var _this = this,
 				distance = null,
 				$addressInput = $('#' + this.settings.addressID),
@@ -1520,33 +1532,33 @@
 				region = '';
 
 			// Stop the form submission
-			if(typeof e !== 'undefined' && e !== null) {
+			if (typeof e !== 'undefined' && e !== null) {
 				e.preventDefault();
 			}
 
 			// Blur the input field to hide mobile keyboards.
-            $addressInput.blur();
+			$addressInput.blur();
 
 			// Query string parameters
-			if(this.settings.querystringParams === true) {
+			if (this.settings.querystringParams === true) {
 				// Check for query string parameters
-				if(this.getQueryString(this.settings.addressID) || this.getQueryString(this.settings.searchID) || this.getQueryString(this.settings.maxDistanceID)){
+				if (this.getQueryString(this.settings.addressID) || this.getQueryString(this.settings.searchID) || this.getQueryString(this.settings.maxDistanceID)) {
 					addressInput = this.getQueryString(this.settings.addressID);
 					searchInput = this.getQueryString(this.settings.searchID);
 					distance = this.getQueryString(this.settings.maxDistanceID);
 
 					// The form should override the query string parameters
-					if($addressInput.val() !== '') {
+					if ($addressInput.val() !== '') {
 						addressInput = $addressInput.val();
 					}
-					if($searchInput.val() !== '') {
+					if ($searchInput.val() !== '') {
 						searchInput = $searchInput.val();
 					}
-					if($distanceInput.val() !== '') {
+					if ($distanceInput.val() !== '') {
 						distance = $distanceInput.val();
 					}
 				}
-				else{
+				else {
 					// Get the user input and use it
 					addressInput = $addressInput.val() || '';
 					searchInput = $searchInput.val() || '';
@@ -1578,10 +1590,10 @@
 			if (addressInput === '' && searchInput === '') {
 				this._start();
 			}
-			else if(addressInput !== '') {
+			else if (addressInput !== '') {
 
 				// Geocode the origin if needed
-				if(typeof originalOrigin !== 'undefined' && typeof olat !== 'undefined' && typeof olng !== 'undefined' && (addressInput === originalOrigin)) {
+				if (typeof originalOrigin !== 'undefined' && typeof olat !== 'undefined' && typeof olng !== 'undefined' && (addressInput === originalOrigin)) {
 					// Run the mapping function
 					mappingObj.lat = olat;
 					mappingObj.lng = olng;
@@ -1612,9 +1624,9 @@
 					});
 				}
 			}
-			else if(searchInput !== '') {
+			else if (searchInput !== '') {
 				// Check for existing origin and remove if address input is blank.
-				if ( addressInput === '' ) {
+				if (addressInput === '') {
 					delete mappingObj.origin;
 				}
 
@@ -1633,7 +1645,7 @@
 		 * @param maxDistance {number} maximum distance if set
 		 */
 		locationsSetup: function (data, lat, lng, origin, maxDistance) {
-			this.writeDebug('locationsSetup',arguments);
+			this.writeDebug('locationsSetup', arguments);
 			if (typeof origin !== 'undefined') {
 				if (!data.distance) {
 					data.distance = this.geoCodeCalcCalcDistance(lat, lng, data.lat, data.lng, GeoCodeCalc.EarthRadius);
@@ -1643,22 +1655,22 @@
 			// Create the array
 			if (this.settings.maxDistance === true && typeof maxDistance !== 'undefined' && maxDistance !== null) {
 				if (data.distance <= maxDistance) {
-					locationset.push( data );
+					locationset.push(data);
 				}
 				else {
 					return;
 				}
 			}
-			else if(this.settings.maxDistance === true && this.settings.querystringParams === true && typeof maxDistance !== 'undefined' && maxDistance !== null) {
+			else if (this.settings.maxDistance === true && this.settings.querystringParams === true && typeof maxDistance !== 'undefined' && maxDistance !== null) {
 				if (data.distance <= maxDistance) {
-					locationset.push( data );
+					locationset.push(data);
 				}
 				else {
 					return;
 				}
 			}
 			else {
-				locationset.push( data );
+				locationset.push(data);
 			}
 		},
 
@@ -1687,8 +1699,8 @@
 		 *
 		 * @param key {string} object key
 		 */
-		_existingCheckedFilters: function(key) {
-			this.writeDebug('_existingCheckedFilters',arguments);
+		_existingCheckedFilters: function (key) {
+			this.writeDebug('_existingCheckedFilters', arguments);
 			$('#' + this.settings.taxonomyFilters[key] + ' input[type=checkbox]').each(function () {
 				if ($(this).prop('checked')) {
 					var filterVal = $(this).val();
@@ -1706,13 +1718,13 @@
 		 *
 		 * @param key {string} object key
 		 */
-		_existingSelectedFilters: function(key) {
-			this.writeDebug('_existingSelectedFilters',arguments);
+		_existingSelectedFilters: function (key) {
+			this.writeDebug('_existingSelectedFilters', arguments);
 			$('#' + this.settings.taxonomyFilters[key] + ' select').each(function () {
 				var filterVal = $(this).val();
 
 				// Only add the taxonomy id if it doesn't already exist
-				if (typeof filterVal !== 'undefined' && filterVal !== '' &&  filters[key].indexOf(filterVal) === -1) {
+				if (typeof filterVal !== 'undefined' && filterVal !== '' && filters[key].indexOf(filterVal) === -1) {
 					filters[key] = [filterVal];
 				}
 			});
@@ -1723,8 +1735,8 @@
 		 *
 		 * @param key {string} object key
 		 */
-		_existingRadioFilters: function(key) {
-			this.writeDebug('_existingRadioFilters',arguments);
+		_existingRadioFilters: function (key) {
+			this.writeDebug('_existingRadioFilters', arguments);
 			$('#' + this.settings.taxonomyFilters[key] + ' input[type=radio]').each(function () {
 				if ($(this).prop('checked')) {
 					var filterVal = $(this).val();
@@ -1742,9 +1754,9 @@
 		 */
 		checkFilters: function () {
 			this.writeDebug('checkFilters');
-			for(var key in this.settings.taxonomyFilters) {
+			for (var key in this.settings.taxonomyFilters) {
 
-				if(this.settings.taxonomyFilters.hasOwnProperty(key)) {
+				if (this.settings.taxonomyFilters.hasOwnProperty(key)) {
 					// Find the existing checked boxes for each checkbox filter
 					this._existingCheckedFilters(key);
 
@@ -1757,67 +1769,67 @@
 			}
 		},
 
-        /**
+		/**
 		 * Select the indicated values from query string parameters.
 		 *
-         * @param taxonomy {string} Current taxonomy.
-         * @param value {array} Query string array values.
-         */
-		selectQueryStringFilters: function( taxonomy, value ) {
-            this.writeDebug('selectQueryStringFilters', arguments);
+		 * @param taxonomy {string} Current taxonomy.
+		 * @param value {array} Query string array values.
+		 */
+		selectQueryStringFilters: function (taxonomy, value) {
+			this.writeDebug('selectQueryStringFilters', arguments);
 
 			var $taxGroupContainer = $('#' + this.settings.taxonomyFilters[taxonomy]);
 
 			// Handle checkboxes.
-			if ( $taxGroupContainer.find('input[type="checkbox"]').length ) {
+			if ($taxGroupContainer.find('input[type="checkbox"]').length) {
 
-				for ( var i = 0; i < value.length; i++ ) {
-                    $taxGroupContainer.find('input:checkbox[value=' + value[i] + ']').prop('checked', true);
+				for (var i = 0; i < value.length; i++) {
+					$taxGroupContainer.find('input:checkbox[value=' + value[i] + ']').prop('checked', true);
 				}
 
-            }
+			}
 
-            // Handle select fields.
-            if ( $taxGroupContainer.find('select').length ) {
-                // Only expecting one value for select fields.
+			// Handle select fields.
+			if ($taxGroupContainer.find('select').length) {
+				// Only expecting one value for select fields.
 				$taxGroupContainer.find('option[value=' + value[0] + ']').prop('selected', true);
-            }
+			}
 
-            // Handle radio buttons.
-            if ( $taxGroupContainer.find('input[type="radio"]').length ) {
+			// Handle radio buttons.
+			if ($taxGroupContainer.find('input[type="radio"]').length) {
 				// Only one value for radio button.
-                $taxGroupContainer.find('input:radio[value=' + value[0] + ']').prop('checked', true);
-            }
+				$taxGroupContainer.find('input:radio[value=' + value[0] + ']').prop('checked', true);
+			}
 		},
 
 		/**
 		 * Check query string parameters for filter values.
 		 */
 		checkQueryStringFilters: function () {
-			this.writeDebug('checkQueryStringFilters',arguments);
+			this.writeDebug('checkQueryStringFilters', arguments);
 
 			// Loop through the filters.
-			for(var key in filters) {
-				if(filters.hasOwnProperty(key)) {
+			for (var key in filters) {
+				if (filters.hasOwnProperty(key)) {
 					var filterVal = this.getQueryString(key);
 
 					// Check for multiple values separated by comma.
-					if ( filterVal.indexOf( ',' ) !== -1 ) {
-						filterVal = filterVal.split( ',' );
+					if (filterVal.indexOf(',') !== -1) {
+						filterVal = filterVal.split(',');
 					}
 
 					// Only add the taxonomy id if it doesn't already exist
 					if (typeof filterVal !== 'undefined' && filterVal !== '' && filters[key].indexOf(filterVal) === -1) {
-						if ( Array.isArray( filterVal ) ) {
-                            filters[key] = filterVal;
+						if (Array.isArray(filterVal)) {
+							filters[key] = filterVal;
 						} else {
-                            filters[key] = [filterVal];
+							filters[key] = [filterVal];
 						}
 					}
 
 					// Select the filters indicated in the query string.
-					if ( filters[key].length ) {
-                        this.selectQueryStringFilters( key, filters[key] );
+					if (filters[key].length) {
+						this.selectQueryStringFilters(key, filters[key]);
 					}
 				}
 			}
@@ -1830,7 +1842,7 @@
 		 * @param filterContainer {string} ID of the changed filter's container
 		 */
 		getFilterKey: function (filterContainer) {
-			this.writeDebug('getFilterKey',arguments);
+			this.writeDebug('getFilterKey', arguments);
 			for (var key in this.settings.taxonomyFilters) {
 				if (this.settings.taxonomyFilters.hasOwnProperty(key)) {
 					for (var i = 0; i < this.settings.taxonomyFilters[key].length; i++) {
@@ -1849,8 +1861,8 @@
 			this.writeDebug('taxonomyFiltersInit');
 
 			// Set up the filters
-			for(var key in this.settings.taxonomyFilters) {
-				if(this.settings.taxonomyFilters.hasOwnProperty(key)) {
+			for (var key in this.settings.taxonomyFilters) {
+				if (this.settings.taxonomyFilters.hasOwnProperty(key)) {
 					filters[key] = [];
 				}
 			}
@@ -1859,7 +1871,7 @@
 		/**
 		 * Taxonomy filtering
 		 */
-		taxonomyFiltering: function() {
+		taxonomyFiltering: function () {
 			this.writeDebug('taxonomyFiltering');
 			var _this = this;
 
@@ -1870,7 +1882,7 @@
 			_this.checkQueryStringFilters();
 
 			// Handle filter updates
-			$('.' + this.settings.taxonomyFiltersContainer).on('change.'+pluginName, 'input, select', function (e) {
+			$('.' + this.settings.taxonomyFiltersContainer).on('change.' + pluginName, 'input, select', function (e) {
 				e.stopPropagation();
 
 				var filterVal, filterContainer, filterKey;
@@ -1888,7 +1900,7 @@
 						// Add or remove filters based on checkbox values
 						if ($(this).prop('checked')) {
 							// Add ids to the filter arrays as they are checked
-							if(filters[filterKey].indexOf(filterVal) === -1) {
+							if (filters[filterKey].indexOf(filterVal) === -1) {
 								filters[filterKey].push(filterVal);
 							}
 
@@ -1973,8 +1985,8 @@
 		 * @param markers {Object} Map markers
 		 * @param map {Object} Google map
 		 */
-		checkVisibleMarkers: function(markers, map) {
-			this.writeDebug('checkVisibleMarkers',arguments);
+		checkVisibleMarkers: function (markers, map) {
+			this.writeDebug('checkVisibleMarkers', arguments);
 			var _this = this;
 			var locations, listHtml;
 
@@ -1982,8 +1994,8 @@
 			$('.' + this.settings.locationList + ' ul').empty();
 
 			// Set up the new list
-			$(markers).each(function(x, marker){
-				if(map.getBounds().contains(marker.getPosition())) {
+			$(markers).each(function (x, marker) {
+				if (map.getBounds().contains(marker.getPosition())) {
 					// Define the location data
 					_this.listSetup(marker, 0, 0);
 
@@ -2002,9 +2014,9 @@
 		 * Performs a new search when the map is dragged to a new position
 		 *
 		 * @param map {Object} Google map
-         */
-		dragSearch: function(map) {
-			this.writeDebug('dragSearch',arguments);
+		 */
+		dragSearch: function (map) {
+			this.writeDebug('dragSearch', arguments);
 			var newCenter = map.getCenter(),
 				newCenterCoords,
 				_this = this;
@@ -2032,10 +2044,10 @@
 		/**
 		 * Handle no results
 		 */
-		emptyResult: function() {
-			this.writeDebug('emptyResult',arguments);
+		emptyResult: function () {
+			this.writeDebug('emptyResult', arguments);
 			var center,
-				locList =  $('.' + this.settings.locationList + ' ul'),
+				locList = $('.' + this.settings.locationList + ' ul'),
 				myOptions = this.settings.mapSettings,
 				noResults;
 
@@ -2051,7 +2063,7 @@
 			locList.empty();
 
 			// Append the no results message
-			noResults = $('<li><div class="bh-sl-noresults-title">' + this.settings.noResultsTitle +  '</div><br><div class="bh-sl-noresults-desc">' + this.settings.noResultsDesc + '</li>').hide().fadeIn();
+			noResults = $('<li><div class="bh-sl-noresults-title">' + this.settings.noResultsTitle + '</div><br><div class="bh-sl-noresults-desc">' + this.settings.noResultsDesc + '</li>').hide().fadeIn();
 			locList.append(noResults);
 
 			// Center on the original origin or 0,0 if not available
@@ -2076,8 +2088,8 @@
 		 * @param origin {string} Origin address
 		 * @param originPoint {Object} LatLng of origin point
 		 */
-		originMarker: function(map, origin, originPoint) {
-			this.writeDebug('originMarker',arguments);
+		originMarker: function (map, origin, originPoint) {
+			this.writeDebug('originMarker', arguments);
 
 			if (this.settings.originMarker !== true) {
 				return;
@@ -2087,8 +2099,8 @@
 				originImg = '';
 
 			if (typeof origin !== 'undefined') {
-				if(this.settings.originMarkerImg !== null) {
-					if(this.settings.originMarkerDim === null) {
+				if (this.settings.originMarkerImg !== null) {
+					if (this.settings.originMarkerDim === null) {
 						originImg = this.markerImage(this.settings.originMarkerImg);
 					}
 					else {
@@ -2113,7 +2125,7 @@
 		/**
 		 * Modal window setup
 		 */
-		modalWindow: function() {
+		modalWindow: function () {
 			this.writeDebug('modalWindow');
 
 			if (this.settings.modal !== true) {
@@ -2130,15 +2142,15 @@
 			// Pop up the modal window
 			$('.' + _this.settings.overlay).fadeIn();
 			// Close modal when close icon is clicked and when background overlay is clicked
-			$(document).on('click.'+pluginName, '.' + _this.settings.closeIcon + ', .' + _this.settings.overlay, function () {
+			$(document).on('click.' + pluginName, '.' + _this.settings.closeIcon + ', .' + _this.settings.overlay, function () {
 				_this.modalClose();
 			});
 			// Prevent clicks within the modal window from closing the entire thing
-			$(document).on('click.'+pluginName, '.' + _this.settings.modalWindow, function (e) {
+			$(document).on('click.' + pluginName, '.' + _this.settings.modalWindow, function (e) {
 				e.stopPropagation();
 			});
 			// Close modal when escape key is pressed
-			$(document).on('keyup.'+pluginName, function (e) {
+			$(document).on('keyup.' + pluginName, function (e) {
 				if (e.keyCode === 27) {
 					_this.modalClose();
 				}
@@ -2153,8 +2165,8 @@
 		 * @param storeStart
 		 * @param page
 		 */
-		listClick: function(map, infowindow, storeStart, page) {
-			this.writeDebug('listClick',arguments);
+		listClick: function (map, infowindow, storeStart, page) {
+			this.writeDebug('listClick', arguments);
 			var _this = this;
 
 			$(document).on('click.' + pluginName, '.' + _this.settings.locationList + ' li', function () {
@@ -2191,7 +2203,7 @@
 			});
 
 			// Prevent bubbling from list content links
-			$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li a', function(e) {
+			$(document).on('click.' + pluginName, '.' + _this.settings.locationList + ' li a', function (e) {
 				e.stopPropagation();
 			});
 		},
@@ -2201,8 +2213,8 @@
 		 *
 		 * @param locCount
 		 */
-		resultsTotalCount: function(locCount) {
-			this.writeDebug('resultsTotalCount',arguments);
+		resultsTotalCount: function (locCount) {
+			this.writeDebug('resultsTotalCount', arguments);
 
 			var $resultsContainer = $('.bh-sl-total-results');
 
@@ -2219,23 +2231,23 @@
 		 * @param map {Object} Google map
 		 * @param origin {string} Origin address
 		 */
-		inlineDirections: function(map, origin) {
-			this.writeDebug('inlineDirections',arguments);
+		inlineDirections: function (map, origin) {
+			this.writeDebug('inlineDirections', arguments);
 
-			if(this.settings.inlineDirections !== true || typeof origin === 'undefined') {
+			if (this.settings.inlineDirections !== true || typeof origin === 'undefined') {
 				return;
 			}
 
 			var _this = this;
 
 			// Open directions
-			$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li .loc-directions a', function (e) {
+			$(document).on('click.' + pluginName, '.' + _this.settings.locationList + ' li .loc-directions a', function (e) {
 				e.preventDefault();
 				var locID = $(this).closest('li').attr('data-markerid');
 				_this.directionsRequest(origin, locID, map);
 
 				// Close directions
-				$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' .bh-sl-close-icon', function () {
+				$(document).on('click.' + pluginName, '.' + _this.settings.locationList + ' .bh-sl-close-icon', function () {
 					_this.closeDirections();
 				});
 			});
@@ -2247,27 +2259,27 @@
 		 * @param map {Object} Google map
 		 * @param markers {Object} Map markers
 		 */
-		visibleMarkersList: function(map, markers) {
-			this.writeDebug('visibleMarkersList',arguments);
+		visibleMarkersList: function (map, markers) {
+			this.writeDebug('visibleMarkersList', arguments);
 
-			if(this.settings.visibleMarkersList !== true) {
+			if (this.settings.visibleMarkersList !== true) {
 				return;
 			}
 
 			var _this = this;
 
 			// Add event listener to filter the list when the map is fully loaded
-			google.maps.event.addListenerOnce(map, 'idle', function(){
+			google.maps.event.addListenerOnce(map, 'idle', function () {
 				_this.checkVisibleMarkers(markers, map);
 			});
 
 			// Add event listener for center change
-			google.maps.event.addListener(map, 'center_changed', function() {
+			google.maps.event.addListener(map, 'center_changed', function () {
 				_this.checkVisibleMarkers(markers, map);
 			});
 
 			// Add event listener for zoom change
-			google.maps.event.addListener(map, 'zoom_changed', function() {
+			google.maps.event.addListener(map, 'zoom_changed', function () {
 				_this.checkVisibleMarkers(markers, map);
 			});
 		},
@@ -2278,7 +2290,7 @@
 		 * @param mappingObject {Object} all the potential mapping properties - latitude, longitude, origin, name, max distance, page
 		 */
 		mapping: function (mappingObject) {
-			this.writeDebug('mapping',arguments);
+			this.writeDebug('mapping', arguments);
 			var _this = this;
 			var orig_lat, orig_lng, geocodeData, origin, originPoint, page;
 			if (!this.isEmptyObject(mappingObject)) {
@@ -2290,8 +2302,8 @@
 			}
 
 			// Set the initial page to zero if not set
-			if ( _this.settings.pagination === true ) {
-				if (typeof page === 'undefined' || originalOrigin !== addressInput ) {
+			if (_this.settings.pagination === true) {
+				if (typeof page === 'undefined' || originalOrigin !== addressInput) {
 					page = 0;
 				}
 			}
@@ -2305,7 +2317,7 @@
 				originPoint = new google.maps.LatLng(orig_lat, orig_lng);
 
 				// If the origin hasn't changed use the existing data so we aren't making unneeded AJAX requests
-				if((typeof originalOrigin !== 'undefined') && (origin === originalOrigin) && (typeof originalData !== 'undefined')) {
+				if ((typeof originalOrigin !== 'undefined') && (origin === originalOrigin) && (typeof originalData !== 'undefined')) {
 					origin = originalOrigin;
 					dataRequest = originalData;
 				}
@@ -2316,14 +2328,14 @@
 			}
 
 			// Check filters here to handle selected filtering after page reload
-			if(_this.settings.taxonomyFilters !== null && _this.hasEmptyObjectVals(filters)) {
+			if (_this.settings.taxonomyFilters !== null && _this.hasEmptyObjectVals(filters)) {
 				_this.checkFilters();
 			}
 			/**
 			 * Process the location data
 			 */
 			// Raw data
-			if( _this.settings.dataRaw !== null ) {
+			if (_this.settings.dataRaw !== null) {
 				_this.processData(mappingObject, originPoint, dataRequest, page);
 			}
 			// Remote data
@@ -2343,10 +2355,11 @@
 		 * @param page {number} current page number
 		 */
 		processData: function (mappingObject, originPoint, data, page) {
-			this.writeDebug('processData',arguments);
+			this.writeDebug('processData', arguments);
 			var _this = this;
 			var i = 0;
-			var orig_lat, orig_lng, origin, name, maxDistance, marker, bounds, storeStart, storeNumToShow, myOptions, distError, openMap, infowindow;
+			var orig_lat, orig_lng, origin, name, maxDistance, marker, bounds, storeStart, storeNumToShow, myOptions,
+				distError, openMap, infowindow;
 			var taxFilters = {};
 			if (!this.isEmptyObject(mappingObject)) {
 				orig_lat = mappingObject.lat;
@@ -2362,7 +2375,7 @@
 
 			// Save data and origin separately so we can potentially avoid multiple AJAX requests
 			originalData = dataRequest;
-			if ( typeof origin !== 'undefined' ) {
+			if (typeof origin !== 'undefined') {
 				originalOrigin = origin;
 			}
 
@@ -2391,7 +2404,7 @@
 			if (_this.settings.dataType === 'json' || _this.settings.dataType === 'jsonp') {
 
 				// Process JSON
-				for(var x = 0; i < data.length; x++){
+				for (var x = 0; i < data.length; x++) {
 					var obj = data[x];
 					var locationData = {};
 
@@ -2441,7 +2454,7 @@
 
 			// Name search - using taxonomy filter to handle
 			if (_this.settings.nameSearch === true) {
-				if(typeof searchInput !== 'undefined') {
+				if (typeof searchInput !== 'undefined') {
 					filters[_this.settings.nameAttribute] = [searchInput];
 				}
 			}
@@ -2449,7 +2462,7 @@
 			// Taxonomy filtering setup
 			if (_this.settings.taxonomyFilters !== null || _this.settings.nameSearch === true) {
 
-				for(var k in filters) {
+				for (var k in filters) {
 					if (filters.hasOwnProperty(k) && filters[k].length > 0) {
 						// Let's use regex
 						for (var z = 0; z < filters[k].length; z++) {
@@ -2543,7 +2556,7 @@
 				storeNumToShow = _this.settings.locationsPerPage;
 				storeStart = page * _this.settings.locationsPerPage;
 
-				if( (storeStart + storeNumToShow) > locationset.length ) {
+				if ((storeStart + storeNumToShow) > locationset.length) {
 					storeNumToShow = _this.settings.locationsPerPage - ((storeStart + storeNumToShow) - locationset.length);
 				}
 
@@ -2585,7 +2598,7 @@
 			_this.map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
 
 			// Re-center the map when the browser is re-sized
-			google.maps.event.addDomListener(window, 'resize', function() {
+			google.maps.event.addDomListener(window, 'resize', function () {
 				var center = _this.map.getCenter();
 				google.maps.event.trigger(_this.map, 'resize');
 				_this.map.setCenter(center);
@@ -2593,8 +2606,8 @@
 
 
 			// Add map drag listener if setting is enabled and re-search on drag end
-			if (_this.settings.dragSearch === true ) {
-				_this.map.addListener('dragend', function() {
+			if (_this.settings.dragSearch === true) {
+				_this.map.addListener('dragend', function () {
 					_this.dragSearch(_this.map);
 				});
 			}
@@ -2608,7 +2621,7 @@
 			}
 
 			// Initialize the infowondow
-			if ( typeof InfoBubble !== 'undefined' && _this.settings.infoBubble !== null ) {
+			if (typeof InfoBubble !== 'undefined' && _this.settings.infoBubble !== null) {
 				var infoBubbleSettings = _this.settings.infoBubble;
 				infoBubbleSettings.map = _this.map;
 
@@ -2622,7 +2635,7 @@
 			_this.originMarker(_this.map, origin, originPoint);
 
 			// Handle pagination
-			$(document).on('click.'+pluginName, '.bh-sl-pagination li', function (e) {
+			$(document).on('click.' + pluginName, '.bh-sl-pagination li', function (e) {
 				e.preventDefault();
 				// Run paginationChange
 				_this.paginationChange($(this).attr('data-page'));
@@ -2659,7 +2672,7 @@
 			}
 
 			// Create the links that focus on the related marker
-			var locList =  $('.' + _this.settings.locationList + ' ul');
+			var locList = $('.' + _this.settings.locationList + ' ul');
 			locList.empty();
 
 			// Set up the location list markup
@@ -2676,7 +2689,7 @@
 			}
 
 			// MarkerClusterer setup
-			if ( typeof MarkerClusterer !== 'undefined' && _this.settings.markerCluster !== null ) {
+			if (typeof MarkerClusterer !== 'undefined' && _this.settings.markerCluster !== null) {
 				var markerCluster = new MarkerClusterer(_this.map, markers, _this.settings.markerCluster);
 			}
 
@@ -2728,7 +2741,7 @@
 	// public function (ie. a function whose name doesn't start
 	// with an underscore) to be called via the jQuery plugin,
 	// e.g. $(element).defaultPluginName('functionName', arg1, arg2)
-	$.fn[ pluginName ] = function (options) {
+	$.fn[pluginName] = function (options) {
 		var args = arguments;
 		// Is the first parameter an object (options), or was omitted, instantiate a new instance of the plugin
 		if (options === undefined || typeof options === 'object') {
@@ -2736,7 +2749,7 @@
 				// Only allow the plugin to be instantiated once, so we check that the element has no plugin instantiation yet
 				if (!$.data(this, 'plugin_' + pluginName)) {
 					// If it has no instance, create a new one, pass options to our plugin constructor, and store the plugin instance in the elements jQuery data object.
-					$.data(this, 'plugin_' + pluginName, new Plugin( this, options ));
+					$.data(this, 'plugin_' + pluginName, new Plugin(this, options));
 				}
 			});
 			// Treat this as a call to a public method
@@ -2751,7 +2764,7 @@
 				if (instance instanceof Plugin && typeof instance[options] === 'function') {
 
 					// Call the method of our plugin instance, and pass it the supplied arguments.
-					returns = instance[options].apply( instance, Array.prototype.slice.call( args, 1 ) );
+					returns = instance[options].apply(instance, Array.prototype.slice.call(args, 1));
 				}
 
 				// Allow instances to be destroyed via the 'destroy' method
