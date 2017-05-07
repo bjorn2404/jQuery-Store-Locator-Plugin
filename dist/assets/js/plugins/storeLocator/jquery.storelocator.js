@@ -1,4 +1,8 @@
-/*! jQuery Google Maps Store Locator - v2.7.3 - 2017-05-03
+/*! jQuery Google Maps Store Locator - v2.7.3 - 2017-05-07
+* http://www.bjornblog.com/web/jquery-store-locator-plugin
+* Copyright (c) 2017 Bjorn Holine; Licensed MIT */
+
+/*! jQuery Google Maps Store Locator - v2.7.3 - 2017-05-07
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2017 Bjorn Holine; Licensed MIT */
 
@@ -2527,7 +2531,7 @@
 			_this.modalWindow();
 
 			// Avoid error if number of locations is less than the default of 26
-			if (_this.settings.storeLimit === -1 || locationset.length < _this.settings.storeLimit || (this.settings.fullMapStart === true && firstRun === true && (isNaN(this.settings.fullMapStartListLimit) || this.settings.fullMapStartListLimit > 26 || this.settings.fullMapStartListLimit === -1))) {
+			if (_this.settings.storeLimit === -1 || locationset.length < _this.settings.storeLimit || (this.settings.fullMapStart === true && firstRun === true && (!isNaN(this.settings.fullMapStartListLimit) || this.settings.fullMapStartListLimit > 26 || this.settings.fullMapStartListLimit === -1))) {
 				storeNum = locationset.length;
 			}
 			else {
@@ -2555,7 +2559,7 @@
 			_this.resultsTotalCount(locationset.length);
 
 			// Google maps settings
-			if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined') || (distError === true)) {
+			if ((_this.settings.fullMapStart === true && firstRun === true && _this.settings.querystringParams !== true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined') || (distError === true)) {
 				myOptions = _this.settings.mapSettings;
 				bounds = new google.maps.LatLngBounds();
 			}
@@ -2642,7 +2646,7 @@
 				marker = _this.createMarker(point, locationset[y].name, locationset[y].address, letter, _this.map, locationset[y].category);
 				marker.set('id', y);
 				markers[y] = marker;
-				if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined') || (distError === true)) {
+				if ((_this.settings.fullMapStart === true && firstRun === true && _this.settings.querystringParams !== true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined') || (distError === true)) {
 					bounds.extend(point);
 				}
 				// Pass variables to the pop-up infowindows
@@ -2650,7 +2654,7 @@
 			}
 
 			// Center and zoom if no origin or zoom was provided, or distance of first marker is greater than distanceAlert
-			if ((_this.settings.fullMapStart === true && firstRun === true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined') || (distError === true)) {
+			if ((_this.settings.fullMapStart === true && firstRun === true && _this.settings.querystringParams !== true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined') || (distError === true)) {
 				_this.map.fitBounds(bounds);
 			}
 

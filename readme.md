@@ -40,11 +40,13 @@ filtering.
 * Added ability to indicate multiple query string parameter values (for checkboxes) with a comma separated list value.
 * Added autoCompleteDisableListener setting to disable the listener that immediately triggers a search when an auto complete location option is selected.
 * Added blur to primary location input field after form submission to hide mobile keyboards.
-* Added functionality to select/check filters on load from query string parameter values.
+* Added functionality to automatically select/check filters on load from query string parameter values.
 * Added location details object to callbackListClick and callbackMarkerClick objects.
 * Fixed broken dragSearch functionality that was introduced after map scope pull request was merged.
 * Fixed Handlebars targeting issue triggered by placing an unordered list within the location list template.
+* Fixed issue with fullMapStart where conditional was checking if isNaN was true when it should have been false on fullMapStartListLimit setting.
 * Updated callbackListClick documentation to include second market object parameter.
+* Updated zooming to prevent fitBounds from being used when query string parameters are in use and the location has been set with bh-sl-address.
 
 ### Version 2.7.2
 
