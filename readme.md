@@ -35,6 +35,12 @@ filtering.
 
 ## Changelog
 
+### Version 2.7.4
+
+* Fixed error when filtering with query strings where filter values with spaces wouldn't work.
+* Updated processForm method so submitting the map removes focus from any of the form input/select fields instead of just the address input.
+* Updated filterData string replace methods to match string replace method in filters setup.
+
 ### Version 2.7.3
 
 * Added ability to indicate multiple query string parameter values (for checkboxes) with a comma separated list value.

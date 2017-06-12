@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.7.3 - 2017-05-07
+/*! jQuery Google Maps Store Locator - v2.7.4 - 2017-06-11
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2017 Bjorn Holine; Licensed MIT */
 
@@ -875,7 +875,7 @@
 
 						if(typeof data[k] !== 'undefined') {
 							for (var l = 0; l < filterTests.length; l++) {
-								exclusiveTest[l] = new RegExp(filterTests[l], 'i').test(data[k].replace(/[^\x00-\x7F]/g, ''));
+								exclusiveTest[l] = new RegExp(filterTests[l], 'i').test(data[k].replace(/([^\x00-\x7F]|[.*+?^=!:${}()|\[\]\/\\])/g, ''));
 							}
 						}
 
@@ -885,7 +885,7 @@
 					}
 					// Inclusive filtering
 					else {
-						if (typeof data[k] === 'undefined' || !(new RegExp(filters[k].join(''), 'i').test(data[k].replace(/[^\x00-\x7F]/g, '')))) {
+						if (typeof data[k] === 'undefined' || !(new RegExp(filters[k].join(''), 'i').test(data[k].replace(/([^\x00-\x7F]|[.*+?^=!:${}()|\[\]\/\\])/g, '')))) {
 							filterTest = false;
 						}
 					}
@@ -1522,8 +1522,8 @@
 				e.preventDefault();
 			}
 
-			// Blur the input field to hide mobile keyboards.
-			$addressInput.blur();
+			// Blur any form field to hide mobile keyboards.
+			$('.' + _this.settings.formContainer +' input, .' + _this.settings.formContainer + ' select').blur();
 
 			// Query string parameters
 			if(this.settings.querystringParams === true) {
@@ -1770,21 +1770,20 @@
 			if ( $taxGroupContainer.find('input[type="checkbox"]').length ) {
 
 				for ( var i = 0; i < value.length; i++ ) {
-					$taxGroupContainer.find('input:checkbox[value=' + value[i] + ']').prop('checked', true);
+					$taxGroupContainer.find('input:checkbox[value="' + value[i] + '"]').prop('checked', true);
 				}
-
 			}
 
 			// Handle select fields.
 			if ( $taxGroupContainer.find('select').length ) {
 				// Only expecting one value for select fields.
-				$taxGroupContainer.find('option[value=' + value[0] + ']').prop('selected', true);
+				$taxGroupContainer.find('option[value="' + value[0] + '"]').prop('selected', true);
 			}
 
 			// Handle radio buttons.
 			if ( $taxGroupContainer.find('input[type="radio"]').length ) {
 				// Only one value for radio button.
-				$taxGroupContainer.find('input:radio[value=' + value[0] + ']').prop('checked', true);
+				$taxGroupContainer.find('input:radio[value="' + value[0] + '"]').prop('checked', true);
 			}
 		},
 
