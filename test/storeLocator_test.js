@@ -75,7 +75,7 @@
 
 	test('geoCodeCalcDiffRadian()', 2, function() {
 		var $this = $('#bh-sl-map-container').data('plugin_storeLocator');
-		
+
 		deepEqual($this.geoCodeCalcDiffRadian(10, 5), ($this.geoCodeCalcToRadian(5) - $this.geoCodeCalcToRadian(10)), 'Integer test');
 		deepEqual($this.geoCodeCalcDiffRadian(10.10, 5.5), ($this.geoCodeCalcToRadian(5.5) - $this.geoCodeCalcToRadian(10.10)), 'Float test');
 	});
@@ -186,7 +186,7 @@
 
 		// Multi-filter
 		filters = {
-			'city': ['Minneapolis', 'St. Paul']
+			'city': ['Minneapolis', 'St Paul']
 		};
 
 		locationset = [{
@@ -230,5 +230,5 @@
 		deepEqual(exclusiveTest, locationsMatch, 'Exclusive filtering test');
 	});
 
-	
+
 }(jQuery));
