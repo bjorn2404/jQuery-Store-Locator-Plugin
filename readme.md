@@ -35,6 +35,8 @@ filtering.
 
 ## Changelog
 
+### Version 2.7.5
+
 ### Version 2.7.4
 
 * Fixed error when filtering with query strings where filter values with spaces wouldn't work.
