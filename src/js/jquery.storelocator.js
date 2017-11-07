@@ -647,22 +647,22 @@
 						this.mapping(null);
 					}
 				}
+			}
 
-				// HTML5 auto geolocation API option
-				if (this.settings.autoGeocode === true && doAutoGeo === true) {
-					_this.writeDebug('Auto Geo');
+			// HTML5 auto geolocation API option
+			if (this.settings.autoGeocode === true && doAutoGeo === true) {
+				_this.writeDebug('Auto Geo');
 
+				_this.htmlGeocode();
+			}
+
+			// HTML5 geolocation API button option
+			if (this.settings.autoGeocode !== null) {
+				_this.writeDebug('Button Geo');
+
+				$(document).on('click.'+pluginName, '#' + this.settings.geocodeID, function () {
 					_this.htmlGeocode();
-				}
-
-				// HTML5 geolocation API button option
-				if (this.settings.autoGeocode !== null) {
-					_this.writeDebug('Button Geo');
-
-					$(document).on('click.'+pluginName, '#' + this.settings.geocodeID, function () {
-						_this.htmlGeocode();
-					});
-				}
+				});
 			}
 		},
 

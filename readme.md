@@ -37,6 +37,8 @@ filtering.
 
 ### Version 2.7.5
 
+* Fixed issue where HTML5 Geolocation was skipped when using the fullMapStartBlank setting.
+
 ### Version 2.7.4
 
 * Fixed error when filtering with query strings where filter values with spaces wouldn't work.
