@@ -23,8 +23,8 @@
 		'addressID'                  : 'bh-sl-address',
 		'regionID'                   : 'bh-sl-region',
 		'mapSettings'                : {
-			mapTypeId      : google.maps.MapTypeId.ROADMAP,
-			zoom           : 12
+			mapTypeId: google.maps.MapTypeId.ROADMAP,
+			zoom     : 12
 		},
 		'markerImg'                  : null,
 		'markerDim'                  : null,
@@ -94,6 +94,7 @@
 		// Callbacks
 		'callbackNotify'             : null,
 		'callbackRegion'             : null,
+		'callbackFormVals'           : null,
 		'callbackBeforeSend'         : null,
 		'callbackSuccess'            : null,
 		'callbackModalOpen'          : null,
@@ -1568,6 +1569,11 @@
 			} else {
 				// Region setting
 				region = $('#' + this.settings.regionID).val();
+			}
+
+			// Form values callback
+			if (this.settings.callbackFormVals) {
+				this.settings.callbackFormVals.call(this, addressInput, searchInput, distance, region);
 			}
 
 			if (addressInput === '' && searchInput === '') {

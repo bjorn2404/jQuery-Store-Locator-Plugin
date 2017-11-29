@@ -37,6 +37,7 @@ filtering.
 
 ### Version 2.7.5
 
+* Added callbackFormVals callback so form values can be utilized.
 * Fixed issue where HTML5 Geolocation was skipped when using the fullMapStartBlank setting.
 
 ### Version 2.7.4
