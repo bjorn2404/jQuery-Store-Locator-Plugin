@@ -92,6 +92,7 @@
 		'markerCluster'              : null,
 		'infoBubble'                 : null,
 		// Callbacks
+		'callbackAutoGeoSuccess'     : null,
 		'callbackNotify'             : null,
 		'callbackRegion'             : null,
 		'callbackFormVals'           : null,
@@ -690,10 +691,17 @@
 							accuracy : position.coords.accuracy
 						}
 					};
+
 					// Have to do this to get around scope issues
 					if (_this.settings.sessionStorage === true && window.sessionStorage) {
 						window.sessionStorage.setItem('myGeo',JSON.stringify(pos));
 					}
+
+					// Callback
+					if (_this.settings.callbackAutoGeoSuccess) {
+						_this.settings.callbackAutoGeoSuccess.call(this, pos);
+					}
+
 					_this.autoGeocodeQuery(pos);
 				}, function(error){
 					_this._autoGeocodeError(error);

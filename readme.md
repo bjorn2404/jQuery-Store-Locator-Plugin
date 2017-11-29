@@ -37,7 +37,8 @@ filtering.
 
 ### Version 2.7.5
 
-* Added callbackFormVals callback so form values can be utilized.
+* Added callbackAutoGeoSuccess callback that fires after the geolocation API returns a successful result.
+* Added callbackFormVals callback that fires after the form values have been processed from the form.
 * Fixed issue where HTML5 Geolocation was skipped when using the fullMapStartBlank setting.
 
 ### Version 2.7.4
