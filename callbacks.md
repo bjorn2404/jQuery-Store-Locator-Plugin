@@ -29,7 +29,7 @@ $('#bh-sl-map-container').storeLocator({
 
 | Function | Description |
 |---|---|
-| [callbackAutoGeoSuccess](callbacks/callback-autogeosuccess.md) | Geolocation success callback |
+| [callbackAutoGeoSuccess](callbacks/callback-autogeosuccess.md) | Geolocation API success callback |
 | [callbackNotify](callbacks/callback-notification.md) | Notification callback |
 | [callbackRegion](callbacks/callback-region.md) | Region callback |
 | [callbackFormVals](callbacks/callback-formvals.md) | Form values callback |
