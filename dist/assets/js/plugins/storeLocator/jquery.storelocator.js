@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.7.4 - 2017-06-12
+/*! jQuery Google Maps Store Locator - v2.7.5 - 2017-11-28
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2017 Bjorn Holine; Licensed MIT */
 
@@ -26,8 +26,8 @@
 		'addressID'                  : 'bh-sl-address',
 		'regionID'                   : 'bh-sl-region',
 		'mapSettings'                : {
-			mapTypeId      : google.maps.MapTypeId.ROADMAP,
-			zoom           : 12
+			mapTypeId: google.maps.MapTypeId.ROADMAP,
+			zoom     : 12
 		},
 		'markerImg'                  : null,
 		'markerDim'                  : null,
@@ -95,8 +95,10 @@
 		'markerCluster'              : null,
 		'infoBubble'                 : null,
 		// Callbacks
+		'callbackAutoGeoSuccess'     : null,
 		'callbackNotify'             : null,
 		'callbackRegion'             : null,
+		'callbackFormVals'           : null,
 		'callbackBeforeSend'         : null,
 		'callbackSuccess'            : null,
 		'callbackModalOpen'          : null,
@@ -650,22 +652,22 @@
 						this.mapping(null);
 					}
 				}
+			}
 
-				// HTML5 auto geolocation API option
-				if (this.settings.autoGeocode === true && doAutoGeo === true) {
-					_this.writeDebug('Auto Geo');
+			// HTML5 auto geolocation API option
+			if (this.settings.autoGeocode === true && doAutoGeo === true) {
+				_this.writeDebug('Auto Geo');
 
+				_this.htmlGeocode();
+			}
+
+			// HTML5 geolocation API button option
+			if (this.settings.autoGeocode !== null) {
+				_this.writeDebug('Button Geo');
+
+				$(document).on('click.'+pluginName, '#' + this.settings.geocodeID, function () {
 					_this.htmlGeocode();
-				}
-
-				// HTML5 geolocation API button option
-				if (this.settings.autoGeocode !== null) {
-					_this.writeDebug('Button Geo');
-
-					$(document).on('click.'+pluginName, '#' + this.settings.geocodeID, function () {
-						_this.htmlGeocode();
-					});
-				}
+				});
 			}
 		},
 
@@ -692,10 +694,17 @@
 							accuracy : position.coords.accuracy
 						}
 					};
+
 					// Have to do this to get around scope issues
 					if (_this.settings.sessionStorage === true && window.sessionStorage) {
 						window.sessionStorage.setItem('myGeo',JSON.stringify(pos));
 					}
+
+					// Callback
+					if (_this.settings.callbackAutoGeoSuccess) {
+						_this.settings.callbackAutoGeoSuccess.call(this, pos);
+					}
+
 					_this.autoGeocodeQuery(pos);
 				}, function(error){
 					_this._autoGeocodeError(error);
@@ -1571,6 +1580,11 @@
 			} else {
 				// Region setting
 				region = $('#' + this.settings.regionID).val();
+			}
+
+			// Form values callback
+			if (this.settings.callbackFormVals) {
+				this.settings.callbackFormVals.call(this, addressInput, searchInput, distance, region);
 			}
 
 			if (addressInput === '' && searchInput === '') {
