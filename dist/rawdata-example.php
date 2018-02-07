@@ -70,7 +70,7 @@ $data = '<?xml version="1.0" encoding="utf-8"?>
 <script>
 	$(function() {
 		$('#bh-sl-map-container').storeLocator({
-			'dataRaw': <?php echo json_encode($data); ?>
+			dataRaw: <?php echo json_encode($data); ?>
 		});
 	});
 </script>
