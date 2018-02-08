@@ -41,7 +41,7 @@ filtering.
 * Added callbackFormVals callback that fires after the form values have been processed from the form.
 * Fixed issue where HTML5 Geolocation was skipped when using the fullMapStartBlank setting.
 * Fixed issue with taxonomy filtering and autoGeocode setting where HTML Geocoding API would run on every filter change.
-* Swapped the default location data type to be JSON instead of XML (it's time).
+* Swapped the default location data type to be JSON instead of XML.
 
 ### Version 2.7.4
 
