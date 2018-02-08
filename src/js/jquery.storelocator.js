@@ -598,8 +598,7 @@
 			this.writeDebug('_start');
 			var _this = this,
 					doAutoGeo = this.settings.autoGeocode,
-					latlng,
-					originAddress;
+					latlng;
 
 			// Full map blank start
 			if (_this.settings.fullMapStartBlank !== false) {
@@ -713,7 +712,6 @@
 		 */
 		googleGeocode: function (thisObj) {
 			thisObj.writeDebug('googleGeocode',arguments);
-			var _this = thisObj;
 			var geocoder = new google.maps.Geocoder();
 			this.geocode = function (request, callbackFunction) {
 				geocoder.geocode(request, function (results, status) {
@@ -736,7 +734,6 @@
 		 */
 		reverseGoogleGeocode: function (thisObj) {
 			thisObj.writeDebug('reverseGoogleGeocode',arguments);
-			var _this = thisObj;
 			var geocoder = new google.maps.Geocoder();
 			this.geocode = function (request, callbackFunction) {
 				geocoder.geocode(request, function (results, status) {

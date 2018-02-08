@@ -1,6 +1,6 @@
-/*! jQuery Google Maps Store Locator - v2.7.5 - 2017-12-12
+/*! jQuery Google Maps Store Locator - v2.7.5 - 2018-02-08
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
-* Copyright (c) 2017 Bjorn Holine; Licensed MIT */
+* Copyright (c) 2018 Bjorn Holine; Licensed MIT */
 
 ;(function ($, window, document, undefined) {
 	'use strict';
@@ -602,8 +602,7 @@
 			this.writeDebug('_start');
 			var _this = this,
 					doAutoGeo = this.settings.autoGeocode,
-					latlng,
-					originAddress;
+					latlng;
 
 			// Full map blank start
 			if (_this.settings.fullMapStartBlank !== false) {
@@ -717,7 +716,6 @@
 		 */
 		googleGeocode: function (thisObj) {
 			thisObj.writeDebug('googleGeocode',arguments);
-			var _this = thisObj;
 			var geocoder = new google.maps.Geocoder();
 			this.geocode = function (request, callbackFunction) {
 				geocoder.geocode(request, function (results, status) {
@@ -740,7 +738,6 @@
 		 */
 		reverseGoogleGeocode: function (thisObj) {
 			thisObj.writeDebug('reverseGoogleGeocode',arguments);
-			var _this = thisObj;
 			var geocoder = new google.maps.Geocoder();
 			this.geocode = function (request, callbackFunction) {
 				geocoder.geocode(request, function (results, status) {
