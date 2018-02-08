@@ -12,10 +12,16 @@
   "eqnull": true,
   "browser": true,
 	"devel": false,
-  "predef": ["jQuery"],
-	"globals": {
-		"google": true,
-		"document": true,
-		"$": true
-	}
+  "globals": {
+    "alert": true,
+    "console": true,
+    "define": true,
+    "document": true,
+    "google": true,
+    "Handlebars": true,
+    "InfoBubble": true,
+    "jQuery": true,
+    "MarkerClusterer": true,
+    "window": true
+  }
 }

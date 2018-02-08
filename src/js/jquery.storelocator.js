@@ -1,4 +1,3 @@
-/* global define, window, document, Handlebars, google */
 ;(function ($, window, document, undefined) {
 	'use strict';
 
