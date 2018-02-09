@@ -877,7 +877,7 @@
 
 						if(typeof data[k] !== 'undefined') {
 							for (var l = 0; l < filterTests.length; l++) {
-								exclusiveTest[l] = new RegExp(filterTests[l], 'i').test(data[k].replace(/([^\x00-\x7F]|[.*+?^=!:${}()|\[\]\/\\])/g, ''));
+								exclusiveTest[l] = new RegExp(filterTests[l], 'i').test(data[k].replace(/([^\x00-\x7F]|[.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, ''));
 							}
 						}
 
@@ -887,7 +887,7 @@
 					}
 					// Inclusive filtering
 					else {
-						if (typeof data[k] === 'undefined' || !(new RegExp(filters[k].join(''), 'i').test(data[k].replace(/([^\x00-\x7F]|[.*+?^=!:${}()|\[\]\/\\])/g, '')))) {
+						if (typeof data[k] === 'undefined' || !(new RegExp(filters[k].join(''), 'i').test(data[k].replace(/([^\x00-\x7F]|[.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '')))) {
 							filterTest = false;
 						}
 					}
@@ -2470,7 +2470,7 @@
 							if (!taxFilters[k]) {
 								taxFilters[k] = [];
 							}
-							taxFilters[k][z] = '(?=.*\\b' + filters[k][z].replace(/([^\x00-\x7F]|[.*+?^=!:${}()|\[\]\/\\])/g, '') + '\\b)';
+							taxFilters[k][z] = '(?=.*\\b' + filters[k][z].replace(/([^\x00-\x7F]|[.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '') + '\\b)';
 						}
 					}
 				}
@@ -2539,7 +2539,7 @@
 				_this.emptyResult();
 				return;
 			}
-			
+
 			// Set up the modal window
 			_this.modalWindow();
 
