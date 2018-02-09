@@ -39,6 +39,8 @@ filtering.
 
 * Added callbackAutoGeoSuccess callback that fires after the geolocation API returns a successful result.
 * Added callbackFormVals callback that fires after the form values have been processed from the form.
+* Added callbackNearestLoc that fires when the nearest location is triggered with the openNearest setting.
+* Added openNearest setting to open/select the nearest location after searching.
 * Fixed issue with featuredLocations setting where featured locations at far distances would trigger distance alert.
 * Fixed issue with filtering values containing ampersands, which would not display any results - updated filtering regex.
 * Fixed issue where HTML5 Geolocation was skipped when using the fullMapStartBlank setting.

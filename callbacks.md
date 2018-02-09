@@ -44,6 +44,7 @@ $('#bh-sl-map-container').storeLocator({
 | [callbackModalOpen](callbacks/callback-modalopen.md) | Modal open callback |
 | [callbackModalReady](callbacks/callback-modalready.md) | Modal ready callback |
 | [callbackModalClose](callbacks/callback-modalclose.md) | Modal close callback |
+| [callbackNearestLoc](callbacks/callback-nearestloc.md) | Nearest location callback |
 | [callbackMarkerClick](callbacks/callback-markerclick.md) | Marker click callback |
 | [callbackListClick](callbacks/callback-listclick.md) | Location list click callback |
 | [callbackPageChange](callbacks/callback-pagechange.md) | Page change callback |

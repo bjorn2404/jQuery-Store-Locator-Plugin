@@ -57,6 +57,7 @@
 | nameAttribute | 'name' | If using nameSearch, the data attribute used for the location name in the data file. |
 | visibleMarkersList | false | Set to true to have the location list only show data from markers that are visible on the map. |
 | dragSearch | false | Set to true to perform a new search after the map is dragged. |
+| openNearest | false | Set to true to highlight the nearest location automatically after searching. |
 | infowindowTemplatePath | 'assets/js/plugins/storeLocator/templates/infowindow-description.html' | Path to the default infowindow template. |
 | listTemplatePath | 'assets/js/plugins/storeLocator/templates/location-list-description.html' | Path to the default list template. |
 | KMLinfowindowTemplatePath | 'assets/js/plugins/storeLocator/templates/kml-infowindow-description.html' | Path to the KML infowindow template – used if dataType is set to kml. |

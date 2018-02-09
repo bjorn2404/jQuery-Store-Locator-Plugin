@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.7.5 - 2018-02-08
+/*! jQuery Google Maps Store Locator - v2.7.5 - 2018-02-09
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2018 Bjorn Holine; Licensed MIT */
 
@@ -79,6 +79,7 @@
 		'nameAttribute'              : 'name',
 		'visibleMarkersList'         : false,
 		'dragSearch'                 : false,
+		'openNearest'                : false,
 		'infowindowTemplatePath'     : 'assets/js/plugins/storeLocator/templates/infowindow-description.html',
 		'listTemplatePath'           : 'assets/js/plugins/storeLocator/templates/location-list-description.html',
 		'KMLinfowindowTemplatePath'  : 'assets/js/plugins/storeLocator/templates/kml-infowindow-description.html',
@@ -104,6 +105,7 @@
 		'callbackModalOpen'          : null,
 		'callbackModalReady'         : null,
 		'callbackModalClose'         : null,
+		'callbackNearestLoc'         : null,
 		'callbackJsonp'              : null,
 		'callbackCreateMarker'       : null,
 		'callbackPageChange'         : null,
@@ -2163,12 +2165,52 @@
 		},
 
 		/**
+		 * Open and select the location closest to the origin
+		 *
+		 * @param nearestLoc {Object} Details for the nearest location
+		 * @param infowindow {Object} Info window object
+		 * @param storeStart {number} Starting point of current page when pagination is enabled
+		 * @param page {number} Current page number when pagination is enabled
+		 */
+		openNearestLocation: function(nearestLoc, infowindow, storeStart, page) {
+			this.writeDebug('openNearestLocation',arguments);
+
+			if (this.settings.openNearest !== true || typeof nearestLoc === 'undefined' || (this.settings.fullMapStart === true && firstRun === true) || (this.settings.defaultLoc === true && firstRun === true)) {
+				return;
+			}
+
+			var _this = this;
+
+			// Callback
+			if (_this.settings.callbackNearestLoc) {
+				_this.settings.callbackNearestLoc.call(this, _this.map, nearestLoc, infowindow, storeStart, page);
+			}
+
+			var markerId = 0;
+			var selectedMarker = markers[markerId];
+
+			_this.createInfowindow(selectedMarker, 'left', infowindow, storeStart, page);
+
+			// Scroll list to selected marker
+			var $container = $('.' + _this.settings.locationList);
+			var $selectedLocation = $('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']');
+
+			// Focus on the list
+			$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
+			$selectedLocation.addClass('list-focus');
+
+			$container.animate({
+				scrollTop: $selectedLocation.offset().top - $container.offset().top + $container.scrollTop()
+			});
+		},
+
+		/**
 		 * Handle clicks from the location list
 		 *
 		 * @param map {Object} Google map
-		 * @param infowindow
-		 * @param storeStart
-		 * @param page
+		 * @param infowindow {Object} Info window object
+		 * @param storeStart {number} Starting point of current page when pagination is enabled
+		 * @param page {number} Current page number when pagination is enabled
 		 */
 		listClick: function(map, infowindow, storeStart, page) {
 			this.writeDebug('listClick',arguments);
@@ -2363,7 +2405,7 @@
 			this.writeDebug('processData',arguments);
 			var _this = this;
 			var i = 0;
-			var orig_lat, orig_lng, origin, name, maxDistance, marker, bounds, storeStart, storeNumToShow, myOptions, distError, openMap, infowindow;
+			var orig_lat, orig_lng, origin, name, maxDistance, marker, bounds, storeStart, storeNumToShow, myOptions, distError, openMap, infowindow, nearestLoc;
 			var taxFilters = {};
 			if (!this.isEmptyObject(mappingObject)) {
 				orig_lat = mappingObject.lat;
@@ -2509,6 +2551,11 @@
 						throw new Error('No locations found. Please check the dataLocation setting and path.');
 					}
 				}
+			}
+
+			// Save the closest location to a variable for openNearest setting.
+			if (_this.settings.openNearest === true && typeof locationset[0] !== 'undefined') {
+				nearestLoc = locationset[0];
 			}
 
 			// Featured locations filtering
@@ -2691,6 +2738,9 @@
 					_this.listSetup(currentMarker, storeStart, page);
 				});
 			}
+
+			// Open nearest location.
+			_this.openNearestLocation(nearestLoc, infowindow, storeStart, page);
 
 			// MarkerClusterer setup
 			if ( typeof MarkerClusterer !== 'undefined' && _this.settings.markerCluster !== null ) {
