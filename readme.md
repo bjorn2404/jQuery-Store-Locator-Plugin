@@ -39,6 +39,7 @@ filtering.
 
 * Added callbackAutoGeoSuccess callback that fires after the geolocation API returns a successful result.
 * Added callbackFormVals callback that fires after the form values have been processed from the form.
+* Fixed issue with featuredLocations setting where featured locations at far distances would trigger distance alert.
 * Fixed issue where HTML5 Geolocation was skipped when using the fullMapStartBlank setting.
 * Fixed issue with taxonomy filtering and autoGeocode setting where HTML Geocoding API would run on every filter change.
 * Swapped the default location data type to be JSON instead of XML.

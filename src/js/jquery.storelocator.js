@@ -2487,23 +2487,6 @@
 				_this.sortNumerically(locationset);
 			}
 
-			// Featured locations filtering
-			if (_this.settings.featuredLocations === true) {
-				// Create array for featured locations
-				featuredset = $.grep(locationset, function (val) {
-					return val.featured === 'true';
-				});
-
-				// Create array for normal locations
-				normalset = $.grep(locationset, function (val) {
-					return val.featured !== 'true';
-				});
-
-				// Combine the arrays
-				locationset = [];
-				locationset = featuredset.concat(normalset);
-			}
-
 			// Check the closest marker
 			if (_this.isEmptyObject(taxFilters)) {
 				if (_this.settings.maxDistance === true && maxDistance) {
@@ -2522,6 +2505,23 @@
 						throw new Error('No locations found. Please check the dataLocation setting and path.');
 					}
 				}
+			}
+
+			// Featured locations filtering
+			if (_this.settings.featuredLocations === true) {
+				// Create array for featured locations
+				featuredset = $.grep(locationset, function (val) {
+					return val.featured === 'true';
+				});
+
+				// Create array for normal locations
+				normalset = $.grep(locationset, function (val) {
+					return val.featured !== 'true';
+				});
+
+				// Combine the arrays
+				locationset = [];
+				locationset = featuredset.concat(normalset);
 			}
 
 			// Slide in the map container
