@@ -2529,17 +2529,17 @@
 				$this.slideDown();
 			}
 
-			// Handle no results
-			if (_this.isEmptyObject(locationset) || locationset[0].result === 'none') {
-				_this.emptyResult();
-				return;
-			}
-
 			// Output page numbers if pagination setting is true
 			if (_this.settings.pagination === true) {
 				_this.paginationSetup(page);
 			}
 
+			// Handle no results
+			if (_this.isEmptyObject(locationset) || locationset[0].result === 'none') {
+				_this.emptyResult();
+				return;
+			}
+			
 			// Set up the modal window
 			_this.modalWindow();
 
