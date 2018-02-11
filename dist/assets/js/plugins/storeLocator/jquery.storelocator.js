@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.7.5 - 2018-02-09
+/*! jQuery Google Maps Store Locator - v2.7.5 - 2018-02-11
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2018 Bjorn Holine; Licensed MIT */
 
@@ -1893,6 +1893,11 @@
 				e.stopPropagation();
 
 				var filterVal, filterContainer, filterKey;
+
+				// Reset pagination.
+				if (_this.settings.pagination === true) {
+					_this.paginationChange(0);
+				}
 
 				// Handle checkbox filters
 				if ($(this).is('input[type="checkbox"]')) {

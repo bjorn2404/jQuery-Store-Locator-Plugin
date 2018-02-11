@@ -1890,6 +1890,11 @@
 
 				var filterVal, filterContainer, filterKey;
 
+				// Reset pagination.
+				if (_this.settings.pagination === true) {
+					_this.paginationChange(0);
+				}
+
 				// Handle checkbox filters
 				if ($(this).is('input[type="checkbox"]')) {
 					// First check for existing selections

@@ -47,6 +47,7 @@ filtering.
 * Fixed issue with pagination page numbers displaying after no results via PR from [heldr88](https://github.com/heldr88)
 * Fixed issue with taxonomy filtering and autoGeocode setting where HTML Geocoding API would run on every filter change.
 * Swapped the default location data type to be JSON instead of XML.
+* Updated taxonomy filtering so pagingation is reset to first page after selecting a filter.
 
 ### Version 2.7.4
 
