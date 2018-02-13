@@ -33,6 +33,7 @@ $('#bh-sl-map-container').storeLocator({
 | [callbackNotify](callbacks/callback-notification.md) | Notification callback |
 | [callbackRegion](callbacks/callback-region.md) | Region callback |
 | [callbackFormVals](callbacks/callback-formvals.md) | Form values callback |
+| [callbackGeocodeRestrictions](callbacks/callback-geocode-restrictions.md) | Geocoding component restrictions callback |
 | [callbackBeforeSend](callbacks/callback-beforesend.md) | Before location data request callback |
 | [callbackDirectionsRequest](callbacks/callback-directionsrequest.md) | Directions request callback |
 | [callbackCloseDirections](callbacks/callback-closedirections.md) | Close directions callback |

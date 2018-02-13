@@ -96,6 +96,7 @@
 		'callbackNotify'             : null,
 		'callbackRegion'             : null,
 		'callbackFormVals'           : null,
+		'callbackGeocodeRestrictions': null,
 		'callbackBeforeSend'         : null,
 		'callbackSuccess'            : null,
 		'callbackModalOpen'          : null,
@@ -1516,6 +1517,7 @@
 			this.writeDebug('processForm',arguments);
 			var _this = this,
 				distance = null,
+				geocodeRestrictions = {},
 				$addressInput = $('#' + this.settings.addressID),
 				$searchInput = $('#' + this.settings.searchID),
 				$distanceInput = $('#' + this.settings.maxDistanceID),
@@ -1582,6 +1584,19 @@
 				this.settings.callbackFormVals.call(this, addressInput, searchInput, distance, region);
 			}
 
+			// Add component restriction if the region has been set.
+			if (typeof region !== 'undefined') {
+				geocodeRestrictions = {
+					country: region
+				};
+			}
+
+			// Component restriction value via callback.
+			if (typeof this.settings.callbackGeocodeRestrictions === 'function') {
+				// Component restriction override callback
+				geocodeRestrictions = this.settings.callbackGeocodeRestrictions.call(this, addressInput, searchInput, distance);
+			}
+
 			if (addressInput === '' && searchInput === '' && this.settings.autoGeocode !== true) {
 				this._start();
 			}
@@ -1599,7 +1614,11 @@
 				}
 				else {
 					var g = new this.googleGeocode(this);
-					g.geocode({'address': addressInput, 'region': region}, function (data) {
+					g.geocode({
+						address: addressInput,
+						componentRestrictions: geocodeRestrictions,
+						region: region
+					}, function (data) {
 						if (data !== null) {
 							olat = data.latitude;
 							olng = data.longitude;

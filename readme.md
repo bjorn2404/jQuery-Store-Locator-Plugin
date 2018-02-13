@@ -39,7 +39,9 @@ filtering.
 
 * Added callbackAutoGeoSuccess callback that fires after the geolocation API returns a successful result.
 * Added callbackFormVals callback that fires after the form values have been processed from the form.
-* Added callbackNearestLoc that fires when the nearest location is triggered with the openNearest setting.
+* Added callbackGeocodeRestrictions callback that allows the componentRestrictions object to be overridden.
+* Added callbackNearestLoc callback that fires when the nearest location is triggered with the openNearest setting.
+* Added component filtering for geocoding to better restrict by area.
 * Added openNearest setting to open/select the nearest location after searching.
 * Fixed issue with featuredLocations setting where featured locations at far distances would trigger distance alert.
 * Fixed issue with filtering values containing ampersands, which would not display any results - updated filtering regex.
