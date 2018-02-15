@@ -1440,7 +1440,7 @@
 
 			// Directions request callback
 			if (this.settings.callbackDirectionsRequest) {
-				this.settings.callbackDirectionsRequest.call(this, origin, locID, map);
+				this.settings.callbackDirectionsRequest.call(this, origin, locID, map, locationset[locID]);
 			}
 
 			var destination = this.getAddressByMarker(locID);

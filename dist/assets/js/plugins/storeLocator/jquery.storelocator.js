@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.7.5 - 2018-02-12
+/*! jQuery Google Maps Store Locator - v2.7.5 - 2018-02-15
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2018 Bjorn Holine; Licensed MIT */
 
@@ -1444,7 +1444,7 @@
 
 			// Directions request callback
 			if (this.settings.callbackDirectionsRequest) {
-				this.settings.callbackDirectionsRequest.call(this, origin, locID, map);
+				this.settings.callbackDirectionsRequest.call(this, origin, locID, map, locationset[locID]);
 			}
 
 			var destination = this.getAddressByMarker(locID);

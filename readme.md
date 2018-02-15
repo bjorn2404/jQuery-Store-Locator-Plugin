@@ -42,6 +42,7 @@ filtering.
 * Added callbackGeocodeRestrictions callback that allows the componentRestrictions object to be overridden.
 * Added callbackNearestLoc callback that fires when the nearest location is triggered with the openNearest setting.
 * Added component filtering for geocoding to better restrict by area.
+* Added location data object as parameter of callbackDirectionsRequest callback.
 * Added openNearest setting to open/select the nearest location after searching.
 * Fixed issue with featuredLocations setting where featured locations at far distances would trigger distance alert.
 * Fixed issue with filtering values containing ampersands, which would not display any results - updated filtering regex.
