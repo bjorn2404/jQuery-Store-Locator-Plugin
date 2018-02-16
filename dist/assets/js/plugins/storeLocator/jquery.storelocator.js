@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.7.5 - 2018-02-15
+/*! jQuery Google Maps Store Locator - v2.7.5 - 2018-02-16
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2018 Bjorn Holine; Licensed MIT */
 
@@ -91,6 +91,7 @@
 		'exclusiveFiltering'         : false,
 		'exclusiveTax'               : null,
 		'querystringParams'          : false,
+		'altDistanceNoResult'        : false,
 		'debug'                      : false,
 		'sessionStorage'             : false,
 		'markerCluster'              : null,
@@ -680,9 +681,9 @@
 			this.writeDebug('htmlGeocode',arguments);
 			var _this = this;
 
-			if (this.settings.sessionStorage === true && window.sessionStorage && window.sessionStorage.getItem('myGeo')){
-				this.writeDebug('Using Session Saved Values for GEO');
-				this.autoGeocodeQuery(JSON.parse(window.sessionStorage.getItem('myGeo')));
+			if (_this.settings.sessionStorage === true && window.sessionStorage && window.sessionStorage.getItem('myGeo')){
+				_this.writeDebug('Using Session Saved Values for GEO');
+				_this.autoGeocodeQuery(JSON.parse(window.sessionStorage.getItem('myGeo')));
 				return false;
 			}
 			else if (navigator.geolocation) {
@@ -2578,7 +2579,7 @@
 			}
 
 			// Save the closest location to a variable for openNearest setting.
-			if (_this.settings.openNearest === true && typeof locationset[0] !== 'undefined') {
+			if (typeof locationset[0] !== 'undefined') {
 				nearestLoc = locationset[0];
 			}
 
@@ -2607,6 +2608,12 @@
 			// Output page numbers if pagination setting is true
 			if (_this.settings.pagination === true) {
 				_this.paginationSetup(page);
+			}
+
+			// Alternative method to display no results if locations are too far away instead of all locations.
+			if (_this.settings.altDistanceNoResult === true && nearestLoc.distance > _this.settings.distanceAlert) {
+				_this.emptyResult();
+				return;
 			}
 
 			// Handle no results

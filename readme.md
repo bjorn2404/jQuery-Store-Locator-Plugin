@@ -37,6 +37,7 @@ filtering.
 
 ### Version 2.7.5
 
+* Added altDistanceNoResult setting to display no results message vs. all locations when closest location is further than distanceAlert setting.
 * Added callbackAutoGeoSuccess callback that fires after the geolocation API returns a successful result.
 * Added callbackFormVals callback that fires after the form values have been processed from the form.
 * Added callbackGeocodeRestrictions callback that allows the componentRestrictions object to be overridden.
