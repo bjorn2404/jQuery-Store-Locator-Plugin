@@ -2448,7 +2448,7 @@
 
 			// Callback
 			if (_this.settings.callbackSuccess) {
-				_this.settings.callbackSuccess.call(this);
+				_this.settings.callbackSuccess.call(this, mappingObject, originPoint, data, page);
 			}
 
 			openMap = $mapDiv.hasClass('bh-sl-map-open');

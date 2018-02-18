@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.7.5 - 2018-02-16
+/*! jQuery Google Maps Store Locator - v2.7.5 - 2018-02-18
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2018 Bjorn Holine; Licensed MIT */
 
@@ -2452,7 +2452,7 @@
 
 			// Callback
 			if (_this.settings.callbackSuccess) {
-				_this.settings.callbackSuccess.call(this);
+				_this.settings.callbackSuccess.call(this, mappingObject, originPoint, data, page);
 			}
 
 			openMap = $mapDiv.hasClass('bh-sl-map-open');
