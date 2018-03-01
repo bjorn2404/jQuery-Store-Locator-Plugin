@@ -110,8 +110,7 @@ module.exports = function (grunt) {
 				files  : ['src/**/*'],
 				tasks  : ['less', 'sass', 'concat', 'uglify', 'usebanner', 'cssmin'],
 				options: {
-					spawn     : false,
-					livereload: true
+					spawn     : false
 				}
 			},
 			test     : {
@@ -136,7 +135,7 @@ module.exports = function (grunt) {
 
 	// Build
 	grunt.registerTask('build', ['less', 'sass', 'concat', 'uglify', 'usebanner', 'cssmin']);
-	
+
 	//Watch src build
 	grunt.registerTask('watchsrc', ['watch:src']);
 
