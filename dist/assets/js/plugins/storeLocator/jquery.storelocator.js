@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v2.7.5 - 2018-02-18
+/*! jQuery Google Maps Store Locator - v2.7.5 - 2018-03-01
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2018 Bjorn Holine; Licensed MIT */
 
@@ -42,7 +42,6 @@
 		'fullMapStart'               : false,
 		'fullMapStartBlank'          : false,
 		'fullMapStartListLimit'      : false,
-		'geocodeID'                  : null,
 		'infoBubble'                 : null,
 		'inlineDirections'           : false,
 		'lengthUnit'                 : 'm',
@@ -81,6 +80,7 @@
 		'closeIcon'                  : 'bh-sl-close-icon',
 		'formContainer'              : 'bh-sl-form-container',
 		'formID'                     : 'bh-sl-user-location',
+		'geocodeID'                  : null,
 		'loadingContainer'           : 'bh-sl-loading',
 		'locationList'               : 'bh-sl-loc-list',
 		'mapID'                      : 'bh-sl-map',
@@ -124,10 +124,10 @@
 		'addressErrorAlert'          : 'Unable to find address',
 		'autoGeocodeErrorAlert'      : 'Automatic location detection failed. Please fill in your address or zip code.',
 		'distanceErrorAlert'         : 'Unfortunately, our closest location is more than ',
-		'mileLang'                   : 'mile',
-		'milesLang'                  : 'miles',
 		'kilometerLang'              : 'kilometer',
 		'kilometersLang'             : 'kilometers',
+		'mileLang'                   : 'mile',
+		'milesLang'                  : 'miles',
 		'noResultsTitle'             : 'No results',
 		'noResultsDesc'              : 'No locations were found with the given criteria. Please modify your selections or input.',
 		'nextPage'                   : 'Next &raquo;',

@@ -29,24 +29,24 @@ $('#bh-sl-map-container').storeLocator({
 
 | Function | Description |
 |---|---|
-| [callbackAutoGeoSuccess](callbacks/callback-autogeosuccess.md) | Geolocation API success callback |
-| [callbackNotify](callbacks/callback-notification.md) | Notification callback |
-| [callbackRegion](callbacks/callback-region.md) | Region callback |
-| [callbackFormVals](callbacks/callback-formvals.md) | Form values callback |
-| [callbackGeocodeRestrictions](callbacks/callback-geocode-restrictions.md) | Geocoding component restrictions callback |
-| [callbackBeforeSend](callbacks/callback-beforesend.md) | Before location data request callback |
-| [callbackDirectionsRequest](callbacks/callback-directionsrequest.md) | Directions request callback |
-| [callbackCloseDirections](callbacks/callback-closedirections.md) | Close directions callback |
-| [callbackNoResults](callbacks/callback-noresults.md) | No results callback |
-| [callbackJsonp](callbacks/callback-jsonp.md) | JSONP callback |
-| [callbackCreateMarker](callbacks/callback-createmarker.md) | Create marker override callback |
-| [callbackSuccess](callbacks/callback-success.md) | Success callback |
-| [callbackMapSet](callbacks/callback-mapset.md) | Map set callback |
-| [callbackModalOpen](callbacks/callback-modalopen.md) | Modal open callback |
-| [callbackModalReady](callbacks/callback-modalready.md) | Modal ready callback |
-| [callbackModalClose](callbacks/callback-modalclose.md) | Modal close callback |
-| [callbackNearestLoc](callbacks/callback-nearestloc.md) | Nearest location callback |
-| [callbackMarkerClick](callbacks/callback-markerclick.md) | Marker click callback |
-| [callbackListClick](callbacks/callback-listclick.md) | Location list click callback |
-| [callbackPageChange](callbacks/callback-pagechange.md) | Page change callback |
-| [callbackFilters](callbacks/callback-filters.md) | Filters callback |
+| [callbackAutoGeoSuccess](callbacks/callback-autogeosuccess.md) | null | Geolocation API success callback |
+| [callbackBeforeSend](callbacks/callback-beforesend.md) | null | | Before location data request callback |
+| [callbackCloseDirections](callbacks/callback-closedirections.md) | null | | Close directions callback |
+| [callbackCreateMarker](callbacks/callback-createmarker.md) | null | | Create marker override callback |
+| [callbackDirectionsRequest](callbacks/callback-directionsrequest.md) | null | | Directions request callback |
+| [callbackFilters](callbacks/callback-filters.md) | null | | Filters callback |
+| [callbackFormVals](callbacks/callback-formvals.md) | null | | Form values callback |
+| [callbackGeocodeRestrictions](callbacks/callback-geocode-restrictions.md) | null | | Geocoding component restrictions callback |
+| [callbackJsonp](callbacks/callback-jsonp.md) | null | | JSONP callback |
+| [callbackListClick](callbacks/callback-listclick.md) | null | | Location list click callback |
+| [callbackMapSet](callbacks/callback-mapset.md) | null | | Map set callback |
+| [callbackMarkerClick](callbacks/callback-markerclick.md) | null | | Marker click callback |
+| [callbackModalClose](callbacks/callback-modalclose.md) | null | | Modal close callback |
+| [callbackModalOpen](callbacks/callback-modalopen.md) | null | | Modal open callback |
+| [callbackModalReady](callbacks/callback-modalready.md) | null | | Modal ready callback |
+| [callbackNearestLoc](callbacks/callback-nearestloc.md) | null | | Nearest location callback |
+| [callbackNoResults](callbacks/callback-noresults.md) | null | | No results callback |
+| [callbackNotify](callbacks/callback-notification.md) | null | | Notification callback |
+| [callbackPageChange](callbacks/callback-pagechange.md) | null | | Page change callback |
+| [callbackRegion](callbacks/callback-region.md) | null | | Region callback |
+| [callbackSuccess](callbacks/callback-success.md) | null | | Success callback |
