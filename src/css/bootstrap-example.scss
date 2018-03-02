@@ -1,0 +1,294 @@
+$white: #fff;
+$gray: #ccc;
+$darkgray: #8e8e8e;
+$titlegray: #797874;
+$shadow: #656565;
+$textgray: #555;
+$darkergray: #2c2c2c;
+$black: #000;
+$blue: #005293;
+$red: #ae2118;
+$arialFont: Arial, Helvetica, sans-serif;
+
+/* Infowindow Roboto font override */
+.gm-style div, .gm-style span, .gm-style label, .gm-style a {
+  font-family: $arialFont;
+}
+
+.bh-sl-error {
+  clear: both;
+  float: left;
+  width: 100%;
+  padding: 10px 0;
+  color: $red;
+  font-weight: bold;
+}
+
+.bh-sl-container {
+  color: $textgray;
+
+  /* Avoid image issues with Google Maps and CSS resets */
+  img {
+    max-width: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Avoid issues with Google Maps and CSS frameworks */
+  > * {
+    box-sizing: content-box !important;
+  }
+
+  .jumbotron{
+    margin-bottom: 0;
+  }
+
+  .form-input {
+    input,select,label {
+      margin-right: 10px;
+    }
+  }
+
+  .loc-alt-dist {
+    display: none;
+  }
+
+  .bh-sl-loading {
+    float: left;
+    margin: 4px 0 0 10px;
+    width: 16px;
+    height: 16px;
+    background: url(../img/ajax-loader.gif) no-repeat;
+  }
+
+  .bh-sl-filters-container {
+    clear: both;
+    width: 100%;
+    margin: 15px 0;
+
+    .bh-sl-filters {
+      list-style: none;
+      float: left;
+      padding: 0;
+      margin: 0 100px 0 0;
+
+      li {
+        display: block;
+        clear: left;
+        float: left;
+        width: 100%;
+        margin: 5px 0;
+
+        label {
+          display: inline;
+        }
+
+        input {
+          display: block;
+          float: left;
+          margin: 2px 8px 2px 0;
+        }
+      }
+    }
+  }
+
+  .bh-sl-map-container {
+    a {
+      color: $blue;
+      text-decoration: none;
+      &:hover, &:active {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .bh-sl-loc-list {
+    height: 530px;
+    overflow-x: auto;
+    font-size: 13px;
+
+    ul {
+      display: block;
+      clear: left;
+      float: left;
+      width: 100%;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        display: block;
+        clear: left;
+        float: left;
+        margin: 3% 4%;
+        cursor: pointer;
+        width: 92%;
+        border: 1px solid $white; /* Adding this to prevent moving li elements when adding the list-focus class*/
+      }
+    }
+
+    .list-label {
+      float: left;
+      margin: 10px 0 0 6px;
+      padding: 4px;
+      width: 27px;
+      text-align: center;
+      background: darken( $blue, 20% );
+      color: $white;
+      font-weight: bold;
+      border-radius: 15px;
+    }
+
+    .list-details {
+      float: left;
+      margin-left: 6px;
+      width: 80%;
+
+      .list-content {
+        padding: 10px;
+      }
+
+      .loc-dist {
+        font-weight: bold;
+        font-style: italic;
+        color: $darkgray;
+      }
+    }
+
+    .list-focus {
+      border: 1px solid rgba(0, 82, 147, 0.4);
+      -moz-box-shadow: 0 0 8px rgba(0, 82, 147, 0.4);
+      -webkit-box-shadow: 0 0 8px rgba(0, 82, 147, 0.4);
+      box-shadow: 0 0 8px rgba(0, 100, 180, 0.4);
+      transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+    }
+
+    .bh-sl-close-directions-container {
+      width: 100%;
+      height: 20px;
+      position: relative;
+
+      .bh-sl-close-icon {
+        top: 0;
+        right: 6px;
+      }
+    }
+
+    .bh-sl-noresults-title {
+      font-weight: bold;
+    }
+  }
+
+  .loc-name {
+    /* Picked up by both list and infowindows */
+    font-size: 15px;
+    font-weight: bold;
+  }
+
+  .bh-sl-map {
+    height: 530px;
+  }
+
+  .bh-sl-pagination-container {
+    clear: both;
+
+    ol {
+      list-style-type: none;
+      text-align: center;
+      margin: 0;
+      padding: 10px 0;
+
+      li {
+        display: inline-block;
+        padding: 10px;
+        cursor: pointer;
+        font: bold 14px $arialFont;
+        color: $blue;
+      }
+
+      .bh-sl-current {
+        color: $textgray;
+        cursor: auto;
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+/* Modal window */
+.bh-sl-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  background: url(../img/overlay-bg.png) repeat;
+
+  .bh-sl-modal-window {
+    position: absolute;
+    left: 50%;
+    margin-left: -460px; /* width divided by 2 */
+    margin-top: 60px;
+    width: 920px;
+    height: 620px;
+    z-index: 10010;
+    background: $white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #656565;
+
+    .bh-sl-map-container {
+      margin-top: 50px; /* increase map container margin */
+    }
+
+    .bh-sl-modal-content {
+      float: left;
+      padding: 0 22px; /* there's already a margin on the top of the map-container div */
+    }
+
+    .bh-sl-close-icon {
+      top: 13px;
+      right: 22px;
+    }
+  }
+}
+
+.bh-sl-close-icon {
+  position: absolute;
+  cursor: pointer;
+  height: 24px;
+  width: 24px;
+
+  &:after,
+  &:before {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    bottom: 0;
+    left: 50%;
+    background: $gray;
+    content: '';
+    display: block;
+    height: 24px;
+    margin: -3px 0 0 -1px;
+    width: 3px;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+
+  &:hover:after,
+  &:hover:before {
+    background: darken($gray, 10%);
+  }
+
+  &:before {
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+  }
+}

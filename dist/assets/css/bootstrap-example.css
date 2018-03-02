@@ -1,179 +1,143 @@
 /* Infowindow Roboto font override */
-.gm-style div,
-.gm-style span,
-.gm-style label,
-.gm-style a {
-  font-family: Arial, Helvetica, sans-serif;
-}
+.gm-style div, .gm-style span, .gm-style label, .gm-style a {
+  font-family: Arial, Helvetica, sans-serif; }
+
 .bh-sl-error {
   clear: both;
   float: left;
   width: 100%;
   padding: 10px 0;
   color: #ae2118;
-  font-weight: bold;
-}
+  font-weight: bold; }
+
 .bh-sl-container {
-  color: #333333;
+  color: #555;
   /* Avoid image issues with Google Maps and CSS resets */
-  /* Avoid issues with Google Maps and CSS frameworks */
-}
-.bh-sl-container img {
-  max-width: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-}
-.bh-sl-container > * {
-  box-sizing: content-box !important;
-}
-.bh-sl-container .jumbotron {
-  padding-top: 30px;
-}
-.bh-sl-container .form-input input,
-.bh-sl-container .form-input select,
-.bh-sl-container .form-input label {
-  margin-right: 10px;
-}
-.bh-sl-container .bh-sl-loading {
-  float: left;
-  margin: 4px 0 0 10px;
-  width: 16px;
-  height: 16px;
-  background: url(../img/ajax-loader.gif) no-repeat;
-}
-.bh-sl-container .bh-sl-filters-container {
-  clear: both;
-  width: 100%;
-  margin: 15px 0;
-}
-.bh-sl-container .bh-sl-filters-container .bh-sl-filters {
-  list-style: none;
-  float: left;
-  padding: 0;
-  margin: 0 100px 0 0;
-}
-.bh-sl-container .bh-sl-filters-container .bh-sl-filters li {
-  display: block;
-  clear: left;
-  float: left;
-  width: 100%;
-  margin: 5px 0;
-}
-.bh-sl-container .bh-sl-filters-container .bh-sl-filters li label {
-  display: inline;
-}
-.bh-sl-container .bh-sl-filters-container .bh-sl-filters li input {
-  display: block;
-  float: left;
-  margin: 2px 8px 2px 0;
-}
-.bh-sl-container .bh-sl-map-container {
-  margin-top: 27px;
-}
-.bh-sl-container .bh-sl-map-container a {
-  color: #005293;
-  text-decoration: none;
-}
-.bh-sl-container .bh-sl-map-container a:hover,
-.bh-sl-container .bh-sl-map-container a:active {
-  text-decoration: underline;
-}
-.bh-sl-container .bh-sl-loc-list {
-  height: 530px;
-  overflow-x: auto;
-  font-size: 13px;
-}
-.bh-sl-container .bh-sl-loc-list ul {
-  display: block;
-  clear: left;
-  float: left;
-  width: 100%;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.bh-sl-container .bh-sl-loc-list ul li {
-  display: block;
-  clear: left;
-  float: left;
-  margin: 3% 4%;
-  cursor: pointer;
-  width: 92%;
-  border: 1px solid #ffffff;
-  /* Adding this to prevent moving li elements when adding the list-focus class*/
-}
-.bh-sl-container .bh-sl-loc-list .list-label {
-  float: left;
-  margin: 10px 0 0 6px;
-  padding: 4px;
-  width: 27px;
-  text-align: center;
-  background: #00192d;
-  color: #ffffff;
-  font-weight: bold;
-  border-radius: 15px;
-}
-.bh-sl-container .bh-sl-loc-list .list-details {
-  float: left;
-  margin-left: 6px;
-  width: 80%;
-}
-.bh-sl-container .bh-sl-loc-list .list-details .list-content {
-  padding: 10px;
-}
-.bh-sl-container .bh-sl-loc-list .list-details .loc-dist {
-  font-weight: bold;
-  font-style: italic;
-  color: #8e8e8e;
-}
-.bh-sl-container .bh-sl-loc-list .list-focus {
-  border: 1px solid rgba(0, 82, 147, 0.4);
-  -moz-box-shadow: 0 0 8px rgba(0, 82, 147, 0.4);
-  -webkit-box-shadow: 0 0 8px rgba(0, 82, 147, 0.4);
-  box-shadow: 0 0 8px rgba(0, 100, 180, 0.4);
-  transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
-}
-.bh-sl-container .bh-sl-loc-list .bh-sl-close-directions-container {
-  width: 100%;
-  height: 20px;
-  position: relative;
-}
-.bh-sl-container .bh-sl-loc-list .bh-sl-close-directions-container .bh-sl-close-icon {
-  top: 0;
-  right: 6px;
-}
-.bh-sl-container .bh-sl-loc-list .bh-sl-noresults-title {
-  font-weight: bold;
-}
-.bh-sl-container .loc-name {
-  /* Picked up by both list and infowindows */
-  font-size: 15px;
-  font-weight: bold;
-}
-.bh-sl-container .bh-sl-map {
-  height: 530px;
-}
-.bh-sl-container .bh-sl-pagination-container {
-  clear: both;
-}
-.bh-sl-container .bh-sl-pagination-container ol {
-  list-style-type: none;
-  text-align: center;
-  margin: 0;
-  padding: 10px 0;
-}
-.bh-sl-container .bh-sl-pagination-container ol li {
-  display: inline-block;
-  padding: 10px;
-  cursor: pointer;
-  font: bold 14px Arial, Helvetica, sans-serif;
-  color: #005293;
-}
-.bh-sl-container .bh-sl-pagination-container ol .bh-sl-current {
-  color: #333333;
-  cursor: auto;
-  text-decoration: none;
-}
+  /* Avoid issues with Google Maps and CSS frameworks */ }
+  .bh-sl-container img {
+    max-width: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important; }
+  .bh-sl-container > * {
+    box-sizing: content-box !important; }
+  .bh-sl-container .jumbotron {
+    margin-bottom: 0; }
+  .bh-sl-container .form-input input, .bh-sl-container .form-input select, .bh-sl-container .form-input label {
+    margin-right: 10px; }
+  .bh-sl-container .loc-alt-dist {
+    display: none; }
+  .bh-sl-container .bh-sl-loading {
+    float: left;
+    margin: 4px 0 0 10px;
+    width: 16px;
+    height: 16px;
+    background: url(../img/ajax-loader.gif) no-repeat; }
+  .bh-sl-container .bh-sl-filters-container {
+    clear: both;
+    width: 100%;
+    margin: 15px 0; }
+    .bh-sl-container .bh-sl-filters-container .bh-sl-filters {
+      list-style: none;
+      float: left;
+      padding: 0;
+      margin: 0 100px 0 0; }
+      .bh-sl-container .bh-sl-filters-container .bh-sl-filters li {
+        display: block;
+        clear: left;
+        float: left;
+        width: 100%;
+        margin: 5px 0; }
+        .bh-sl-container .bh-sl-filters-container .bh-sl-filters li label {
+          display: inline; }
+        .bh-sl-container .bh-sl-filters-container .bh-sl-filters li input {
+          display: block;
+          float: left;
+          margin: 2px 8px 2px 0; }
+  .bh-sl-container .bh-sl-map-container a {
+    color: #005293;
+    text-decoration: none; }
+    .bh-sl-container .bh-sl-map-container a:hover, .bh-sl-container .bh-sl-map-container a:active {
+      text-decoration: underline; }
+  .bh-sl-container .bh-sl-loc-list {
+    height: 530px;
+    overflow-x: auto;
+    font-size: 13px; }
+    .bh-sl-container .bh-sl-loc-list ul {
+      display: block;
+      clear: left;
+      float: left;
+      width: 100%;
+      list-style: none;
+      margin: 0;
+      padding: 0; }
+      .bh-sl-container .bh-sl-loc-list ul li {
+        display: block;
+        clear: left;
+        float: left;
+        margin: 3% 4%;
+        cursor: pointer;
+        width: 92%;
+        border: 1px solid #fff;
+        /* Adding this to prevent moving li elements when adding the list-focus class*/ }
+    .bh-sl-container .bh-sl-loc-list .list-label {
+      float: left;
+      margin: 10px 0 0 6px;
+      padding: 4px;
+      width: 27px;
+      text-align: center;
+      background: #00192d;
+      color: #fff;
+      font-weight: bold;
+      border-radius: 15px; }
+    .bh-sl-container .bh-sl-loc-list .list-details {
+      float: left;
+      margin-left: 6px;
+      width: 80%; }
+      .bh-sl-container .bh-sl-loc-list .list-details .list-content {
+        padding: 10px; }
+      .bh-sl-container .bh-sl-loc-list .list-details .loc-dist {
+        font-weight: bold;
+        font-style: italic;
+        color: #8e8e8e; }
+    .bh-sl-container .bh-sl-loc-list .list-focus {
+      border: 1px solid rgba(0, 82, 147, 0.4);
+      -moz-box-shadow: 0 0 8px rgba(0, 82, 147, 0.4);
+      -webkit-box-shadow: 0 0 8px rgba(0, 82, 147, 0.4);
+      box-shadow: 0 0 8px rgba(0, 100, 180, 0.4);
+      transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s; }
+    .bh-sl-container .bh-sl-loc-list .bh-sl-close-directions-container {
+      width: 100%;
+      height: 20px;
+      position: relative; }
+      .bh-sl-container .bh-sl-loc-list .bh-sl-close-directions-container .bh-sl-close-icon {
+        top: 0;
+        right: 6px; }
+    .bh-sl-container .bh-sl-loc-list .bh-sl-noresults-title {
+      font-weight: bold; }
+  .bh-sl-container .loc-name {
+    /* Picked up by both list and infowindows */
+    font-size: 15px;
+    font-weight: bold; }
+  .bh-sl-container .bh-sl-map {
+    height: 530px; }
+  .bh-sl-container .bh-sl-pagination-container {
+    clear: both; }
+    .bh-sl-container .bh-sl-pagination-container ol {
+      list-style-type: none;
+      text-align: center;
+      margin: 0;
+      padding: 10px 0; }
+      .bh-sl-container .bh-sl-pagination-container ol li {
+        display: inline-block;
+        padding: 10px;
+        cursor: pointer;
+        font: bold 14px Arial, Helvetica, sans-serif;
+        color: #005293; }
+      .bh-sl-container .bh-sl-pagination-container ol .bh-sl-current {
+        color: #555;
+        cursor: auto;
+        text-decoration: none; }
+
 /* Modal window */
 .bh-sl-overlay {
   position: fixed;
@@ -182,67 +146,59 @@
   width: 100%;
   height: 100%;
   z-index: 10000;
-  background: url(../img/overlay-bg.png) repeat;
-}
-.bh-sl-overlay .bh-sl-modal-window {
-  position: absolute;
-  left: 50%;
-  margin-left: -460px;
-  /* width divided by 2 */
-  margin-top: 60px;
-  width: 920px;
-  height: 620px;
-  z-index: 10010;
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 0 10px #656565;
-}
-.bh-sl-overlay .bh-sl-modal-window .bh-sl-map-container {
-  margin-top: 50px;
-  /* increase map container margin */
-}
-.bh-sl-overlay .bh-sl-modal-window .bh-sl-modal-content {
-  float: left;
-  padding: 0 22px;
-  /* there's already a margin on the top of the map-container div */
-}
-.bh-sl-overlay .bh-sl-modal-window .bh-sl-close-icon {
-  top: 13px;
-  right: 22px;
-}
+  background: url(../img/overlay-bg.png) repeat; }
+  .bh-sl-overlay .bh-sl-modal-window {
+    position: absolute;
+    left: 50%;
+    margin-left: -460px;
+    /* width divided by 2 */
+    margin-top: 60px;
+    width: 920px;
+    height: 620px;
+    z-index: 10010;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #656565; }
+    .bh-sl-overlay .bh-sl-modal-window .bh-sl-map-container {
+      margin-top: 50px;
+      /* increase map container margin */ }
+    .bh-sl-overlay .bh-sl-modal-window .bh-sl-modal-content {
+      float: left;
+      padding: 0 22px;
+      /* there's already a margin on the top of the map-container div */ }
+    .bh-sl-overlay .bh-sl-modal-window .bh-sl-close-icon {
+      top: 13px;
+      right: 22px; }
+
 .bh-sl-close-icon {
   position: absolute;
   cursor: pointer;
   height: 24px;
-  width: 24px;
-}
-.bh-sl-close-icon:after,
-.bh-sl-close-icon:before {
-  position: absolute;
-  top: 3px;
-  right: 3px;
-  bottom: 0;
-  left: 50%;
-  background: #cccccc;
-  content: '';
-  display: block;
-  height: 24px;
-  margin: -3px 0 0 -1px;
-  width: 3px;
-  -webkit-transform: rotate(45deg);
-  -moz-transform: rotate(45deg);
-  -ms-transform: rotate(45deg);
-  -o-transform: rotate(45deg);
-  transform: rotate(45deg);
-}
-.bh-sl-close-icon:hover:after,
-.bh-sl-close-icon:hover:before {
-  background: #b3b3b3;
-}
-.bh-sl-close-icon:before {
-  -webkit-transform: rotate(-45deg);
-  -moz-transform: rotate(-45deg);
-  -ms-transform: rotate(-45deg);
-  -o-transform: rotate(-45deg);
-  transform: rotate(-45deg);
-}
+  width: 24px; }
+  .bh-sl-close-icon:after, .bh-sl-close-icon:before {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    bottom: 0;
+    left: 50%;
+    background: #ccc;
+    content: '';
+    display: block;
+    height: 24px;
+    margin: -3px 0 0 -1px;
+    width: 3px;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg); }
+  .bh-sl-close-icon:hover:after, .bh-sl-close-icon:hover:before {
+    background: #b3b3b3; }
+  .bh-sl-close-icon:before {
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg); }
+
+/*# sourceMappingURL=bootstrap-example.css.map */

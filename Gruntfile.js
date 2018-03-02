@@ -13,17 +13,11 @@ module.exports = function (grunt) {
 		clean    : {
 			files: ['dist']
 		},
-		less     : {
-			dist: {
-				files: {
-					'dist/assets/css/bootstrap-example.css' : 'src/css/bootstrap-example.less'
-				}
-			}
-		},
 		sass     : {
 			dist: {
 				files: {
-					'dist/assets/css/storelocator.css' : 'src/css/storelocator.scss'
+					'dist/assets/css/storelocator.css' : 'src/css/storelocator.scss',
+					'dist/assets/css/bootstrap-example.css' : 'src/css/bootstrap-example.scss'
 				}
 			}
 		},
@@ -108,7 +102,7 @@ module.exports = function (grunt) {
 			},
 			src      : {
 				files  : ['src/**/*'],
-				tasks  : ['less', 'sass', 'concat', 'uglify', 'usebanner', 'cssmin'],
+				tasks  : ['sass', 'concat', 'uglify', 'usebanner', 'cssmin'],
 				options: {
 					spawn     : false
 				}
@@ -122,7 +116,6 @@ module.exports = function (grunt) {
 
 	// These plugins provide necessary tasks.
 	grunt.loadNpmTasks('grunt-contrib-clean');
-	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-sass');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -134,7 +127,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-handlebars');
 
 	// Build
-	grunt.registerTask('build', ['less', 'sass', 'concat', 'uglify', 'usebanner', 'cssmin']);
+	grunt.registerTask('build', ['sass', 'concat', 'uglify', 'usebanner', 'cssmin']);
 
 	//Watch src build
 	grunt.registerTask('watchsrc', ['watch:src']);
