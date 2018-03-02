@@ -77,6 +77,7 @@
 		'formContainer'              : 'bh-sl-form-container',
 		'formID'                     : 'bh-sl-user-location',
 		'geocodeID'                  : null,
+		'lengthSwapID'               : 'bh-sl-length-swap',
 		'loadingContainer'           : 'bh-sl-loading',
 		'locationList'               : 'bh-sl-loc-list',
 		'mapID'                      : 'bh-sl-map',
@@ -841,7 +842,7 @@
 				if (locationset[loopcount].hasOwnProperty(key)) {
 					value = locationset[loopcount][key];
 
-					if (key === 'distance') {
+					if (key === 'distance' || key === 'altdistance') {
 						value = this.roundNumber(value, 2);
 					}
 
@@ -1113,21 +1114,27 @@
 			var indicator = '';
 			this._createLocationVariables(currentMarker.get('id'));
 
-			var distLength;
+			var altDistLength,
+				distLength;
+
 			if (locationData.distance <= 1) {
 				if (this.settings.lengthUnit === 'km') {
 					distLength = this.settings.kilometerLang;
+					altDistLength = this.settings.mileLang;
 				}
 				else {
 					distLength = this.settings.mileLang;
+					altDistLength = this.settings.kilometerLang;
 				}
 			}
 			else {
 				if (this.settings.lengthUnit === 'km') {
 					distLength = this.settings.kilometersLang;
+					altDistLength = this.settings.milesLang;
 				}
 				else {
 					distLength = this.settings.milesLang;
+					altDistLength = this.settings.kilometersLang;
 				}
 			}
 
@@ -1149,10 +1156,11 @@
 			// Define location data
 			return {
 				location: [$.extend(locationData, {
-					'markerid': markerId,
-					'marker'  : indicator,
-					'length'  : distLength,
-					'origin'  : originalOrigin
+					'markerid' : markerId,
+					'marker'   : indicator,
+					'altlength': altDistLength,
+					'length'   : distLength,
+					'origin'   : originalOrigin
 				})]
 			};
 		},
@@ -1512,6 +1520,22 @@
 		},
 
 		/**
+		 * Handle length unit swap
+		 *
+		 * @param $lengthSwap
+		 */
+		lengthUnitSwap: function($lengthSwap) {
+
+			if ($lengthSwap.val() === 'alt-distance') {
+				$('.' + this.settings.locationList + ' .loc-alt-dist').show();
+				$('.' + this.settings.locationList + ' .loc-default-dist').hide();
+			} else if ($lengthSwap.val() === 'default-distance') {
+				$('.' + this.settings.locationList + ' .loc-default-dist').show();
+				$('.' + this.settings.locationList + ' .loc-alt-dist').hide();
+			}
+		},
+
+		/**
 		 * Process the form values and/or query string
 		 *
 		 * @param e {Object} event
@@ -1675,6 +1699,15 @@
 			if (typeof origin !== 'undefined') {
 				if (!data.distance) {
 					data.distance = this.geoCodeCalcCalcDistance(lat, lng, data.lat, data.lng, GeoCodeCalc.EarthRadius);
+
+					// Alternative distance length unit
+					if (this.settings.lengthUnit === 'm') {
+						// Miles to kilometers
+						data.altdistance = parseFloat(data.distance)*1.609344;
+					} else if (this.settings.lengthUnit === 'km') {
+						// Kilometers to miles
+						data.altdistance = parseFloat(data.distance)/1.609344;
+					}
 				}
 			}
 
@@ -2430,6 +2463,8 @@
 			var i = 0;
 			var orig_lat, orig_lng, origin, name, maxDistance, marker, bounds, storeStart, storeNumToShow, myOptions, distError, openMap, infowindow, nearestLoc;
 			var taxFilters = {};
+			var $lengthSwap = $('#' + _this.settings.lengthSwapID);
+
 			if (!this.isEmptyObject(mappingObject)) {
 				orig_lat = mappingObject.lat;
 				orig_lng = mappingObject.lng;
@@ -2765,6 +2800,16 @@
 				$(markers).each(function (x) {
 					var currentMarker = markers[x];
 					_this.listSetup(currentMarker, storeStart, page);
+				});
+			}
+
+			// Length unit swap setup
+			if ($lengthSwap.length) {
+				_this.lengthUnitSwap($lengthSwap);
+
+				$lengthSwap.on('change.'+pluginName, function (e) {
+					e.stopPropagation();
+					_this.lengthUnitSwap($lengthSwap);
 				});
 			}
 

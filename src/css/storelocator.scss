@@ -117,6 +117,10 @@ $tabletLarge: '(min-width: 1024px)';
 		}
 	}
 
+	.loc-alt-dist {
+		display: none;
+	}
+
 	button {
 		background: darken( $blue, 5% );
 		border: none;
@@ -168,7 +172,7 @@ $tabletLarge: '(min-width: 1024px)';
 					float: left;
 					margin-right: 8px;
 				}
-				
+
 				select {
 					box-sizing: border-box;
 					border: 1px solid $gray;
@@ -283,7 +287,7 @@ $tabletLarge: '(min-width: 1024px)';
 
 		.bh-sl-directions-panel {
 			margin: 0 2%;
-			
+
 			/* Avoid issues with table-layout */
 			table {
 				table-layout: auto;
@@ -313,7 +317,7 @@ $tabletLarge: '(min-width: 1024px)';
 			font-weight: bold;
 			margin: 15px;
 		}
-		
+
 		.bh-sl-noresults-desc {
 			margin: 0 15px;
 		}
@@ -371,7 +375,7 @@ $tabletLarge: '(min-width: 1024px)';
 	top: 0;
 	width: 100%;
 	z-index: 10000;
-	
+
 	.bh-sl-modal-window {
 		background: $white;
 		border-radius: 10px;
@@ -383,7 +387,7 @@ $tabletLarge: '(min-width: 1024px)';
 		height: 620px;
 		width: 920px;
 		z-index: 10010;
-		
+
 		.bh-sl-map-container {
 			margin-top: 50px; /* increase map container margin */
 		}
@@ -406,7 +410,7 @@ $tabletLarge: '(min-width: 1024px)';
 	height: 24px;
 	position: absolute;
 	width: 24px;
-	
+
 	&:after,
 	&:before {
 		background: $gray;

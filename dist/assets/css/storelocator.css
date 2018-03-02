@@ -76,6 +76,8 @@
         .bh-sl-container .form-input input, .bh-sl-container .form-input select {
           width: auto;
           margin: 0 15px 0 10px; } }
+  .bh-sl-container .loc-alt-dist {
+    display: none; }
   .bh-sl-container button {
     background: #00447a;
     border: none;

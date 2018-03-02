@@ -20,7 +20,7 @@
 | distanceAlert | 60 | Displays alert if there are no locations with 60 m/km of the user's location. Set to -1 to disable. |
 | dragSearch | false | Set to true to perform a new search after the map is dragged. |
 | exclusiveFiltering | false | Set to true to enable exclusive taxonomy filtering rather than the default inclusive. |
-| exclusiveTax | null | Set to comma separated array of taxonomies that should filter exclusively vs. inclusively.  |
+| exclusiveTax | null | Set to an array of taxonomies that should filter exclusively vs. inclusively.  |
 | featuredLocations | false | Set to true to enable featuring locations at the top of the location list (no matter the distance). Add featured=”true” to featured locations in your XML or JSON locations data. |
 | fullMapStart | false | Set to true if you want to immediately show a map of all locations. The map will center and zoom automatically. |
 | fullMapStartBlank | false | Set to a zoom integer if you want to immediately show a blank map without any locations. |
@@ -64,6 +64,7 @@
 | formContainer | 'bh-sl-form-container' | Class of the container around the form. |
 | formID | 'bh-sl-user-location' | ID of the input form. |
 | geocodeID | null | Set to the ID of an element to connect the HTML5 geolocation API to a button instead of firing automatically. |
+| lengthSwapID | 'bh-sl-length-swap' | Set to the ID of a select element within the form container to allow users to swap between the distance length unit (miles/kilometers). |
 | loadingContainer | 'bh-sl-loading' | Class of element container that displays the loading animated gif. |
 | locationList | 'bh-sl-loc-list' | Class of the container around the location list. |
 | mapID | 'bh-sl-map' | ID of the div where the actual Google Map is displayed. |

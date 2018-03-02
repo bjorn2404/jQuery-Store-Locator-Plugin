@@ -4,13 +4,14 @@
 	<div class="list-details">
 		<div class="list-content">
 			<div class="loc-name">{{name}}</div>
-			<div class="loc-addr">{{address}}</div> 
-			<div class="loc-addr2">{{address2}}</div> 
+			<div class="loc-addr">{{address}}</div>
+			<div class="loc-addr2">{{address2}}</div>
 			<div class="loc-addr3">{{city}}{{#if city}},{{/if}} {{state}} {{postal}}</div>
 			<div class="loc-phone">{{phone}}</div>
 			<div class="loc-web"><a href="{{web}}" target="_blank">{{niceURL web}}</a></div>
 			{{#if distance}}
-				<div class="loc-dist">{{distance}} {{length}}</div>
+				<div class="loc-dist loc-default-dist">{{distance}} {{length}}</div>
+				{{#if altdistance}}<div class="loc-dist loc-alt-dist">{{altdistance}} {{altlength}}</div>{{/if}}
 				<div class="loc-directions"><a href="https://maps.google.com/maps?saddr={{origin}}&amp;daddr={{address}} {{address2}} {{city}}, {{state}} {{postal}}" target="_blank">Directions</a></div>
 			{{/if}}
 		</div>
