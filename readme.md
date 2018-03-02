@@ -35,7 +35,9 @@ filtering.
 
 ## Changelog
 
-### Version 2.7.5
+### Version 3.0.0
+
+Version 3 has a breaking change with the dataLocation and dataType settings switching the default from XML to JSON.
 
 * Added altDistanceNoResult setting to display no results message vs. all locations when closest location is further than distanceAlert setting.
 * Added callbackAutoGeoSuccess callback that fires after the geolocation API returns a successful result.
@@ -43,6 +45,7 @@ filtering.
 * Added callbackGeocodeRestrictions callback that allows the componentRestrictions object to be overridden.
 * Added callbackNearestLoc callback that fires when the nearest location is triggered with the openNearest setting.
 * Added component filtering for geocoding to better restrict by area.
+* Added length unit (distance miles/kilometers) front-end swap functionality, setting and example file.
 * Added mappingObject, originPoint, data, and page parameters to callbackSuccess callback.
 * Added location data object as parameter of callbackDirectionsRequest callback.
 * Added openNearest setting to open/select the nearest location after searching.
