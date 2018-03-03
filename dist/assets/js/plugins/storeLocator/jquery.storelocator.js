@@ -546,14 +546,14 @@
 			}
 
 			// Raw data
-			if( _this.settings.dataRaw !== null ) {
+			if(_this.settings.dataRaw !== null) {
 				// XML
 				if( dataTypeRead === 'xml' ) {
 					return $.parseXML(_this.settings.dataRaw);
 				}
 
 				// JSON
-				else if( dataTypeRead === 'json' ) {
+				else if(dataTypeRead === 'json') {
 					if (Array.isArray && Array.isArray(_this.settings.dataRaw)) {
 						return _this.settings.dataRaw;
 					}

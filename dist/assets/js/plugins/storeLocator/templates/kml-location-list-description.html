@@ -4,7 +4,9 @@
 	<div class="list-details">
 		<div class="list-content">
 			<div class="loc-name">{{name}}</div>
-			<div>{{{description}}}</div>
+			{{#if description}}
+				<div>{{{description}}}</div>
+			{{/if}}
 		</div>
 	</div>
 </li>

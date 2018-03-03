@@ -1,4 +1,6 @@
 {{#location}}
 <div class="loc-name">{{name}}</div>
-<div>{{{description}}}</div>
+{{#if description}}
+    <div>{{{description}}}</div>
+{{/if}}
 {{/location}}
