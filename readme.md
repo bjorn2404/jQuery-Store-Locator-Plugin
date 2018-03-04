@@ -44,9 +44,11 @@ Version 3 has a breaking change with the dataLocation and dataType settings swit
 * Added callbackFormVals callback that fires after the form values have been processed from the form.
 * Added callbackGeocodeRestrictions callback that allows the componentRestrictions object to be overridden.
 * Added callbackNearestLoc callback that fires when the nearest location is triggered with the openNearest setting.
+* Added callbackSorting callback that fires when when a new sorting method is selected.
 * Added component filtering for geocoding to better restrict by area.
 * Added length unit (distance miles/kilometers) front-end swap functionality, setting and example file.
 * Added mappingObject, originPoint, data, and page parameters to callbackSuccess callback.
+* Added new front-end sorting functionality, settings, and example file.
 * Added location data object as parameter of callbackDirectionsRequest callback.
 * Added openNearest setting to open/select the nearest location after searching.
 * Fixed issue with featuredLocations setting where featured locations at far distances would trigger distance alert.

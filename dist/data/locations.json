@@ -16,7 +16,8 @@
     "hours2": "",
     "hours3": "",
     "featured": "",
-    "features": ""
+    "features": "",
+    "date": "10/17/18"
   },
   {
     "id": "2",
@@ -35,7 +36,8 @@
     "hours2": "",
     "hours3": "",
     "featured": "",
-    "features": "Online Ordering"
+    "features": "Online Ordering",
+    "date": "09/17/18"
   },
   {
     "id": "3",
@@ -54,7 +56,8 @@
     "hours2": "",
     "hours3": "",
     "featured": "true",
-    "features": "Online Ordering, Fresh Guacamole"
+    "features": "Online Ordering, Fresh Guacamole",
+    "date": "08/17/18"
   },
   {
     "id": "4",
@@ -73,7 +76,8 @@
     "hours2": "",
     "hours3": "",
     "featured": "",
-    "features": "Online Ordering"
+    "features": "Online Ordering",
+    "date": "07/17/18"
   },
   {
     "id": "5",
@@ -92,7 +96,8 @@
     "hours2": "",
     "hours3": "",
     "featured": "",
-    "features": "Margaritas"
+    "features": "Margaritas",
+    "date": "06/17/18"
   },
   {
     "id": "6",
@@ -111,7 +116,8 @@
     "hours2": "",
     "hours3": "",
     "featured": "",
-    "features": "Online Ordering, Margaritas"
+    "features": "Online Ordering, Margaritas",
+    "date": "05/17/18"
   },
   {
     "id": "7",
@@ -130,7 +136,8 @@
     "hours2": "",
     "hours3": "",
     "featured": "",
-    "features": "Fresh Guacamole"
+    "features": "Fresh Guacamole",
+    "date": "04/17/18"
   },
   {
     "id": "8",
@@ -149,7 +156,8 @@
     "hours2": "",
     "hours3": "",
     "featured": "",
-    "features": "Online Ordering, Fresh Guacamole"
+    "features": "Online Ordering, Fresh Guacamole",
+    "date": "03/17/18"
   },
   {
     "id": "9",
@@ -168,7 +176,8 @@
     "hours2": "",
     "hours3": "",
     "featured": "",
-    "features": "Margaritas"
+    "features": "Margaritas",
+    "date": "02/17/18"
   },
   {
     "id": "10",
@@ -187,7 +196,8 @@
     "hours2": "",
     "hours3": "",
     "featured": "",
-    "features": ""
+    "features": "",
+    "date": "01/17/18"
   },
   {
     "id": "11",
@@ -206,7 +216,8 @@
     "hours2": "",
     "hours3": "",
     "featured": "",
-    "features": "Fresh Guacamole"
+    "features": "Fresh Guacamole",
+    "date": "12/17/17"
   },
   {
     "id": "12",
@@ -225,7 +236,8 @@
     "hours2": "",
     "hours3": "",
     "featured": "",
-    "features": ""
+    "features": "",
+    "date": "11/17/17"
   },
   {
     "id": "13",
@@ -244,7 +256,8 @@
     "hours2": "",
     "hours3": "",
     "featured": "",
-    "features": "Online Ordering"
+    "features": "Online Ordering",
+    "date": "10/17/17"
   },
   {
     "id": "14",
@@ -263,7 +276,8 @@
     "hours2": "",
     "hours3": "",
     "featured": "",
-    "features": "Margaritas"
+    "features": "Margaritas",
+    "date": "09/17/17"
   },
   {
     "id": "15",
@@ -282,7 +296,8 @@
     "hours2": "",
     "hours3": "",
     "featured": "",
-    "features": "Online Ordering"
+    "features": "Online Ordering",
+    "date": "08/17/17"
   },
   {
     "id": "16",
@@ -301,7 +316,8 @@
     "hours2": "",
     "hours3": "",
     "featured": "",
-    "features": "Online Ordering, Fresh Guacamole"
+    "features": "Online Ordering, Fresh Guacamole",
+    "date": "07/17/17"
   },
   {
     "id": "17",
@@ -320,7 +336,8 @@
     "hours2": "",
     "hours3": "",
     "featured": "",
-    "features": ""
+    "features": "",
+    "date": "06/17/17"
   },
   {
     "id": "18",
@@ -339,7 +356,8 @@
     "hours2": "",
     "hours3": "",
     "featured": "",
-    "features": ""
+    "features": "",
+    "date": "05/17/17"
   },
   {
     "id": "19",
@@ -358,7 +376,8 @@
     "hours2": "",
     "hours3": "",
     "featured": "",
-    "features": "Online Ordering, Fresh Guacamole"
+    "features": "Online Ordering, Fresh Guacamole",
+    "date": "04/17/17"
   },
   {
     "id": "20",
@@ -377,6 +396,7 @@
     "hours2": "",
     "hours3": "",
     "featured": "",
-    "features": "Fresh Guacamole"
+    "features": "Fresh Guacamole",
+    "date": "03/17/17"
   }
 ]

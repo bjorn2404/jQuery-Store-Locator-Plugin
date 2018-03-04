@@ -51,6 +51,7 @@
 | selectedMarkerImgDim | null | Selected marker image dimensions object - ex value: { height: 20, width: 20 } |
 | sessionStorage | false | Set to true to enable Window.sessionStorage for user's location when autoGeocode is enabled. |
 | slideMap | true | First hides the map container and then uses jQuery’s slideDown method to reveal the map. |
+| sortBy | null | Set to an object for custom sorting that accepts three properties: method ('alpha', 'date', or 'numeric'), order ('asc', or 'desc'), and prop (property in your data to sort by such as name, city, distance, etc.). |
 | storeLimit | 26 | The number of closest locations displayed at one time. Set to -1 for unlimited. |
 | taxonomyFilters | null | Filtering object that can be used to set up live filtering (see categories example). |
 | visibleMarkersList | false | Set to true to have the location list only show data from markers that are visible on the map. |
@@ -74,6 +75,7 @@
 | overlay | 'bh-sl-overlay' | Class of element that fills 100% of the window and fills with a transparent background image. |
 | regionID | 'bh-sl-region' | ID of the region select form field for country region biasing. |
 | searchID | 'bh-sl-search' | ID of the search input form field for location name searching. |
+| sortID | 'bh-sl-sort' | ID of the select form field for custom sorting of location results. |
 | taxonomyFiltersContainer | 'bh-sl-filters-container' | Class of the container around the filters. |
 
 ## Templates
@@ -110,6 +112,7 @@
 | [callbackNotify](callbacks/callback-notification.md) | null | Notification callback |
 | [callbackPageChange](callbacks/callback-pagechange.md) | null | Page change callback |
 | [callbackRegion](callbacks/callback-region.md) | null | Region callback |
+| [callbackSorting](callbacks/callback-sorting.md) | null | Sorting callback |
 | [callbackSuccess](callbacks/callback-success.md) | null | Success callback |
 
 ## Language options

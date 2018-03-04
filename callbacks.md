@@ -49,4 +49,5 @@ $('#bh-sl-map-container').storeLocator({
 | [callbackNotify](callbacks/callback-notification.md) | null | Notification callback |
 | [callbackPageChange](callbacks/callback-pagechange.md) | null | Page change callback |
 | [callbackRegion](callbacks/callback-region.md) | null | Region callback |
+| [callbackSorting](callbacks/callback-sorting.md) | null | Sorting callback |
 | [callbackSuccess](callbacks/callback-success.md) | null | Success callback |

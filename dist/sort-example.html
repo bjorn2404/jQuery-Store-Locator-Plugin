@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Length Unit Swap Example</title>
+    <title>Sorting Example</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="assets/css/storelocator.css" />
 </head>
@@ -21,10 +21,12 @@
                 <label for="bh-sl-address">Enter Address or Zip Code:</label>
                 <input type="text" id="bh-sl-address" name="bh-sl-address" />
 
-                <label for="bh-sl-length-swap">Length unit:</label>
-                <select id="bh-sl-length-swap" name="bh-sl-length-swap">
-                    <option value="default-distance">Miles</option>
-                    <option value="alt-distance">Kilometers</option>
+                <label for="bh-sl-sort">Sort by:</label>
+                <select id="bh-sl-sort" name="bh-sl-sort">
+                    <option data-method="alpha" value="name">Name</option>
+                    <option data-method="alpha" value="city">City</option>
+                    <option data-method="numeric" value="address">Address</option>
+                    <option data-method="numeric" value="distance">Distance</option>
                 </select>
             </div>
 
@@ -42,11 +44,24 @@
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="assets/js/libs/handlebars.min.js"></script>
-<script src="https://maps.google.com/maps/api/js"></script>
+<script src="https://maps.google.com/maps/api/js?key=AIzaSyBTYkcfVmKh16yQ3joQRWGLlfgRjj6wv8c"></script>
 <script src="assets/js/plugins/storeLocator/jquery.storelocator.js"></script>
 <script>
 	$(function() {
-		$('#bh-sl-map-container').storeLocator();
+		$('#bh-sl-map-container').storeLocator({
+			/**
+             * The sortBy setting accepts three object properties that can be set for the initial search results.
+             *
+             * method: 'alpha', 'date', or 'numeric'
+             * order: 'asc', or 'desc'
+             * prop: Property in your data to sort by such as name, city, distance, etc.
+			 */
+			sortBy: {
+				method: 'alpha',
+				order: 'asc', // This is the default value but here for example.
+                prop: 'name' // This is the default alpha sorting value but here for example.
+            }
+        });
 	});
 </script>
 

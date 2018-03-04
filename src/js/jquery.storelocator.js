@@ -67,6 +67,7 @@
 		'selectedMarkerImgDim'       : null,
 		'sessionStorage'             : false,
 		'slideMap'                   : true,
+		'sortBy'                     : null,
 		'storeLimit'                 : 26,
 		'taxonomyFilters'            : null,
 		'visibleMarkersList'         : false,
@@ -87,6 +88,7 @@
 		'overlay'                    : 'bh-sl-overlay',
 		'regionID'                   : 'bh-sl-region',
 		'searchID'                   : 'bh-sl-search',
+		'sortID'                     : 'bh-sl-sort',
 		'taxonomyFiltersContainer'   : 'bh-sl-filters-container',
 		// Templates
 		'infowindowTemplatePath'     : 'assets/js/plugins/storeLocator/templates/infowindow-description.html',
@@ -116,6 +118,7 @@
 		'callbackNotify'             : null,
 		'callbackPageChange'         : null,
 		'callbackRegion'             : null,
+		'callbackSorting'            : null,
 		'callbackSuccess'            : null,
 		// Language options
 		'addressErrorAlert'          : 'Unable to find address',
@@ -169,7 +172,7 @@
 			}
 
 			// Add directions panel if enabled
-			if(this.settings.inlineDirections === true) {
+			if (this.settings.inlineDirections === true) {
 				$('.' + this.settings.locationList).prepend('<div class="bh-sl-directions-panel"></div>');
 			}
 
@@ -178,7 +181,7 @@
 
 			// Add Handlebars helper for handling URL output
 			Handlebars.registerHelper('niceURL', function(url) {
-				if(url){
+				if (url) {
 					return url.replace('https://', '').replace('http://', '');
 				}
 			});
@@ -187,6 +190,9 @@
 			if (this.settings.taxonomyFilters !== null) {
 				this.taxonomyFiltering();
 			}
+
+			// Do sorting if set.
+			this.sorting();
 
 			// Add modal window divs if set
 			if (this.settings.modal === true) {
@@ -229,7 +235,7 @@
 			var $mapDiv = $('#' + this.settings.mapID);
 
 			// Remove marker event listeners
-			if(markers.length) {
+			if (markers.length) {
 				for(var i = 0; i <= markers.length; i++) {
 					google.maps.event.removeListener(markers[i]);
 				}
@@ -237,7 +243,7 @@
 
 			// Remove markup
 			$('.' + this.settings.locationList + ' ul').empty();
-			if($mapDiv.hasClass('bh-sl-map-open')) {
+			if ($mapDiv.hasClass('bh-sl-map-open')) {
 				$mapDiv.empty().removeClass('bh-sl-map-open');
 			}
 
@@ -271,10 +277,12 @@
 			markers = [];
 			firstRun = false;
 			$(document).off('click.'+pluginName, '.' + this.settings.locationList + ' li');
-			if( $('.' + this.settings.locationList + ' .bh-sl-close-directions-container').length ) {
+
+			if ( $('.' + this.settings.locationList + ' .bh-sl-close-directions-container').length ) {
 				$('.bh-sl-close-directions-container').remove();
 			}
-			if(this.settings.inlineDirections === true) {
+
+			if (this.settings.inlineDirections === true) {
 				// Remove directions panel if it's there
 				var $adp = $('.' + this.settings.locationList + ' .adp');
 				if ( $adp.length > 0 ) {
@@ -283,7 +291,8 @@
 				}
 				$(document).off('click', '.' + this.settings.locationList + ' li .loc-directions a');
 			}
-			if(this.settings.pagination === true) {
+
+			if (this.settings.pagination === true) {
 				$(document).off('click.'+pluginName, '.bh-sl-pagination li');
 			}
 		},
@@ -549,7 +558,7 @@
 				}
 
 				// JSON
-				else if(dataTypeRead === 'json') {
+				else if (dataTypeRead === 'json') {
 					if (Array.isArray && Array.isArray(_this.settings.dataRaw)) {
 						return _this.settings.dataRaw;
 					}
@@ -567,7 +576,7 @@
 				var d = $.Deferred();
 
 				// Loading
-				if(this.settings.loading === true){
+				if (this.settings.loading === true) {
 					$('.' + this.settings.formContainer).append('<div class="' + this.settings.loadingContainer +'"></div>');
 				}
 
@@ -590,7 +599,7 @@
 					d.resolve(p);
 
 					// Loading remove
-					if(_this.settings.loading === true){
+					if (_this.settings.loading === true) {
 						$('.' + _this.settings.formContainer + ' .' + _this.settings.loadingContainer).remove();
 					}
 				}).fail(d.reject);
@@ -645,7 +654,7 @@
 				}
 				// If show full map option is true
 				else if (this.settings.fullMapStart === true) {
-					if((this.settings.querystringParams === true && this.getQueryString(this.settings.addressID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.searchID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.maxDistanceID))) {
+					if ((this.settings.querystringParams === true && this.getQueryString(this.settings.addressID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.searchID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.maxDistanceID))) {
 						_this.writeDebug('Using Query String');
 						this.processForm(null);
 						doAutoGeo = false; // No need for additional processing
@@ -797,8 +806,8 @@
 				var objTest = true;
 
 				for(var key in obj) {
-					if(obj.hasOwnProperty(key)) {
-						if(obj[key] !== '' && obj[key].length !== 0) {
+					if (obj.hasOwnProperty(key)) {
+						if (obj[key] !== '' && obj[key].length !== 0) {
 							objTest = false;
 						}
 					}
@@ -852,15 +861,81 @@
 		},
 
 		/**
+		 * Location alphabetical sorting function
+		 *
+		 * @param locationsarray {array} locationset array
+		 */
+		sortAlpha: function(locationsarray) {
+			this.writeDebug('sortAlpha',arguments);
+			var property = (typeof this.settings.sortBy.prop !== 'undefined') ?  this.settings.sortBy.prop : 'name';
+
+			if (this.settings.sortBy.order === 'desc') {
+				locationsarray.sort(function (a, b) {
+					return b[property].toLowerCase().localeCompare(a[property].toLowerCase());
+				});
+			} else {
+				locationsarray.sort(function (a, b) {
+					return a[property].toLowerCase().localeCompare(b[property].toLowerCase());
+				});
+			}
+		},
+
+		/**
+		 * Location date sorting function
+		 *
+		 * @param locationsarray {array} locationset array
+		 */
+		sortDate: function(locationsarray) {
+			this.writeDebug('sortDate',arguments);
+			var property = (typeof this.settings.sortBy.prop !== 'undefined') ?  this.settings.sortBy.prop : 'date';
+
+			if (this.settings.sortBy.order === 'desc') {
+				locationsarray.sort(function (a, b) {
+					return new Date(b[property]).getTime() - new Date(a[property]).getTime();
+				});
+			} else {
+				locationsarray.sort(function (a, b) {
+					return new Date(a[property]).getTime() - new Date(b[property]).getTime();
+				});
+			}
+		},
+
+		/**
 		 * Location distance sorting function
 		 *
 		 * @param locationsarray {array} locationset array
 		 */
 		sortNumerically: function (locationsarray) {
 			this.writeDebug('sortNumerically',arguments);
-			locationsarray.sort(function (a, b) {
-				return ((a.distance < b.distance) ? -1 : ((a.distance > b.distance) ? 1 : 0));
-			});
+			var property = (typeof this.settings.sortBy.prop !== 'undefined') ?  this.settings.sortBy.prop : 'distance';
+
+			if (this.settings.sortBy.order === 'desc') {
+				locationsarray.sort(function (a, b) {
+					return ((b[property] < a[property]) ? -1 : ((b[property] > a[property]) ? 1 : 0));
+				});
+			} else {
+				locationsarray.sort(function (a, b) {
+					return ((a[property] < b[property]) ? -1 : ((a[property] > b[property]) ? 1 : 0));
+				});
+			}
+		},
+
+		/**
+		 * Alternative sorting setup
+		 *
+		 * @param locationsarray {array} locationset array
+		 */
+		sortCustom: function (locationsarray) {
+			this.writeDebug('sortCustom',arguments);
+
+			// Alphabetically, date, or numeric
+			if (this.settings.sortBy.method === 'alpha') {
+				this.sortAlpha(locationsarray);
+			} else if (this.settings.sortBy.method === 'date') {
+				this.sortDate(locationsarray);
+			} else {
+				this.sortNumerically(locationsarray);
+			}
 		},
 
 		/**
@@ -878,17 +953,17 @@
 				if (filters.hasOwnProperty(k)) {
 
 					// Exclusive filtering
-					if(this.settings.exclusiveFiltering === true || (this.settings.exclusiveTax !== null && Array.isArray(this.settings.exclusiveTax) && this.settings.exclusiveTax.indexOf(k) !== -1)) {
+					if (this.settings.exclusiveFiltering === true || (this.settings.exclusiveTax !== null && Array.isArray(this.settings.exclusiveTax) && this.settings.exclusiveTax.indexOf(k) !== -1)) {
 						var filterTests = filters[k];
 						var exclusiveTest = [];
 
-						if(typeof data[k] !== 'undefined') {
+						if (typeof data[k] !== 'undefined') {
 							for (var l = 0; l < filterTests.length; l++) {
 								exclusiveTest[l] = new RegExp(filterTests[l], 'i').test(data[k].replace(/([^\x00-\x7F]|[.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, ''));
 							}
 						}
 
-						if(exclusiveTest.indexOf(true) === -1) {
+						if (exclusiveTest.indexOf(true) === -1) {
 							filterTest = false;
 						}
 					}
@@ -922,7 +997,7 @@
 			var prevPage = currentPage - 1;
 
 			// Previous page
-			if( currentPage > 0 ) {
+			if ( currentPage > 0 ) {
 				output += '<li class="bh-sl-next-prev" data-page="' + prevPage + '">' + this.settings.prevPage + '</li>';
 			}
 
@@ -939,7 +1014,7 @@
 			}
 
 			// Next page
-			if( nextPage < totalPages ) {
+			if ( nextPage < totalPages ) {
 				output += '<li class="bh-sl-next-prev" data-page="' + nextPage + '">' + this.settings.nextPage + '</li>';
 			}
 
@@ -999,7 +1074,7 @@
 			var markerImg;
 
 			// User defined marker dimensions
-			if(typeof markerWidth !== 'undefined' && typeof markerHeight !== 'undefined') {
+			if (typeof markerWidth !== 'undefined' && typeof markerHeight !== 'undefined') {
 				markerImg = {
 					url: markerUrl,
 					size: new google.maps.Size(markerWidth, markerHeight),
@@ -1035,22 +1110,22 @@
 			var categories = [];
 
 			// Custom multi-marker image override (different markers for different categories
-			if(this.settings.catMarkers !== null) {
-				if(typeof category !== 'undefined') {
+			if (this.settings.catMarkers !== null) {
+				if (typeof category !== 'undefined') {
 					// Multiple categories
-					if(category.indexOf(',') !== -1) {
+					if (category.indexOf(',') !== -1) {
 						// Break the category variable into an array if there are multiple categories for the location
 						categories = category.split(',');
 						// With multiple categories the color will be determined by the last matched category in the data
 						for(var i = 0; i < categories.length; i++) {
-							if(categories[i] in this.settings.catMarkers) {
+							if (categories[i] in this.settings.catMarkers) {
 								markerImg = this.markerImage(this.settings.catMarkers[categories[i]][0], parseInt(this.settings.catMarkers[categories[i]][1]), parseInt(this.settings.catMarkers[categories[i]][2]));
 							}
 						}
 					}
 					// Single category
 					else {
-						if(category in this.settings.catMarkers) {
+						if (category in this.settings.catMarkers) {
 							markerImg = this.markerImage(this.settings.catMarkers[category][0], parseInt(this.settings.catMarkers[category][1]), parseInt(this.settings.catMarkers[category][2]));
 						}
 					}
@@ -1058,8 +1133,8 @@
 			}
 
 			// Custom single marker image override
-			if(this.settings.markerImg !== null) {
-				if(this.settings.markerDim === null) {
+			if (this.settings.markerImg !== null) {
+				if (this.settings.markerDim === null) {
 					markerImg = this.markerImage(this.settings.markerImg);
 				}
 				else {
@@ -1196,7 +1271,7 @@
 			}
 
 			// Change the selected marker icon
-			if(this.settings.selectedMarkerImgDim === null) {
+			if (this.settings.selectedMarkerImgDim === null) {
 				markerImg = this.markerImage(this.settings.selectedMarkerImg);
 			} else {
 				markerImg = this.markerImage(this.settings.selectedMarkerImg, this.settings.selectedMarkerImgDim.width, this.settings.selectedMarkerImgDim.height);
@@ -1260,7 +1335,7 @@
 					}
 
 					// Custom selected marker override
-					if(_this.settings.selectedMarkerImg !== null) {
+					if (_this.settings.selectedMarkerImg !== null) {
 						_this.changeSelectedMarker(marker);
 					}
 				});
@@ -1280,12 +1355,12 @@
 				originAddress;
 
 			// Query string parameters
-			if(this.settings.querystringParams === true) {
+			if (this.settings.querystringParams === true) {
 				// Check for distance query string parameters
-				if(this.getQueryString(this.settings.maxDistanceID)){
+				if (this.getQueryString(this.settings.maxDistanceID)){
 					distance = this.getQueryString(this.settings.maxDistanceID);
 
-					if($distanceInput.val() !== '') {
+					if ($distanceInput.val() !== '') {
 						distance = $distanceInput.val();
 					}
 				}
@@ -1342,16 +1417,16 @@
 				originAddress;
 
 			// Query string parameters
-			if(this.settings.querystringParams === true) {
+			if (this.settings.querystringParams === true) {
 				// Check for distance query string parameters
-				if(this.getQueryString(this.settings.maxDistanceID)){
+				if (this.getQueryString(this.settings.maxDistanceID)){
 					distance = this.getQueryString(this.settings.maxDistanceID);
 
-					if($distanceInput.val() !== '') {
+					if ($distanceInput.val() !== '') {
 						distance = $distanceInput.val();
 					}
 				}
-				else{
+				else {
 					// Get the distance if set
 					if (this.settings.maxDistance === true) {
 						distance = $distanceInput.val() || '';
@@ -1456,14 +1531,14 @@
 
 			var destination = this.getAddressByMarker(locID);
 
-			if(destination) {
+			if (destination) {
 				// Hide the location list
 				$('.' + this.settings.locationList + ' ul').hide();
 				// Remove the markers
 				this.clearMarkers();
 
 				// Clear the previous directions request
-				if(directionsDisplay !== null && typeof directionsDisplay !== 'undefined') {
+				if (directionsDisplay !== null && typeof directionsDisplay !== 'undefined') {
 					directionsDisplay.setMap(null);
 					directionsDisplay = null;
 				}
@@ -1525,6 +1600,7 @@
 		 * @param $lengthSwap
 		 */
 		lengthUnitSwap: function($lengthSwap) {
+			this.writeDebug('lengthUnitSwap',arguments);
 
 			if ($lengthSwap.val() === 'alt-distance') {
 				$('.' + this.settings.locationList + ' .loc-alt-dist').show();
@@ -1551,7 +1627,7 @@
 				region = '';
 
 			// Stop the form submission
-			if(typeof e !== 'undefined' && e !== null) {
+			if (typeof e !== 'undefined' && e !== null) {
 				e.preventDefault();
 			}
 
@@ -1559,25 +1635,25 @@
 			$('.' + _this.settings.formContainer +' input, .' + _this.settings.formContainer + ' select').blur();
 
 			// Query string parameters
-			if(this.settings.querystringParams === true) {
+			if (this.settings.querystringParams === true) {
 				// Check for query string parameters
-				if(this.getQueryString(this.settings.addressID) || this.getQueryString(this.settings.searchID) || this.getQueryString(this.settings.maxDistanceID)){
+				if (this.getQueryString(this.settings.addressID) || this.getQueryString(this.settings.searchID) || this.getQueryString(this.settings.maxDistanceID)) {
 					addressInput = this.getQueryString(this.settings.addressID);
 					searchInput = this.getQueryString(this.settings.searchID);
 					distance = this.getQueryString(this.settings.maxDistanceID);
 
 					// The form should override the query string parameters
-					if($addressInput.val() !== '') {
+					if ($addressInput.val() !== '') {
 						addressInput = $addressInput.val();
 					}
-					if($searchInput.val() !== '') {
+					if ($searchInput.val() !== '') {
 						searchInput = $searchInput.val();
 					}
-					if($distanceInput.val() !== '') {
+					if ($distanceInput.val() !== '') {
 						distance = $distanceInput.val();
 					}
 				}
-				else{
+				else {
 					// Get the user input and use it
 					addressInput = $addressInput.val() || '';
 					searchInput = $searchInput.val() || '';
@@ -1627,10 +1703,10 @@
 			if (addressInput === '' && searchInput === '' && this.settings.autoGeocode !== true) {
 				this._start();
 			}
-			else if(addressInput !== '') {
+			else if (addressInput !== '') {
 
 				// Geocode the origin if needed
-				if(typeof originalOrigin !== 'undefined' && typeof olat !== 'undefined' && typeof olng !== 'undefined' && (addressInput === originalOrigin)) {
+				if (typeof originalOrigin !== 'undefined' && typeof olat !== 'undefined' && typeof olng !== 'undefined' && (addressInput === originalOrigin)) {
 					// Run the mapping function
 					mappingObj.lat = olat;
 					mappingObj.lng = olng;
@@ -1665,7 +1741,7 @@
 					});
 				}
 			}
-			else if(searchInput !== '') {
+			else if (searchInput !== '') {
 				// Check for existing origin and remove if address input is blank.
 				if ( addressInput === '' ) {
 					delete mappingObj.origin;
@@ -1720,7 +1796,7 @@
 					return;
 				}
 			}
-			else if(this.settings.maxDistance === true && this.settings.querystringParams === true && typeof maxDistance !== 'undefined' && maxDistance !== null) {
+			else if (this.settings.maxDistance === true && this.settings.querystringParams === true && typeof maxDistance !== 'undefined' && maxDistance !== null) {
 				if (data.distance <= maxDistance) {
 					locationset.push( data );
 				}
@@ -1731,6 +1807,47 @@
 			else {
 				locationset.push( data );
 			}
+		},
+
+		/**
+		 * Set up front-end sorting functionality
+		 */
+		sorting: function() {
+			this.writeDebug('sorting',arguments);
+			var _this = this,
+				$mapDiv = $('#' + _this.settings.mapID),
+				$sortSelect = $('#' + _this.settings.sortID);
+
+			if ($sortSelect.length === 0) {
+				return;
+			}
+
+			$sortSelect.on('change.'+pluginName, function (e) {
+				e.stopPropagation();
+
+				// Reset pagination.
+				if (_this.settings.pagination === true) {
+					_this.paginationChange(0);
+				}
+
+				var sortMethod,
+					sortVal;
+
+				sortMethod = (typeof $(this).find(':selected').attr('data-method') !== 'undefined') ?  $(this).find(':selected').attr('data-method') : 'distance';
+				sortVal = $(this).val();
+
+				_this.settings.sortBy.method = sortMethod;
+				_this.settings.sortBy.prop = sortVal;
+
+				// Callback
+				if (_this.settings.callbackSorting) {
+					_this.settings.callbackSorting.call(this, _this.settings.sortBy);
+				}
+
+				if ($mapDiv.hasClass('bh-sl-map-open')) {
+					_this.mapping(mappingObj);
+				}
+			});
 		},
 
 		/**
@@ -1815,7 +1932,7 @@
 			this.writeDebug('checkFilters');
 			for(var key in this.settings.taxonomyFilters) {
 
-				if(this.settings.taxonomyFilters.hasOwnProperty(key)) {
+				if (this.settings.taxonomyFilters.hasOwnProperty(key)) {
 					// Find the existing checked boxes for each checkbox filter
 					this._existingCheckedFilters(key);
 
@@ -1868,7 +1985,7 @@
 
 			// Loop through the filters.
 			for(var key in filters) {
-				if(filters.hasOwnProperty(key)) {
+				if (filters.hasOwnProperty(key)) {
 					var filterVal = this.getQueryString(key);
 
 					// Check for multiple values separated by comma.
@@ -1920,7 +2037,7 @@
 
 			// Set up the filters
 			for(var key in this.settings.taxonomyFilters) {
-				if(this.settings.taxonomyFilters.hasOwnProperty(key)) {
+				if (this.settings.taxonomyFilters.hasOwnProperty(key)) {
 					filters[key] = [];
 				}
 			}
@@ -1963,7 +2080,7 @@
 						// Add or remove filters based on checkbox values
 						if ($(this).prop('checked')) {
 							// Add ids to the filter arrays as they are checked
-							if(filters[filterKey].indexOf(filterVal) === -1) {
+							if (filters[filterKey].indexOf(filterVal) === -1) {
 								filters[filterKey].push(filterVal);
 							}
 
@@ -2058,7 +2175,7 @@
 
 			// Set up the new list
 			$(markers).each(function(x, marker){
-				if(map.getBounds().contains(marker.getPosition())) {
+				if (map.getBounds().contains(marker.getPosition())) {
 					// Define the location data
 					_this.listSetup(marker, 0, 0);
 
@@ -2162,8 +2279,8 @@
 				originImg = '';
 
 			if (typeof origin !== 'undefined') {
-				if(this.settings.originMarkerImg !== null) {
-					if(this.settings.originMarkerDim === null) {
+				if (this.settings.originMarkerImg !== null) {
+					if (this.settings.originMarkerDim === null) {
 						originImg = this.markerImage(this.settings.originMarkerImg);
 					}
 					else {
@@ -2337,7 +2454,7 @@
 		inlineDirections: function(map, origin) {
 			this.writeDebug('inlineDirections',arguments);
 
-			if(this.settings.inlineDirections !== true || typeof origin === 'undefined') {
+			if (this.settings.inlineDirections !== true || typeof origin === 'undefined') {
 				return;
 			}
 
@@ -2365,7 +2482,7 @@
 		visibleMarkersList: function(map, markers) {
 			this.writeDebug('visibleMarkersList',arguments);
 
-			if(this.settings.visibleMarkersList !== true) {
+			if (this.settings.visibleMarkersList !== true) {
 				return;
 			}
 
@@ -2420,7 +2537,7 @@
 				originPoint = new google.maps.LatLng(orig_lat, orig_lng);
 
 				// If the origin hasn't changed use the existing data so we aren't making unneeded AJAX requests
-				if((typeof originalOrigin !== 'undefined') && (origin === originalOrigin) && (typeof originalData !== 'undefined')) {
+				if ((typeof originalOrigin !== 'undefined') && (origin === originalOrigin) && (typeof originalData !== 'undefined')) {
 					origin = originalOrigin;
 					dataRequest = originalData;
 				}
@@ -2431,14 +2548,14 @@
 			}
 
 			// Check filters here to handle selected filtering after page reload
-			if(_this.settings.taxonomyFilters !== null && _this.hasEmptyObjectVals(filters)) {
+			if (_this.settings.taxonomyFilters !== null && _this.hasEmptyObjectVals(filters)) {
 				_this.checkFilters();
 			}
 			/**
 			 * Process the location data
 			 */
 			// Raw data
-			if( _this.settings.dataRaw !== null ) {
+			if ( _this.settings.dataRaw !== null ) {
 				_this.processData(mappingObject, originPoint, dataRequest, page);
 			}
 			// Remote data
@@ -2558,7 +2675,7 @@
 
 			// Name search - using taxonomy filter to handle
 			if (_this.settings.nameSearch === true) {
-				if(typeof searchInput !== 'undefined') {
+				if (typeof searchInput !== 'undefined') {
 					filters[_this.settings.nameAttribute] = [searchInput];
 				}
 			}
@@ -2586,34 +2703,39 @@
 				}
 			}
 
-			// Sort the multi-dimensional array by distance
-			if (typeof origin !== 'undefined') {
-				_this.sortNumerically(locationset);
-			}
-
-			// Check the closest marker
-			if (_this.isEmptyObject(taxFilters)) {
-				if (_this.settings.maxDistance === true && maxDistance) {
-					if (typeof locationset[0] === 'undefined' || locationset[0].distance > maxDistance) {
-						_this.notify(_this.settings.distanceErrorAlert + maxDistance + ' ' + distUnit);
-					}
+			// Sorting
+			if (_this.settings.sortBy !== null && typeof _this.settings.sortBy === 'object') {
+				_this.sortCustom(locationset);
+			} else {
+				// Sort the multi-dimensional array by distance
+				if (typeof origin !== 'undefined') {
+					_this.sortNumerically(locationset);
 				}
-				else {
-					if (typeof locationset[0] !== 'undefined') {
-						if (_this.settings.distanceAlert !== -1 && locationset[0].distance > _this.settings.distanceAlert) {
-							_this.notify(_this.settings.distanceErrorAlert + _this.settings.distanceAlert + ' ' + distUnit);
-							distError = true;
+
+				// Check the closest marker
+				if (_this.isEmptyObject(taxFilters)) {
+					if (_this.settings.maxDistance === true && maxDistance) {
+						if (typeof locationset[0] === 'undefined' || locationset[0].distance > maxDistance) {
+							_this.notify(_this.settings.distanceErrorAlert + maxDistance + ' ' + distUnit);
 						}
 					}
 					else {
-						throw new Error('No locations found. Please check the dataLocation setting and path.');
+						if (typeof locationset[0] !== 'undefined') {
+							if (_this.settings.distanceAlert !== -1 && locationset[0].distance > _this.settings.distanceAlert) {
+								_this.notify(_this.settings.distanceErrorAlert + _this.settings.distanceAlert + ' ' + distUnit);
+								distError = true;
+							}
+						}
+						else {
+							throw new Error('No locations found. Please check the dataLocation setting and path.');
+						}
 					}
 				}
-			}
 
-			// Save the closest location to a variable for openNearest setting.
-			if (typeof locationset[0] !== 'undefined') {
-				nearestLoc = locationset[0];
+				// Save the closest location to a variable for openNearest setting.
+				if (typeof locationset[0] !== 'undefined') {
+					nearestLoc = locationset[0];
+				}
 			}
 
 			// Featured locations filtering
