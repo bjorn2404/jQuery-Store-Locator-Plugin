@@ -2,6 +2,7 @@
 
 | Property | Default | Description |
 |---|---|---|
+| ajaxData | null | Allows custom data to be sent with the AJAX request. Set the setting to an object with your properties and values. |
 | altDistanceNoResult | false | Display no results message vs. all locations when closest location is further than distanceAlert setting |
 | autoComplete | false | Set to true to enable Google Places autocomplete. Note the slight markup differences in the example file. |
 | autoCompleteDisableListener | false | Disable the listener that immediately triggers a search when an auto complete location option is selected. |

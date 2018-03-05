@@ -19,6 +19,7 @@
 
 	// Create the defaults once. DO NOT change these settings in this file - settings should be overridden in the plugin call
 	var defaults = {
+		'ajaxData'                   : null,
 		'altDistanceNoResult'        : false,
 		'autoComplete'               : false,
 		'autoCompleteDisableListener': false,
@@ -584,19 +585,27 @@
 					$('.' + this.settings.formContainer).append('<div class="' + this.settings.loadingContainer +'"></div>');
 				}
 
+				// Data to pass with the AJAX request
+				var ajaxData = {
+					'origLat' : lat,
+					'origLng' : lng,
+					'origAddress': address,
+					'formattedAddress': formattedAddress,
+					'boundsNorthEast' : northEast,
+					'boundsSouthWest' : southWest
+				};
+
+				// Set up extra object for custom extra data to be passed with the AJAX request
+				if (this.settings.ajaxData !== null && typeof this.settings.ajaxData === 'object') {
+					$.extend(ajaxData, this.settings.ajaxData);
+				}
+
 				// AJAX request
 				$.ajax({
 					type         : 'GET',
 					url          : this.settings.dataLocation + (this.settings.dataType === 'jsonp' ? (this.settings.dataLocation.match(/\?/) ? '&' : '?') + 'callback=?' : ''),
 					// Passing the lat, lng, address, formatted address and bounds with the AJAX request so they can optionally be used by back-end languages
-					data: {
-						'origLat' : lat,
-						'origLng' : lng,
-						'origAddress': address,
-						'formattedAddress': formattedAddress,
-						'boundsNorthEast' : northEast,
-						'boundsSouthWest' : southWest
-					},
+					data         : ajaxData,
 					dataType     : dataTypeRead,
 					jsonpCallback: (this.settings.dataType === 'jsonp' ? this.settings.callbackJsonp : null)
 				}).done(function(p) {
@@ -871,9 +880,9 @@
 		 */
 		sortAlpha: function(locationsarray) {
 			this.writeDebug('sortAlpha',arguments);
-			var property = (typeof this.settings.sortBy.prop !== 'undefined') ?  this.settings.sortBy.prop : 'name';
+			var property = (this.settings.sortBy.hasOwnProperty('prop') && typeof this.settings.sortBy.prop !== 'undefined') ?  this.settings.sortBy.prop : 'name';
 
-			if (this.settings.sortBy.order === 'desc') {
+			if (this.settings.sortBy.hasOwnProperty('order') && this.settings.sortBy.order.toString() === 'desc') {
 				locationsarray.sort(function (a, b) {
 					return b[property].toLowerCase().localeCompare(a[property].toLowerCase());
 				});
@@ -891,9 +900,9 @@
 		 */
 		sortDate: function(locationsarray) {
 			this.writeDebug('sortDate',arguments);
-			var property = (typeof this.settings.sortBy.prop !== 'undefined') ?  this.settings.sortBy.prop : 'date';
+			var property = (this.settings.sortBy.hasOwnProperty('prop') && typeof this.settings.sortBy.prop !== 'undefined') ?  this.settings.sortBy.prop : 'date';
 
-			if (this.settings.sortBy.order === 'desc') {
+			if (this.settings.sortBy.hasOwnProperty('order') && this.settings.sortBy.order.toString() === 'desc') {
 				locationsarray.sort(function (a, b) {
 					return new Date(b[property]).getTime() - new Date(a[property]).getTime();
 				});
@@ -911,9 +920,13 @@
 		 */
 		sortNumerically: function (locationsarray) {
 			this.writeDebug('sortNumerically',arguments);
-			var property = (typeof this.settings.sortBy.prop !== 'undefined') ?  this.settings.sortBy.prop : 'distance';
+			var property = (
+				this.settings.sortBy !== null &&
+				this.settings.sortBy.hasOwnProperty('prop') &&
+				typeof this.settings.sortBy.prop !== 'undefined'
+			) ?  this.settings.sortBy.prop : 'distance';
 
-			if (this.settings.sortBy.order === 'desc') {
+			if (this.settings.sortBy !== null && this.settings.sortBy.hasOwnProperty('order') && this.settings.sortBy.order.toString() === 'desc') {
 				locationsarray.sort(function (a, b) {
 					return ((b[property] < a[property]) ? -1 : ((b[property] > a[property]) ? 1 : 0));
 				});
@@ -933,9 +946,9 @@
 			this.writeDebug('sortCustom',arguments);
 
 			// Alphabetically, date, or numeric
-			if (this.settings.sortBy.method === 'alpha') {
+			if (this.settings.sortBy.hasOwnProperty('method') && this.settings.sortBy.method.toString() === 'alpha') {
 				this.sortAlpha(locationsarray);
-			} else if (this.settings.sortBy.method === 'date') {
+			} else if (this.settings.sortBy.hasOwnProperty('method') && this.settings.sortBy.method.toString() === 'date') {
 				this.sortDate(locationsarray);
 			} else {
 				this.sortNumerically(locationsarray);
