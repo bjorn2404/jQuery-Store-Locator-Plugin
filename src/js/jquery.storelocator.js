@@ -2477,7 +2477,7 @@
 			$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' li .loc-directions a', function (e) {
 				e.preventDefault();
 				var locID = $(this).closest('li').attr('data-markerid');
-				_this.directionsRequest(origin, locID, map);
+				_this.directionsRequest(origin, parseInt(locID), map);
 
 				// Close directions
 				$(document).on('click.'+pluginName, '.' + _this.settings.locationList + ' .bh-sl-close-icon', function () {
