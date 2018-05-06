@@ -1402,6 +1402,11 @@
 					mappingObj.origin = originAddress;
 					mappingObj.distance = distance;
 					_this.mapping(mappingObj);
+
+					// Fill in the search box.
+					if (typeof originAddress !== 'undefined') {
+						$('#' + _this.settings.addressID).val(originAddress);
+					}
 				} else {
 					// Unable to geocode
 					_this.notify(_this.settings.addressErrorAlert);

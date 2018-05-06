@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.0.0 - 2018-03-05
+/*! jQuery Google Maps Store Locator - v3.0.0 - 2018-05-06
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2018 Bjorn Holine; Licensed MIT */
 
@@ -1406,6 +1406,11 @@
 					mappingObj.origin = originAddress;
 					mappingObj.distance = distance;
 					_this.mapping(mappingObj);
+
+					// Fill in the search box.
+					if (typeof originAddress !== 'undefined') {
+						$('#' + _this.settings.addressID).val(originAddress);
+					}
 				} else {
 					// Unable to geocode
 					_this.notify(_this.settings.addressErrorAlert);
