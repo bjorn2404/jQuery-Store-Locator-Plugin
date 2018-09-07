@@ -8,4 +8,4 @@ Fires when a new order option is selected.
 
 | Name | Type | Description |
 |---|---|---|
-| sortObj | object | Sorting object properties: method, order, and prop. |
+| order | string | Order string value - asc or desc. |
