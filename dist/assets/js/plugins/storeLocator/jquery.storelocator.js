@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.0.0 - 2018-05-06
+/*! jQuery Google Maps Store Locator - v3.0.1 - 2018-09-06
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2018 Bjorn Holine; Licensed MIT */
 
@@ -90,6 +90,7 @@
 		'maxDistanceID'              : 'bh-sl-maxdistance',
 		'modalContent'               : 'bh-sl-modal-content',
 		'modalWindow'                : 'bh-sl-modal-window',
+		'orderID'                    : 'bh-sl-order',
 		'overlay'                    : 'bh-sl-overlay',
 		'regionID'                   : 'bh-sl-region',
 		'searchID'                   : 'bh-sl-search',
@@ -121,6 +122,7 @@
 		'callbackNearestLoc'         : null,
 		'callbackNoResults'          : null,
 		'callbackNotify'             : null,
+		'callbackOrder'              : null,
 		'callbackPageChange'         : null,
 		'callbackRegion'             : null,
 		'callbackSorting'            : null,
@@ -196,8 +198,9 @@
 				this.taxonomyFiltering();
 			}
 
-			// Do sorting if set.
+			// Do sorting and ordering if set.
 			this.sorting();
+			this.order();
 
 			// Add modal window divs if set
 			if (this.settings.modal === true) {
@@ -1864,6 +1867,40 @@
 				// Callback
 				if (_this.settings.callbackSorting) {
 					_this.settings.callbackSorting.call(this, _this.settings.sortBy);
+				}
+
+				if ($mapDiv.hasClass('bh-sl-map-open')) {
+					_this.mapping(mappingObj);
+				}
+			});
+		},
+
+		/**
+		 * Set up front-end ordering functionality - this ties in to sorting and that has to be enabled for this to work.
+		 */
+		order: function() {
+			this.writeDebug('order',arguments);
+			var _this = this,
+				$mapDiv = $('#' + _this.settings.mapID),
+				$orderSelect = $('#' + _this.settings.orderID);
+
+			if ($orderSelect.length === 0) {
+				return;
+			}
+
+			$orderSelect.on('change.'+pluginName, function (e) {
+				e.stopPropagation();
+
+				// Reset pagination.
+				if (_this.settings.pagination === true) {
+					_this.paginationChange(0);
+				}
+
+				_this.settings.sortBy.order = $(this).val();
+
+				// Callback
+				if (_this.settings.callbackOrder) {
+					_this.settings.callbackOrder.call(this, _this.settings.order);
 				}
 
 				if ($mapDiv.hasClass('bh-sl-map-open')) {

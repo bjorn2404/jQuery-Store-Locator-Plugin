@@ -35,6 +35,11 @@ filtering.
 
 ## Changelog
 
+### Version 3.0.1
+
+* Added custom order handling to tie into previously added custom sorting. Set order to asc or desc.
+* Updated sort-example.html example with order select field.
+
 ### Version 3.0.0
 
 Version 3 has a breaking change with the dataLocation and dataType settings switching the default from XML to JSON.

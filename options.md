@@ -73,6 +73,7 @@
 | maxDistanceID | 'bh-sl-maxdistance' | ID of the select element for the maximum distance options. |
 | modalContent | 'bh-sl-modal-content' | Class of element container around the content of the modal window. |
 | modalWindow | 'bh-sl-modal-window' | Class of element of the actual modal window |
+| orderID | 'bh-sl-order' | ID of the select form field for custom sort order handling of location results. |
 | overlay | 'bh-sl-overlay' | Class of element that fills 100% of the window and fills with a transparent background image. |
 | regionID | 'bh-sl-region' | ID of the region select form field for country region biasing. |
 | searchID | 'bh-sl-search' | ID of the search input form field for location name searching. |
@@ -111,6 +112,7 @@
 | [callbackNearestLoc](callbacks/callback-nearestloc.md) | null | Nearest location callback |
 | [callbackNoResults](callbacks/callback-noresults.md) | null | No results callback |
 | [callbackNotify](callbacks/callback-notification.md) | null | Notification callback |
+| [callbackNotify](callbacks/callback-order.md) | null | Order callback |
 | [callbackPageChange](callbacks/callback-pagechange.md) | null | Page change callback |
 | [callbackRegion](callbacks/callback-region.md) | null | Region callback |
 | [callbackSorting](callbacks/callback-sorting.md) | null | Sorting callback |
