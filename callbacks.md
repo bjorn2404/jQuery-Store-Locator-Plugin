@@ -47,6 +47,7 @@ $('#bh-sl-map-container').storeLocator({
 | [callbackNearestLoc](callbacks/callback-nearestloc.md) | null | Nearest location callback |
 | [callbackNoResults](callbacks/callback-noresults.md) | null | No results callback |
 | [callbackNotify](callbacks/callback-notification.md) | null | Notification callback |
+| [callbackOrder](callbacks/callback-order.md) | null | Order callback |
 | [callbackPageChange](callbacks/callback-pagechange.md) | null | Page change callback |
 | [callbackRegion](callbacks/callback-region.md) | null | Region callback |
 | [callbackSorting](callbacks/callback-sorting.md) | null | Sorting callback |
