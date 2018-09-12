@@ -9,3 +9,4 @@ Fires when a filter is changed.
 | Name | Type | Description |
 |---|---|---|
 | filters | array | Array of selected filters |
+| map | object | Google map object |

@@ -12,3 +12,4 @@ already been determined.
 | lat | float | Origin latitude |
 | lng | float | Origin longitude |
 | address | string | The full origin address |
+| map | object | Google map object |

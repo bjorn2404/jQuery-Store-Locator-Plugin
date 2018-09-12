@@ -11,3 +11,4 @@ Fires after a location list item is clicked.
 | markerId | int | Corresponding marker ID |
 | selectedMarker | object | Corresponding marker object | 
 | locationObj | object | Location details of the selected item |
+| map | object | Google map object |

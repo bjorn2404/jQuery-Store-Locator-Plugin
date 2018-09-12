@@ -533,9 +533,11 @@
 		 * @param lng {number} longitude
 		 * @param address {string} street address
 		 * @param geocodeData {object} full Google geocode results object
+		 * @param map (object} Google Maps object.
+		 *
 		 * @returns {Object} deferred object
 		 */
-		_getData: function (lat, lng, address, geocodeData ) {
+		_getData: function (lat, lng, address, geocodeData, map) {
 			this.writeDebug('_getData',arguments);
 			var _this = this,
 				northEast = '',
@@ -551,7 +553,7 @@
 
 			// Before send callback
 			if (this.settings.callbackBeforeSend) {
-				this.settings.callbackBeforeSend.call(this, lat, lng, address, formattedAddress, northEast, southWest);
+				this.settings.callbackBeforeSend.call(this, lat, lng, address, formattedAddress, northEast, southWest, map);
 			}
 
 			// Raw data
@@ -2450,7 +2452,7 @@
 
 				// List click callback
 				if (_this.settings.callbackListClick) {
-					_this.settings.callbackListClick.call(this, markerId, selectedMarker, locationset[markerId]);
+					_this.settings.callbackListClick.call(this, markerId, selectedMarker, locationset[markerId], map);
 				}
 
 				map.panTo(selectedMarker.getPosition());
@@ -2598,7 +2600,7 @@
 				}
 				else {
 					// Do the data request - doing this in mapping so the lat/lng and address can be passed over and used if needed
-					dataRequest = _this._getData(olat, olng, origin, geocodeData);
+					dataRequest = _this._getData(olat, olng, origin, geocodeData, mappingObject);
 				}
 			}
 
@@ -3010,12 +3012,12 @@
 
 			// Modal ready callback
 			if (_this.settings.modal === true && _this.settings.callbackModalReady) {
-				_this.settings.callbackModalReady.call(this);
+				_this.settings.callbackModalReady.call(this, mappingObject);
 			}
 
 			// Filters callback
 			if (_this.settings.callbackFilters) {
-				_this.settings.callbackFilters.call(this, filters);
+				_this.settings.callbackFilters.call(this, filters, mappingObject);
 			}
 		},
 
