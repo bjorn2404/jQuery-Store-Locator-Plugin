@@ -38,6 +38,7 @@ filtering.
 ### Version 3.0.1
 
 * Added custom order handling to tie into previously added custom sorting. Set order to asc or desc.
+* Changed parseJSON to native JSON.parse due to deprecation in rawData processing.
 * Updated sort-example.html example with order select field.
 
 ### Version 3.0.0

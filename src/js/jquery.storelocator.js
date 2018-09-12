@@ -567,7 +567,7 @@
 						return _this.settings.dataRaw;
 					}
 					else if (typeof _this.settings.dataRaw === 'string') {
-						return $.parseJSON(_this.settings.dataRaw);
+						return JSON.parse(_this.settings.dataRaw);
 					}
 					else {
 						return [];
