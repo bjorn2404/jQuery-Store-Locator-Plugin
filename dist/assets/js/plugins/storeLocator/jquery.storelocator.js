@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.0.1 - 2018-09-11
+/*! jQuery Google Maps Store Locator - v3.0.1 - 2018-09-15
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2018 Bjorn Holine; Licensed MIT */
 
@@ -13,7 +13,7 @@
 	}
 
 	// Variables used across multiple methods
-	var $this, map, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom, dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService, prevSelectedMarkerBefore, prevSelectedMarkerAfter, firstRun;
+	var $this, map, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom, dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService, prevSelectedMarkerBefore, prevSelectedMarkerAfter, firstRun, reload;
 	var featuredset = [], locationset = [], normalset = [], markers = [];
 	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {};
 
@@ -341,6 +341,7 @@
 		mapReload: function() {
 			this.writeDebug('mapReload');
 			this.reset();
+			reload = true;
 
 			if ( this.settings.taxonomyFilters !== null ) {
 				this.formFiltersReset();
@@ -2672,7 +2673,8 @@
 			if (
 				( _this.settings.fullMapStart === true && openMap === false ) ||
 				( _this.settings.autoGeocode === true && openMap === false ) ||
-				( _this.settings.defaultLoc === true && openMap === false )
+				( _this.settings.defaultLoc === true && openMap === false ) ||
+				reload === true
 			) {
 				firstRun = true;
 			}

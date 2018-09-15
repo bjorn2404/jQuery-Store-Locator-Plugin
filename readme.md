@@ -40,6 +40,7 @@ filtering.
 * Added custom order handling to tie into previously added custom sorting. Set order to asc or desc.
 * Added Google Map object as parameter to callbackBeforeSend, callbackListClick, callbackModalReady, and callbackFilters callbacks.
 * Changed parseJSON to native JSON.parse due to deprecation in rawData processing function.
+* Fixed issue with mapReload (triggered with optional reset button) where storeLimit wasn't reset.
 * Updated sort-example.html example with order select field.
 
 ### Version 3.0.0
