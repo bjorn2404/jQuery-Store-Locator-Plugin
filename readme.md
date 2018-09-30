@@ -38,6 +38,7 @@ filtering.
 ### Version 3.0.1
 
 * Added custom order handling to tie into previously added custom sorting. Set order to asc or desc.
+* Added functionality to fill in search input with determined address when using autoGeocode or geocodeID settings.
 * Added Google Map object as parameter to callbackBeforeSend, callbackListClick, callbackModalReady, and callbackFilters callbacks.
 * Changed parseJSON to native JSON.parse due to deprecation in rawData processing function.
 * Fixed issue with mapReload (triggered with optional reset button) where storeLimit wasn't reset.
