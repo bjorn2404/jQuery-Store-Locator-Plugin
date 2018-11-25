@@ -37,6 +37,7 @@ filtering.
 
 ### Version 3.1.0
 
+* Added featuredDistance setting to restrict featured locations by a specified distance.
 * Added featuredPostal setting to restrict featured locations by postal code.
 
 ### Version 3.0.1

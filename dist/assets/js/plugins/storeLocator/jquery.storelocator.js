@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.0.1 - 2018-11-25
+/*! jQuery Google Maps Store Locator - v3.1.0 - 2018-11-25
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2018 Bjorn Holine; Licensed MIT */
 
@@ -2577,15 +2577,23 @@
          * @param mappingObject
          * @returns {Array}
          */
-		featurdRestrictions: function(mappingObject) {
-            this.writeDebug('featurdRestrictions',arguments);
+		featuredRestrictions: function(mappingObject) {
+            this.writeDebug('featuredRestrictions',arguments);
 
-			if (this.settings.featuredPostal === false && this.settings.featuredPostal === null) {
+			if (this.settings.featuredPostal === false && this.settings.featuredDistance === null) {
 				return featuredset;
 			}
 
 			// Featured locations radius restriction.
-            if (this.settings.featuredPostal !== null) {
+            if (this.settings.featuredDistance !== null) {
+                var _this = this;
+
+            	featuredset = $.grep(featuredset, function (val) {
+
+                    if (val.hasOwnProperty('distance')) {
+                        return parseFloat(val.distance) <= parseFloat(_this.settings.featuredDistance);
+                    }
+                });
             }
 
 			// Featured locations postal code restriction.
@@ -2868,7 +2876,7 @@
 				});
 
 				// Featured location restrictions.
-				featuredset = _this.featurdRestrictions(mappingObject);
+				featuredset = _this.featuredRestrictions(mappingObject);
 
 				// Create array for normal locations
 				normalset = $.grep(locationset, function (val) {
@@ -3090,6 +3098,7 @@
 			if (_this.settings.callbackFilters) {
 				_this.settings.callbackFilters.call(this, filters, mappingObject);
 			}
+			
 		},
 
 		/**
