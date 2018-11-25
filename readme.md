@@ -35,6 +35,10 @@ filtering.
 
 ## Changelog
 
+### Version 3.1.0
+
+* Added featuredPostal setting to restrict featured locations by postal code.
+
 ### Version 3.0.1
 
 * Added custom order handling to tie into previously added custom sorting. Set order to asc or desc.

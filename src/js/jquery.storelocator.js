@@ -13,129 +13,131 @@
 	var featuredset = [], locationset = [], normalset = [], markers = [];
 	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {};
 
-	// Create the defaults once. DO NOT change these settings in this file - settings should be overridden in the plugin call
-	var defaults = {
-		'ajaxData'                   : null,
-		'altDistanceNoResult'        : false,
-		'autoComplete'               : false,
-		'autoCompleteDisableListener': false,
-		'autoCompleteOptions'        : {},
-		'autoGeocode'                : false,
-		'bounceMarker'               : true,
-		'catMarkers'                 : null,
-		'dataLocation'               : 'data/locations.json',
-		'dataRaw'                    : null,
-		'dataType'                   : 'json',
-		'debug'                      : false,
-		'defaultLat'                 : null,
-		'defaultLng'                 : null,
-		'defaultLoc'                 : false,
-		'disableAlphaMarkers'        : false,
-		'distanceAlert'              : 60,
-		'dragSearch'                 : false,
-		'exclusiveFiltering'         : false,
-		'exclusiveTax'               : null,
-		'featuredLocations'          : false,
-		'fullMapStart'               : false,
-		'fullMapStartBlank'          : false,
-		'fullMapStartListLimit'      : false,
-		'infoBubble'                 : null,
-		'inlineDirections'           : false,
-		'lengthUnit'                 : 'm',
-		'listColor1'                 : '#ffffff',
-		'listColor2'                 : '#eeeeee',
-		'loading'                    : false,
-		'locationsPerPage'           : 10,
-		'mapSettings'                : {
-			mapTypeId: google.maps.MapTypeId.ROADMAP,
-			zoom     : 12
-		},
-		'markerCluster'              : null,
-		'markerImg'                  : null,
-		'markerDim'                  : null,
-		'maxDistance'                : false,
-		'modal'                      : false,
-		'nameAttribute'              : 'name',
-		'nameSearch'                 : false,
-		'noForm'                     : false,
-		'openNearest'                : false,
-		'originMarker'               : false,
-		'originMarkerDim'            : null,
-		'originMarkerImg'            : null,
-		'pagination'                 : false,
-		'querystringParams'          : false,
-		'selectedMarkerImg'          : null,
-		'selectedMarkerImgDim'       : null,
-		'sessionStorage'             : false,
-		'slideMap'                   : true,
-		'sortBy'                     : null,
-		'storeLimit'                 : 26,
-		'taxonomyFilters'            : null,
-		'visibleMarkersList'         : false,
-		'xmlElement'                 : 'marker',
-		// HTML elements
-		'addressID'                  : 'bh-sl-address',
-		'closeIcon'                  : 'bh-sl-close-icon',
-		'formContainer'              : 'bh-sl-form-container',
-		'formID'                     : 'bh-sl-user-location',
-		'geocodeID'                  : null,
-		'lengthSwapID'               : 'bh-sl-length-swap',
-		'loadingContainer'           : 'bh-sl-loading',
-		'locationList'               : 'bh-sl-loc-list',
-		'mapID'                      : 'bh-sl-map',
-		'maxDistanceID'              : 'bh-sl-maxdistance',
-		'modalContent'               : 'bh-sl-modal-content',
-		'modalWindow'                : 'bh-sl-modal-window',
-		'orderID'                    : 'bh-sl-order',
-		'overlay'                    : 'bh-sl-overlay',
-		'regionID'                   : 'bh-sl-region',
-		'searchID'                   : 'bh-sl-search',
-		'sortID'                     : 'bh-sl-sort',
-		'taxonomyFiltersContainer'   : 'bh-sl-filters-container',
-		// Templates
-		'infowindowTemplatePath'     : 'assets/js/plugins/storeLocator/templates/infowindow-description.html',
-		'listTemplatePath'           : 'assets/js/plugins/storeLocator/templates/location-list-description.html',
-		'KMLinfowindowTemplatePath'  : 'assets/js/plugins/storeLocator/templates/kml-infowindow-description.html',
-		'KMLlistTemplatePath'        : 'assets/js/plugins/storeLocator/templates/kml-location-list-description.html',
-		'listTemplateID'             : null,
-		'infowindowTemplateID'       : null,
-		// Callbacks
-		'callbackAutoGeoSuccess'     : null,
-		'callbackBeforeSend'         : null,
-		'callbackCloseDirections'    : null,
-		'callbackCreateMarker'       : null,
-		'callbackDirectionsRequest'  : null,
-		'callbackFilters'            : null,
-		'callbackFormVals'           : null,
-		'callbackGeocodeRestrictions': null,
-		'callbackJsonp'              : null,
-		'callbackListClick'          : null,
-		'callbackMapSet'             : null,
-		'callbackMarkerClick'        : null,
-		'callbackModalClose'         : null,
-		'callbackModalOpen'          : null,
-		'callbackModalReady'         : null,
-		'callbackNearestLoc'         : null,
-		'callbackNoResults'          : null,
-		'callbackNotify'             : null,
-		'callbackOrder'              : null,
-		'callbackPageChange'         : null,
-		'callbackRegion'             : null,
-		'callbackSorting'            : null,
-		'callbackSuccess'            : null,
-		// Language options
-		'addressErrorAlert'          : 'Unable to find address',
-		'autoGeocodeErrorAlert'      : 'Automatic location detection failed. Please fill in your address or zip code.',
-		'distanceErrorAlert'         : 'Unfortunately, our closest location is more than ',
-		'kilometerLang'              : 'kilometer',
-		'kilometersLang'             : 'kilometers',
-		'mileLang'                   : 'mile',
-		'milesLang'                  : 'miles',
-		'noResultsTitle'             : 'No results',
-		'noResultsDesc'              : 'No locations were found with the given criteria. Please modify your selections or input.',
-		'nextPage'                   : 'Next &raquo;',
-		'prevPage'                   : '&laquo; Prev'
-	};
+    // Create the defaults once. DO NOT change these settings in this file - settings should be overridden in the plugin call
+    var defaults = {
+        'ajaxData'                   : null,
+        'altDistanceNoResult'        : false,
+        'autoComplete'               : false,
+        'autoCompleteDisableListener': false,
+        'autoCompleteOptions'        : {},
+        'autoGeocode'                : false,
+        'bounceMarker'               : true,
+        'catMarkers'                 : null,
+        'dataLocation'               : 'data/locations.json',
+        'dataRaw'                    : null,
+        'dataType'                   : 'json',
+        'debug'                      : false,
+        'defaultLat'                 : null,
+        'defaultLng'                 : null,
+        'defaultLoc'                 : false,
+        'disableAlphaMarkers'        : false,
+        'distanceAlert'              : 60,
+        'dragSearch'                 : false,
+        'exclusiveFiltering'         : false,
+        'exclusiveTax'               : null,
+        'featuredDistance'           : null,
+        'featuredLocations'          : false,
+        'featuredPostal'             : false,
+        'fullMapStart'               : false,
+        'fullMapStartBlank'          : false,
+        'fullMapStartListLimit'      : false,
+        'infoBubble'                 : null,
+        'inlineDirections'           : false,
+        'lengthUnit'                 : 'm',
+        'listColor1'                 : '#ffffff',
+        'listColor2'                 : '#eeeeee',
+        'loading'                    : false,
+        'locationsPerPage'           : 10,
+        'mapSettings'                : {
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            zoom     : 12
+        },
+        'markerCluster'              : null,
+        'markerImg'                  : null,
+        'markerDim'                  : null,
+        'maxDistance'                : false,
+        'modal'                      : false,
+        'nameAttribute'              : 'name',
+        'nameSearch'                 : false,
+        'noForm'                     : false,
+        'openNearest'                : false,
+        'originMarker'               : false,
+        'originMarkerDim'            : null,
+        'originMarkerImg'            : null,
+        'pagination'                 : false,
+        'querystringParams'          : false,
+        'selectedMarkerImg'          : null,
+        'selectedMarkerImgDim'       : null,
+        'sessionStorage'             : false,
+        'slideMap'                   : true,
+        'sortBy'                     : null,
+        'storeLimit'                 : 26,
+        'taxonomyFilters'            : null,
+        'visibleMarkersList'         : false,
+        'xmlElement'                 : 'marker',
+        // HTML elements
+        'addressID'                  : 'bh-sl-address',
+        'closeIcon'                  : 'bh-sl-close-icon',
+        'formContainer'              : 'bh-sl-form-container',
+        'formID'                     : 'bh-sl-user-location',
+        'geocodeID'                  : null,
+        'lengthSwapID'               : 'bh-sl-length-swap',
+        'loadingContainer'           : 'bh-sl-loading',
+        'locationList'               : 'bh-sl-loc-list',
+        'mapID'                      : 'bh-sl-map',
+        'maxDistanceID'              : 'bh-sl-maxdistance',
+        'modalContent'               : 'bh-sl-modal-content',
+        'modalWindow'                : 'bh-sl-modal-window',
+        'orderID'                    : 'bh-sl-order',
+        'overlay'                    : 'bh-sl-overlay',
+        'regionID'                   : 'bh-sl-region',
+        'searchID'                   : 'bh-sl-search',
+        'sortID'                     : 'bh-sl-sort',
+        'taxonomyFiltersContainer'   : 'bh-sl-filters-container',
+        // Templates
+        'infowindowTemplatePath'     : 'assets/js/plugins/storeLocator/templates/infowindow-description.html',
+        'listTemplatePath'           : 'assets/js/plugins/storeLocator/templates/location-list-description.html',
+        'KMLinfowindowTemplatePath'  : 'assets/js/plugins/storeLocator/templates/kml-infowindow-description.html',
+        'KMLlistTemplatePath'        : 'assets/js/plugins/storeLocator/templates/kml-location-list-description.html',
+        'listTemplateID'             : null,
+        'infowindowTemplateID'       : null,
+        // Callbacks
+        'callbackAutoGeoSuccess'     : null,
+        'callbackBeforeSend'         : null,
+        'callbackCloseDirections'    : null,
+        'callbackCreateMarker'       : null,
+        'callbackDirectionsRequest'  : null,
+        'callbackFilters'            : null,
+        'callbackFormVals'           : null,
+        'callbackGeocodeRestrictions': null,
+        'callbackJsonp'              : null,
+        'callbackListClick'          : null,
+        'callbackMapSet'             : null,
+        'callbackMarkerClick'        : null,
+        'callbackModalClose'         : null,
+        'callbackModalOpen'          : null,
+        'callbackModalReady'         : null,
+        'callbackNearestLoc'         : null,
+        'callbackNoResults'          : null,
+        'callbackNotify'             : null,
+        'callbackOrder'              : null,
+        'callbackPageChange'         : null,
+        'callbackRegion'             : null,
+        'callbackSorting'            : null,
+        'callbackSuccess'            : null,
+        // Language options
+        'addressErrorAlert'          : 'Unable to find address',
+        'autoGeocodeErrorAlert'      : 'Automatic location detection failed. Please fill in your address or zip code.',
+        'distanceErrorAlert'         : 'Unfortunately, our closest location is more than ',
+        'kilometerLang'              : 'kilometer',
+        'kilometersLang'             : 'kilometers',
+        'mileLang'                   : 'mile',
+        'milesLang'                  : 'miles',
+        'noResultsTitle'             : 'No results',
+        'noResultsDesc'              : 'No locations were found with the given criteria. Please modify your selections or input.',
+        'nextPage'                   : 'Next &raquo;',
+        'prevPage'                   : '&laquo; Prev'
+    };
 
 	// Plugin constructor
 	function Plugin(element, options) {
@@ -230,7 +232,8 @@
 
 		/**
 		 * Destroy
-		 * Note: The Google map is not destroyed here because Google recommends using a single instance and reusing it (it's not really supported)
+		 * Note: The Google map is not destroyed here because Google recommends using a single instance and reusing it
+		 * (it's not really supported)
 		 */
 		destroy: function () {
 			this.writeDebug('destroy');
@@ -1118,7 +1121,8 @@
 		 * @param point {Object} LatLng of current location
 		 * @param name {string} location name
 		 * @param address {string} location address
-		 * @param letter {string} optional letter used for front-end identification and correlation between list and points
+		 * @param letter {string} optional letter used for front-end identification and correlation between list and
+		 *     points
 		 * @param map {Object} the Google Map
 		 * @param category {string} location category/categories
 		 * @returns {Object} Google Maps marker
@@ -1875,7 +1879,8 @@
 		},
 
 		/**
-		 * Set up front-end ordering functionality - this ties in to sorting and that has to be enabled for this to work.
+		 * Set up front-end ordering functionality - this ties in to sorting and that has to be enabled for this to
+		 * work.
 		 */
 		order: function() {
 			this.writeDebug('order',arguments);
@@ -2562,10 +2567,60 @@
 			});
 		},
 
+        /**
+		 * Restrict featured locations by distance and/or postal code.
+		 *
+         * @param mappingObject
+         * @returns {Array}
+         */
+		featurdRestrictions: function(mappingObject) {
+            this.writeDebug('featurdRestrictions',arguments);
+
+			if (this.settings.featuredPostal === false && this.settings.featuredPostal === null) {
+				return featuredset;
+			}
+
+			// Featured locations radius restriction.
+            if (this.settings.featuredPostal !== null) {
+            }
+
+			// Featured locations postal code restriction.
+			if (this.settings.featuredPostal === true) {
+				var postalCode = null;
+
+                // Check for postal code in the Geocoding result.
+                if (typeof mappingObject === 'object' && mappingObject.hasOwnProperty('geocodeResult')) {
+
+                    for (var i = 0; i < mappingObject.geocodeResult.address_components.length; i++) {
+
+                        for (var x = 0; x < mappingObject.geocodeResult.address_components[x].types.length; x++) {
+
+                            if (mappingObject.geocodeResult.address_components[i].types[x] === 'postal_code') {
+                                postalCode = mappingObject.geocodeResult.address_components[i].short_name;
+                            }
+                        }
+                    }
+                }
+
+                // Do the restriction with the determined postal code if it was found.
+				if (postalCode !== null) {
+                    featuredset = $.grep(featuredset, function (val) {
+
+                    	if (val.hasOwnProperty('postal')) {
+                            return val.postal === postalCode;
+						}
+                    });
+				}
+			}
+
+			return featuredset;
+		},
+
 		/**
 		 * The primary mapping function that runs everything
 		 *
-		 * @param mappingObject {Object} all the potential mapping properties - latitude, longitude, origin, name, max distance, page
+		 * @param mappingObject {Object} all the potential mapping properties - latitude, longitude, origin, name, max
+		 *     distance, page
 		 */
 		mapping: function (mappingObject) {
 			this.writeDebug('mapping',arguments);
@@ -2627,7 +2682,8 @@
 		/**
 		 * Processes the location data
 		 *
-		 * @param mappingObject {Object} all the potential mapping properties - latitude, longitude, origin, name, max distance, page
+		 * @param mappingObject {Object} all the potential mapping properties - latitude, longitude, origin, name, max
+		 *     distance, page
 		 * @param originPoint {Object} LatLng of origin point
 		 * @param data {Object} location data
 		 * @param page {number} current page number
@@ -2801,12 +2857,21 @@
 			if (_this.settings.featuredLocations === true) {
 				// Create array for featured locations
 				featuredset = $.grep(locationset, function (val) {
-					return val.featured === 'true';
+
+                    if (val.hasOwnProperty('featured')) {
+                        return val.featured === 'true';
+                    }
 				});
+
+				// Featured location restrictions.
+				featuredset = _this.featurdRestrictions(mappingObject);
 
 				// Create array for normal locations
 				normalset = $.grep(locationset, function (val) {
-					return val.featured !== 'true';
+
+					if (val.hasOwnProperty('featured')) {
+                        return val.featured !== 'true';
+					}
 				});
 
 				// Combine the arrays

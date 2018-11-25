@@ -22,7 +22,9 @@
 | dragSearch | false | Set to true to perform a new search after the map is dragged. |
 | exclusiveFiltering | false | Set to true to enable exclusive taxonomy filtering rather than the default inclusive. |
 | exclusiveTax | null | Set to an array of taxonomies that should filter exclusively vs. inclusively.  |
+| featuredDistance | null | Restrict the featured locations from displaying by a certain distance. |
 | featuredLocations | false | Set to true to enable featuring locations at the top of the location list (no matter the distance). Add featured=”true” to featured locations in your XML or JSON locations data. |
+| featuredPostal | false | Restrict the featured locations from displaying by requiring a match of the postal code to the searched location. |
 | fullMapStart | false | Set to true if you want to immediately show a map of all locations. The map will center and zoom automatically. |
 | fullMapStartBlank | false | Set to a zoom integer if you want to immediately show a blank map without any locations. |
 | fullMapStartListLimit | false | Set to a number to limit the number of items displayed in the location list with full map start. |
