@@ -1,6 +1,6 @@
-/*! jQuery Google Maps Store Locator - v3.1.0 - 2018-11-25
+/*! jQuery Google Maps Store Locator - v3.1.0 - 2019-11-17
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
-* Copyright (c) 2018 Bjorn Holine; Licensed MIT */
+* Copyright (c) 2019 Bjorn Holine; Licensed MIT */
 
 ;(function ($, window, document, undefined) {
 	'use strict';
@@ -41,7 +41,6 @@
         'exclusiveTax'               : null,
         'featuredDistance'           : null,
         'featuredLocations'          : false,
-        'featuredPostal'             : false,
         'fullMapStart'               : false,
         'fullMapStartBlank'          : false,
         'fullMapStartListLimit'      : false,
@@ -779,6 +778,7 @@
 						if (results[0]) {
 							var result = {};
 							result.address = results[0].formatted_address;
+							result.fullResult = results[0];
 							callbackFunction(result);
 						}
 					} else {
@@ -2571,61 +2571,43 @@
 			});
 		},
 
-        /**
-		 * Restrict featured locations by distance and/or postal code.
+		/**
+		 * Restrict featured locations from displaying in results by a specific distance
 		 *
-         * @param mappingObject
-         * @returns {Array}
+		 * @returns {Array}
+		 */
+		featuredDistanceRestriction: function() {
+			this.writeDebug('featuredDistanceRestriction',arguments);
+			var _this = this;
+
+			featuredset = $.grep(featuredset, function (val) {
+
+				if (val.hasOwnProperty('distance')) {
+					return parseFloat(val.distance) <= parseFloat(_this.settings.featuredDistance);
+				}
+			});
+
+			return featuredset;
+		},
+
+        /**
+		 * Restrict featured locations by distance.
+		 *
+		 * @returns {Array}
          */
 		featuredRestrictions: function(mappingObject) {
             this.writeDebug('featuredRestrictions',arguments);
 
-			if (this.settings.featuredPostal === false && this.settings.featuredDistance === null) {
+			if (this.settings.featuredDistance === null) {
 				return featuredset;
 			}
 
 			// Featured locations radius restriction.
             if (this.settings.featuredDistance !== null) {
-                var _this = this;
-
-            	featuredset = $.grep(featuredset, function (val) {
-
-                    if (val.hasOwnProperty('distance')) {
-                        return parseFloat(val.distance) <= parseFloat(_this.settings.featuredDistance);
-                    }
-                });
+                featuredset = this.featuredDistanceRestriction(mappingObject);
             }
 
-			// Featured locations postal code restriction.
-			if (this.settings.featuredPostal === true) {
-				var postalCode = null;
-
-                // Check for postal code in the Geocoding result.
-                if (typeof mappingObject === 'object' && mappingObject.hasOwnProperty('geocodeResult')) {
-
-                    for (var i = 0; i < mappingObject.geocodeResult.address_components.length; i++) {
-
-                        for (var x = 0; x < mappingObject.geocodeResult.address_components[x].types.length; x++) {
-
-                            if (mappingObject.geocodeResult.address_components[i].types[x] === 'postal_code') {
-                                postalCode = mappingObject.geocodeResult.address_components[i].short_name;
-                            }
-                        }
-                    }
-                }
-
-                // Do the restriction with the determined postal code if it was found.
-				if (postalCode !== null) {
-                    featuredset = $.grep(featuredset, function (val) {
-
-                    	if (val.hasOwnProperty('postal')) {
-                            return val.postal === postalCode;
-						}
-                    });
-				}
-			}
-
-			return featuredset;
+            return featuredset;
 		},
 
 		/**
@@ -2867,6 +2849,7 @@
 
 			// Featured locations filtering
 			if (_this.settings.featuredLocations === true) {
+
 				// Create array for featured locations
 				featuredset = $.grep(locationset, function (val) {
 
@@ -3098,7 +3081,6 @@
 			if (_this.settings.callbackFilters) {
 				_this.settings.callbackFilters.call(this, filters, mappingObject);
 			}
-			
 		},
 
 		/**

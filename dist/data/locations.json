@@ -295,7 +295,7 @@
     "hours1": "Mon-Sun 11am-10pm",
     "hours2": "",
     "hours3": "",
-    "featured": "",
+    "featured": "true",
     "features": "Online Ordering",
     "date": "08/17/17"
   },
