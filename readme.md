@@ -39,6 +39,7 @@ filtering.
 
 * Added featuredDistance setting to restrict featured locations by a specified distance (number value should be used).
 * Updated bundled version of Handlebars to v4.5.1 due to security issue.
+* Updated taxonomy filtering REGEX and string replacements for international character support.
 
 ### Version 3.0.1
 
