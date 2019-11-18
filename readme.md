@@ -37,7 +37,8 @@ filtering.
 
 ### Version 3.1.0
 
-* Added featuredDistance setting to restrict featured locations by a specified distance.
+* Added featuredDistance setting to restrict featured locations by a specified distance (number value should be used).
+* Updated bundled version of Handlebars to v4.5.1 due to security issue.
 
 ### Version 3.0.1
 
