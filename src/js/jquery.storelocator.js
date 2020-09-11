@@ -1821,6 +1821,7 @@
 					locationset.push( data );
 				}
 				else {
+					this.writeDebug('locationsSetup', "location ignored because it is out of maxDistance: " + maxDistance, data);
 					return;
 				}
 			}
@@ -1829,6 +1830,7 @@
 					locationset.push( data );
 				}
 				else {
+					this.writeDebug('locationsSetup', "location ignored because it is out of maxDistance: " + maxDistance, data);
 					return;
 				}
 			}
