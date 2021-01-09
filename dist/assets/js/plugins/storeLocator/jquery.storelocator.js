@@ -1,6 +1,6 @@
-/*! jQuery Google Maps Store Locator - v3.1.0 - 2019-11-17
+/*! jQuery Google Maps Store Locator - v3.1.1 - 2021-01-09
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
-* Copyright (c) 2019 Bjorn Holine; Licensed MIT */
+* Copyright (c) 2021 Bjorn Holine; Licensed MIT */
 
 ;(function ($, window, document, undefined) {
 	'use strict';
@@ -965,6 +965,39 @@
 		},
 
 		/**
+		 * Run the matching between regular expression filters and string value
+		 *
+		 * @param filter {array} One or multiple filters to apply
+		 * @param val {string} Value to compare
+		 * @param inclusive {boolean} Inclusive (default) or exclusive
+		 *
+		 * @returns {boolean}
+		 */
+		filterMatching: function(filter, val, inclusive) {
+			this.writeDebug('inclusiveFilter',arguments);
+			inclusive = (typeof inclusive !== 'undefined') ?  inclusive : true;
+			var applyFilters;
+
+			// Undefined check.
+			if (typeof val === 'undefined') {
+				return false;
+			}
+
+			// Modify the join depending on inclusive (AND) vs exclusive (OR).
+			if ( true === inclusive ) {
+				applyFilters = filter.join('');
+			} else {
+				applyFilters = filter.join('|');
+			}
+
+			if ((new RegExp(applyFilters, 'i').test(val.replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '')))) {
+				return true;
+			}
+
+			return false;
+		},
+
+		/**
 		 * Filter the data with Regex
 		 *
 		 * @param data {array} data array to check for filter values
@@ -973,38 +1006,23 @@
 		 */
 		filterData: function (data, filters) {
 			this.writeDebug('filterData',arguments);
-			var filterTest = true;
+			var filterTest = false;
 
 			for (var k in filters) {
 				if (filters.hasOwnProperty(k)) {
 
 					// Exclusive filtering
 					if (this.settings.exclusiveFiltering === true || (this.settings.exclusiveTax !== null && Array.isArray(this.settings.exclusiveTax) && this.settings.exclusiveTax.indexOf(k) !== -1)) {
-						var filterTests = filters[k];
-						var exclusiveTest = [];
-
-						if (typeof data[k] !== 'undefined') {
-							for (var l = 0; l < filterTests.length; l++) {
-								exclusiveTest[l] = new RegExp(filterTests[l], 'i').test(data[k].replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, ''));
-							}
-						}
-
-						if (exclusiveTest.indexOf(true) === -1) {
-							filterTest = false;
-						}
+						filterTest = this.filterMatching(filters[k], data[k], false );
 					}
 					// Inclusive filtering
 					else {
-						if (typeof data[k] === 'undefined' || !(new RegExp(filters[k].join(''), 'i').test(data[k].replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '')))) {
-							filterTest = false;
-						}
+						filterTest = this.filterMatching(filters[k], data[k]);
 					}
 				}
 			}
 
-			if (filterTest) {
-				return true;
-			}
+			return filterTest;
 		},
 
 		/**
