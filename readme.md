@@ -37,9 +37,9 @@ filtering.
 
 ### Version 3.1.1
 
-* Enhanced filtering regular expression to better account for exact matches vs. substrings
-* Fixed multi-category selection filtering issue introduced in last version 3.1.0
-* Updated bundled Handlebars to v4.7.6
+* Enhanced filtering regular expression to better account for exact matches vs. substrings.
+* Fixed multi-category selection filtering issue introduced in last version 3.1.0.
+* Updated bundled Handlebars to v4.7.6.
 * Updated node modules.
 
 ### Version 3.1.0
