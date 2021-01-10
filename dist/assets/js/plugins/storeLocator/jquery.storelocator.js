@@ -395,6 +395,7 @@
 		 * Check for query string
 		 *
 		 * @param param {string} query string parameter to test
+		 *
 		 * @returns {string} query string value
 		 */
 		getQueryString: function(param) {
@@ -794,6 +795,7 @@
 		 *
 		 * @param num {number} the full number
 		 * @param dec {number} the number of digits to show after the decimal
+		 *
 		 * @returns {number}
 		 */
 		roundNumber: function (num, dec) {
@@ -805,6 +807,7 @@
 		 * Checks to see if the object is empty. Using this instead of $.isEmptyObject for legacy browser support
 		 *
 		 * @param obj {Object} the object to check
+		 *
 		 * @returns {boolean}
 		 */
 		isEmptyObject: function (obj) {
@@ -821,6 +824,7 @@
 		 * Checks to see if all the property values in the object are empty
 		 *
 		 * @param obj {Object} the object to check
+		 *
 		 * @returns {boolean}
 		 */
 		hasEmptyObjectVals: function (obj) {
@@ -1002,6 +1006,7 @@
 		 *
 		 * @param data {array} data array to check for filter values
 		 * @param filters {Object} taxonomy filters object
+		 *
 		 * @returns {boolean}
 		 */
 		filterData: function (data, filters) {
@@ -1030,6 +1035,7 @@
 		 *
 		 * @param currentPage {number}
 		 * @param totalPages {number}
+		 *
 		 * @returns {string}
 		 */
 		_paginationOutput: function(currentPage, totalPages) {
@@ -1111,6 +1117,7 @@
 		 * @param markerUrl {string} path to marker image
 		 * @param markerWidth {number} width of marker
 		 * @param markerHeight {number} height of marker
+		 *
 		 * @returns {Object} Google Maps icon object
 		 */
 		markerImage: function (markerUrl, markerWidth, markerHeight) {
@@ -1147,6 +1154,7 @@
 		 *     points
 		 * @param map {Object} the Google Map
 		 * @param category {string} location category/categories
+		 *
 		 * @returns {Object} Google Maps marker
 		 */
 		createMarker: function (point, name, address, letter, map, category) {
@@ -1227,6 +1235,7 @@
 		 * @param currentMarker {Object} Google Maps marker
 		 * @param storeStart {number} optional first location on the current page
 		 * @param page {number} optional current page
+		 *
 		 * @returns {Object} extended location data object
 		 */
 		_defineLocationData: function (currentMarker, storeStart, page) {
@@ -1529,6 +1538,7 @@
 		 * Get the address by marker ID
 		 *
 		 * @param markerID {number} location ID
+		 *
 		 * @returns {string} formatted address
 		 */
 		getAddressByMarker: function(markerID) {
@@ -2608,24 +2618,24 @@
 			return featuredset;
 		},
 
-        /**
+		/**
 		 * Restrict featured locations by distance.
 		 *
 		 * @returns {Array}
-         */
+		 */
 		featuredRestrictions: function(mappingObject) {
-            this.writeDebug('featuredRestrictions',arguments);
+			this.writeDebug('featuredRestrictions',arguments);
 
 			if (this.settings.featuredDistance === null) {
 				return featuredset;
 			}
 
 			// Featured locations radius restriction.
-            if (this.settings.featuredDistance !== null) {
-                featuredset = this.featuredDistanceRestriction(mappingObject);
-            }
+			if (this.settings.featuredDistance !== null) {
+					featuredset = this.featuredDistanceRestriction(mappingObject);
+			}
 
-            return featuredset;
+			return featuredset;
 		},
 
 		/**
@@ -2818,7 +2828,7 @@
 							if (!taxFilters[k]) {
 								taxFilters[k] = [];
 							}
-							taxFilters[k][z] = '(?:^|\\s)' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '');
+							taxFilters[k][z] = '(?=.*' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '') + '(?!\\s))';
 						}
 					}
 				}
