@@ -35,6 +35,10 @@ filtering.
 
 ## Changelog
 
+### Version 3.1.2
+
+* Fixed name search issue introduced in v3.1.1. Reverted to previous matching pattern only for name searches and still using the new patter for taxonomy matching.
+
 ### Version 3.1.1
 
 * Enhanced filtering regular expression to better account for exact matches vs. substrings.

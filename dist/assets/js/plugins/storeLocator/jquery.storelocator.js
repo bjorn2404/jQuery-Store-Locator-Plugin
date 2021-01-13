@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.1.1 - 2021-01-09
+/*! jQuery Google Maps Store Locator - v3.1.2 - 2021-01-12
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2021 Bjorn Holine; Licensed MIT */
 
@@ -2828,7 +2828,13 @@
 							if (!taxFilters[k]) {
 								taxFilters[k] = [];
 							}
-							taxFilters[k][z] = '(?=.*' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '') + '(?!\\s))';
+
+							// Swap pattern matching depending on name search vs. taxonomy filtering.
+							if ( k === _this.settings.nameAttribute ) {
+								taxFilters[k][z] = '(?:^|\\s)' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '');
+							} else {
+								taxFilters[k][z] = '(?=.*' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '') + '(?!\\s))';
+							}
 						}
 					}
 				}
