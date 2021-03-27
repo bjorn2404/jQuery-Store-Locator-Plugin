@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.1.2 - 2021-01-12
+/*! jQuery Google Maps Store Locator - v3.1.2 - 2021-03-27
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2021 Bjorn Holine; Licensed MIT */
 
@@ -3066,7 +3066,7 @@
 			locList.empty();
 
 			// Set up the location list markup
-			if (firstRun && _this.settings.fullMapStartListLimit !== false && !isNaN(_this.settings.fullMapStartListLimit) && _this.settings.fullMapStartListLimit !== -1) {
+			if (firstRun && _this.settings.fullMapStartListLimit !== false && !isNaN(_this.settings.fullMapStartListLimit) && _this.settings.fullMapStartListLimit !== -1 && markers.length > _this.settings.fullMapStartListLimit) {
 				for (var m = 0; m < _this.settings.fullMapStartListLimit; m++) {
 					var currentMarker = markers[m];
 					_this.listSetup(currentMarker, storeStart, page);

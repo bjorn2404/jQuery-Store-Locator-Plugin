@@ -35,6 +35,10 @@ filtering.
 
 ## Changelog
 
+### Version 3.1.3
+
+* Fixed potential error from occurring if fullMapStartListLimit is set and the number of locations is less than the limit.
+
 ### Version 3.1.2
 
 * Fixed name search issue introduced in v3.1.1. Reverted to previous matching pattern only for name searches and still using the new patter for taxonomy matching.
