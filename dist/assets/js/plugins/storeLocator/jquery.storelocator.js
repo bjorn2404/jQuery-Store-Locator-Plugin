@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.1.2 - 2021-03-27
+/*! jQuery Google Maps Store Locator - v3.1.3 - 2021-05-02
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2021 Bjorn Holine; Licensed MIT */
 
@@ -1010,19 +1010,27 @@
 		 * @returns {boolean}
 		 */
 		filterData: function (data, filters) {
-			this.writeDebug('filterData',arguments);
-			var filterTest = false;
+			this.writeDebug('filterData', arguments);
+			var filterTest = true;
 
 			for (var k in filters) {
 				if (filters.hasOwnProperty(k)) {
+					var testResults = [];
 
-					// Exclusive filtering
-					if (this.settings.exclusiveFiltering === true || (this.settings.exclusiveTax !== null && Array.isArray(this.settings.exclusiveTax) && this.settings.exclusiveTax.indexOf(k) !== -1)) {
-						filterTest = this.filterMatching(filters[k], data[k], false );
+					for (var l = 0; l < filters[k].length; l++) {
+
+						// Exclusive filtering
+						if (this.settings.exclusiveFiltering === true || (this.settings.exclusiveTax !== null && Array.isArray(this.settings.exclusiveTax) && this.settings.exclusiveTax.indexOf(k) !== -1)) {
+							testResults[l] = this.filterMatching(filters[k], data[k], false);
+						}
+						// Inclusive filtering
+						else {
+							testResults[l] = this.filterMatching(filters[k], data[k]);
+						}
 					}
-					// Inclusive filtering
-					else {
-						filterTest = this.filterMatching(filters[k], data[k]);
+
+					if (testResults.indexOf(true) === -1) {
+						filterTest = false;
 					}
 				}
 			}
@@ -2812,7 +2820,7 @@
 
 			// Name search - using taxonomy filter to handle
 			if (_this.settings.nameSearch === true) {
-				if (typeof searchInput !== 'undefined') {
+				if (typeof searchInput !== 'undefined' && '' !== searchInput) {
 					filters[_this.settings.nameAttribute] = [searchInput];
 				}
 			}

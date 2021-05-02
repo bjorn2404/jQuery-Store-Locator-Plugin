@@ -37,6 +37,8 @@ filtering.
 
 ### Version 3.1.3
 
+* Fixed empty name search field value overriding filter results.
+* Fixed groups of filters not applying together.
 * Fixed potential error from occurring if fullMapStartListLimit is set and the number of locations is less than the limit.
 
 ### Version 3.1.2
