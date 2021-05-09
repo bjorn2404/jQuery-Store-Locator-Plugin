@@ -39,7 +39,8 @@ filtering.
 
 * Fixed empty name search field value overriding filter results.
 * Fixed groups of filters not applying together.
-* Fixed potential error from occurring if fullMapStartListLimit is set and the number of locations is less than the limit.
+* Fixed potential error from occurring if fullMapStartListLimit is set, and the number of locations is less than the limit.
+* Updated bundled Handlebars to v4.7.7 that addresses a [critical vulnerability](https://github.com/advisories/GHSA-f2jv-r9rf-7988)
 
 ### Version 3.1.2
 
