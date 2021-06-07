@@ -35,6 +35,9 @@ filtering.
 
 ## Changelog
 
+### Version 3.1.4
+* Fixed name search filter value not clearing if form input is cleared
+
 ### Version 3.1.3
 
 * Fixed empty name search field value overriding filter results.
