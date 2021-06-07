@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.1.3 - 2021-05-08
+/*! jQuery Google Maps Store Locator - v3.1.3 - 2021-06-06
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2021 Bjorn Holine; Licensed MIT */
 
@@ -1725,6 +1725,7 @@
 					// Get the user input and use it
 					addressInput = $addressInput.val() || '';
 					searchInput = $searchInput.val() || '';
+
 					// Get the distance if set
 					if (this.settings.maxDistance === true) {
 						distance = $distanceInput.val() || '';
@@ -1772,6 +1773,10 @@
 				this._start();
 			}
 			else if (addressInput !== '') {
+				// Check for existing name search and remove if address input is blank.
+				if (searchInput === '' && filters.hasOwnProperty('name')) {
+					delete filters.name;
+				}
 
 				// Geocode the origin if needed
 				if (typeof originalOrigin !== 'undefined' && typeof olat !== 'undefined' && typeof olng !== 'undefined' && (addressInput === originalOrigin)) {
@@ -2895,9 +2900,9 @@
 				// Create array for featured locations
 				featuredset = $.grep(locationset, function (val) {
 
-                    if (val.hasOwnProperty('featured')) {
-                        return val.featured === 'true';
-                    }
+						if (val.hasOwnProperty('featured')) {
+								return val.featured === 'true';
+						}
 				});
 
 				// Featured location restrictions.
@@ -2954,7 +2959,7 @@
 				storeNumToShow = _this.settings.locationsPerPage;
 				storeStart = page * _this.settings.locationsPerPage;
 
-				if( (storeStart + storeNumToShow) > locationset.length ) {
+				if ( (storeStart + storeNumToShow) > locationset.length ) {
 					storeNumToShow = _this.settings.locationsPerPage - ((storeStart + storeNumToShow) - locationset.length);
 				}
 
