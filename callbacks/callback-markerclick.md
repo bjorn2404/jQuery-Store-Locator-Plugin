@@ -12,3 +12,4 @@ Fires when a marker on the map is clicked.
 | markerId | int | Marker ID number |
 | $selectedLocation | object | Corresponding location list DOM element |
 | locationObj | object | Location details of the selected item |
+| map | object | Google map object |

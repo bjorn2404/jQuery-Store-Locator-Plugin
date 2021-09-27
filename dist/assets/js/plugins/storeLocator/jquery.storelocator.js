@@ -1383,7 +1383,7 @@
 					if ($selectedLocation.length > 0) {
 						// Marker click callback
 						if (_this.settings.callbackMarkerClick) {
-							_this.settings.callbackMarkerClick.call(this, marker, markerId, $selectedLocation, locationset[markerId]);
+							_this.settings.callbackMarkerClick.call(this, marker, markerId, $selectedLocation, locationset[markerId], _this.map);
 						}
 
 						$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
