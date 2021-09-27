@@ -3003,7 +3003,6 @@
 				_this.map.setCenter(center);
 			});
 
-
 			// Add map drag listener if setting is enabled and re-search on drag end
 			if (_this.settings.dragSearch === true ) {
 				_this.map.addListener('dragend', function() {
@@ -3068,6 +3067,14 @@
 			// Center and zoom if no origin or zoom was provided, or distance of first marker is greater than distanceAlert
 			if ((_this.settings.fullMapStart === true && firstRun === true && _this.settings.querystringParams !== true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined') || (distError === true)) {
 				_this.map.fitBounds(bounds);
+
+				// Prevent zooming in too far after fitBounds
+				var zoomListener = google.maps.event.addListener(_this.map, 'idle', function() {
+					if (_this.map.getZoom() > 16) {
+						_this.map.setZoom(16);
+					}
+					google.maps.event.removeListener(zoomListener);
+				});
 			}
 
 			// Create the links that focus on the related marker

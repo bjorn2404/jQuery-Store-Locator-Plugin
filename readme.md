@@ -35,8 +35,11 @@ filtering.
 
 ## Changelog
 
+### Version 3.1.5
+* Added a zoom listener after fitBounds is used to prevent high zoom levels after name search and taxonomy filtering.
+
 ### Version 3.1.4
-* Fixed name search filter value not clearing if form input is cleared
+* Fixed name search filter value not clearing if form input is cleared.
 
 ### Version 3.1.3
 
