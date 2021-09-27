@@ -37,6 +37,7 @@ filtering.
 
 ### Version 3.1.5
 * Added a zoom listener after fitBounds is used to prevent high zoom levels after name search and taxonomy filtering.
+* Improved zooming when maxDistance setting is enabled taking advantage of the fitBounds method.
 
 ### Version 3.1.4
 * Fixed name search filter value not clearing if form input is cleared.

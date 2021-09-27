@@ -2895,7 +2895,6 @@
 
 				// Create array for featured locations
 				featuredset = $.grep(locationset, function (val) {
-
 						if (val.hasOwnProperty('featured')) {
 								return val.featured === 'true';
 						}
@@ -2906,9 +2905,8 @@
 
 				// Create array for normal locations
 				normalset = $.grep(locationset, function (val) {
-
 					if (val.hasOwnProperty('featured')) {
-                        return val.featured !== 'true';
+						return val.featured !== 'true';
 					}
 				});
 
@@ -2971,7 +2969,13 @@
 			_this.resultsTotalCount(locationset.length);
 
 			// Google maps settings
-			if ((_this.settings.fullMapStart === true && firstRun === true && _this.settings.querystringParams !== true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined') || (distError === true)) {
+			if (
+				(_this.settings.fullMapStart === true && firstRun === true && _this.settings.querystringParams !== true) ||
+				(_this.settings.mapSettings.zoom === 0) ||
+				(typeof origin === 'undefined') ||
+				(distError === true) ||
+				(_this.settings.maxDistance === true && firstRun === false)
+			) {
 				myOptions = _this.settings.mapSettings;
 				bounds = new google.maps.LatLngBounds();
 			}
@@ -3057,7 +3061,13 @@
 				marker = _this.createMarker(point, locationset[y].name, locationset[y].address, letter, _this.map, locationset[y].category);
 				marker.set('id', y);
 				markers[y] = marker;
-				if ((_this.settings.fullMapStart === true && firstRun === true && _this.settings.querystringParams !== true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined') || (distError === true)) {
+				if (
+					(_this.settings.fullMapStart === true && firstRun === true && _this.settings.querystringParams !== true) ||
+					(_this.settings.mapSettings.zoom === 0) ||
+					(typeof origin === 'undefined') ||
+					(distError === true) ||
+					(_this.settings.maxDistance === true && firstRun === false)
+				) {
 					bounds.extend(point);
 				}
 				// Pass variables to the pop-up infowindows
@@ -3065,7 +3075,13 @@
 			}
 
 			// Center and zoom if no origin or zoom was provided, or distance of first marker is greater than distanceAlert
-			if ((_this.settings.fullMapStart === true && firstRun === true && _this.settings.querystringParams !== true) || (_this.settings.mapSettings.zoom === 0) || (typeof origin === 'undefined') || (distError === true)) {
+			if (
+				(_this.settings.fullMapStart === true && firstRun === true && _this.settings.querystringParams !== true) ||
+				(_this.settings.mapSettings.zoom === 0) ||
+				(typeof origin === 'undefined') ||
+				(distError === true) ||
+				(_this.settings.maxDistance === true && firstRun === false)
+			) {
 				_this.map.fitBounds(bounds);
 
 				// Prevent zooming in too far after fitBounds
@@ -3082,7 +3098,13 @@
 			locList.empty();
 
 			// Set up the location list markup
-			if (firstRun && _this.settings.fullMapStartListLimit !== false && !isNaN(_this.settings.fullMapStartListLimit) && _this.settings.fullMapStartListLimit !== -1 && markers.length > _this.settings.fullMapStartListLimit) {
+			if (
+				firstRun &&
+				_this.settings.fullMapStartListLimit !== false &&
+				!isNaN(_this.settings.fullMapStartListLimit) &&
+				_this.settings.fullMapStartListLimit !== -1 &&
+				markers.length > _this.settings.fullMapStartListLimit
+			) {
 				for (var m = 0; m < _this.settings.fullMapStartListLimit; m++) {
 					var currentMarker = markers[m];
 					_this.listSetup(currentMarker, storeStart, page);
