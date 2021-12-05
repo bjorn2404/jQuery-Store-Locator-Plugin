@@ -37,7 +37,8 @@ filtering.
 
 ### Version 3.1.6
 
-* Added check to make sure mapping doesn't fire twice when defaultLoc is enabled and fullMapStart is also enabled (not intended to both be enabled at the same time).
+* Added extra check to make sure mapping doesn't fire twice when defaultLoc is enabled and fullMapStart is also enabled. 
+  fullMapStart is not needed when defaultLoc is enabled and this is just a preventative to avoid user errors.
 * Fixed centering issue on initial search with maxDistance enabled introduced with fitBounds updates in last update. 
 
 ### Version 3.1.5
