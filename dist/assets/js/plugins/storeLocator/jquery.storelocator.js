@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.1.6 - 2021-12-04
+/*! jQuery Google Maps Store Locator - v3.1.6 - 2021-12-05
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2021 Bjorn Holine; Licensed MIT */
 
@@ -675,7 +675,7 @@
 					doAutoGeo = false; // No need for additional processing
 				}
 				// If show full map option is true
-				else if (this.settings.fullMapStart === true) {
+				else if (this.settings.fullMapStart === true && this.settings.defaultLoc === false) {
 					if ((this.settings.querystringParams === true && this.getQueryString(this.settings.addressID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.searchID)) || (this.settings.querystringParams === true && this.getQueryString(this.settings.maxDistanceID))) {
 						_this.writeDebug('Using Query String');
 						this.processForm(null);
@@ -1864,20 +1864,18 @@
 			if (this.settings.maxDistance === true && typeof maxDistance !== 'undefined' && maxDistance !== null) {
 				if (data.distance <= maxDistance) {
 					locationset.push( data );
-				}
-				else {
+				} else {
+					this.writeDebug('locationsSetup', "location ignored because it is out of maxDistance: " + maxDistance, data);
 					return;
 				}
-			}
-			else if (this.settings.maxDistance === true && this.settings.querystringParams === true && typeof maxDistance !== 'undefined' && maxDistance !== null) {
+			} else if (this.settings.maxDistance === true && this.settings.querystringParams === true && typeof maxDistance !== 'undefined' && maxDistance !== null) {
 				if (data.distance <= maxDistance) {
 					locationset.push( data );
-				}
-				else {
+				} else {
+					this.writeDebug('locationsSetup', "location ignored because it is out of maxDistance: " + maxDistance, data);
 					return;
 				}
-			}
-			else {
+			} else {
 				locationset.push( data );
 			}
 		},

@@ -37,14 +37,17 @@ filtering.
 
 ### Version 3.1.6
 
+* Added check to make sure mapping doesn't fire twice when defaultLoc is enabled and fullMapStart is also enabled (not intended to both be enabled at the same time).
 * Fixed centering issue on initial search with maxDistance enabled introduced with fitBounds updates in last update. 
 
 ### Version 3.1.5
+
 * Added Google Maps object as a parameter for [callbackMarkerClick](callbacks/callback-markerclick.md) callback.
 * Added a zoom listener after fitBounds is used to prevent high zoom levels after name search and taxonomy filtering.
 * Improved zooming when maxDistance setting is enabled taking advantage of the fitBounds method.
 
 ### Version 3.1.4
+
 * Fixed name search filter value not clearing if form input is cleared.
 
 ### Version 3.1.3
