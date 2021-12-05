@@ -35,6 +35,10 @@ filtering.
 
 ## Changelog
 
+### Version 3.1.6
+
+* Fixed centering issue on initial search with maxDistance enabled introduced with fitBounds updates in last update. 
+
 ### Version 3.1.5
 * Added Google Maps object as a parameter for [callbackMarkerClick](callbacks/callback-markerclick.md) callback.
 * Added a zoom listener after fitBounds is used to prevent high zoom levels after name search and taxonomy filtering.

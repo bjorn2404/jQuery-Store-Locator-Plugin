@@ -2974,7 +2974,7 @@
 				(_this.settings.mapSettings.zoom === 0) ||
 				(typeof origin === 'undefined') ||
 				(distError === true) ||
-				(_this.settings.maxDistance === true && firstRun === false)
+				((_this.settings.maxDistance === true && firstRun === false) && this.countFilters() > 0)
 			) {
 				myOptions = _this.settings.mapSettings;
 				bounds = new google.maps.LatLngBounds();
@@ -3066,7 +3066,7 @@
 					(_this.settings.mapSettings.zoom === 0) ||
 					(typeof origin === 'undefined') ||
 					(distError === true) ||
-					(_this.settings.maxDistance === true && firstRun === false)
+					((_this.settings.maxDistance === true && firstRun === false) && this.countFilters() > 0)
 				) {
 					bounds.extend(point);
 				}
@@ -3080,7 +3080,7 @@
 				(_this.settings.mapSettings.zoom === 0) ||
 				(typeof origin === 'undefined') ||
 				(distError === true) ||
-				(_this.settings.maxDistance === true && firstRun === false)
+				((_this.settings.maxDistance === true && firstRun === false) && this.countFilters() > 0)
 			) {
 				_this.map.fitBounds(bounds);
 

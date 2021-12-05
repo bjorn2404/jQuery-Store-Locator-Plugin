@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.1.5 - 2021-09-27
+/*! jQuery Google Maps Store Locator - v3.1.6 - 2021-12-04
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2021 Bjorn Holine; Licensed MIT */
 
@@ -2978,7 +2978,7 @@
 				(_this.settings.mapSettings.zoom === 0) ||
 				(typeof origin === 'undefined') ||
 				(distError === true) ||
-				(_this.settings.maxDistance === true && firstRun === false)
+				((_this.settings.maxDistance === true && firstRun === false) && this.countFilters() > 0)
 			) {
 				myOptions = _this.settings.mapSettings;
 				bounds = new google.maps.LatLngBounds();
@@ -3070,7 +3070,7 @@
 					(_this.settings.mapSettings.zoom === 0) ||
 					(typeof origin === 'undefined') ||
 					(distError === true) ||
-					(_this.settings.maxDistance === true && firstRun === false)
+					((_this.settings.maxDistance === true && firstRun === false) && this.countFilters() > 0)
 				) {
 					bounds.extend(point);
 				}
@@ -3084,7 +3084,7 @@
 				(_this.settings.mapSettings.zoom === 0) ||
 				(typeof origin === 'undefined') ||
 				(distError === true) ||
-				(_this.settings.maxDistance === true && firstRun === false)
+				((_this.settings.maxDistance === true && firstRun === false) && this.countFilters() > 0)
 			) {
 				_this.map.fitBounds(bounds);
 
