@@ -38,6 +38,7 @@ filtering.
 ### Version 3.1.7
 
 * Fixed openNearest setting not working in combination with querystringParams setting.
+* Fixed openNearest setting not opening correct location with custom sorting (sortBy) enabled.
 
 ### Version 3.1.6
 

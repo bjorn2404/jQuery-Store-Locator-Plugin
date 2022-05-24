@@ -926,14 +926,19 @@
 		 * Location distance sorting function
 		 *
 		 * @param locationsarray {array} locationset array
+		 * @param distanceOverride {boolean} Force sort by distance
 		 */
-		sortNumerically: function (locationsarray) {
+		sortNumerically: function (locationsarray, distanceOverride) {
 			this.writeDebug('sortNumerically',arguments);
 			var property = (
 				this.settings.sortBy !== null &&
 				this.settings.sortBy.hasOwnProperty('prop') &&
 				typeof this.settings.sortBy.prop !== 'undefined'
 			) ?  this.settings.sortBy.prop : 'distance';
+
+			if (typeof distanceOverride !== 'undefined' && distanceOverride === true) {
+				property = 'distance';
+			}
 
 			if (this.settings.sortBy !== null && this.settings.sortBy.hasOwnProperty('order') && this.settings.sortBy.order.toString() === 'desc') {
 				locationsarray.sort(function (a, b) {
@@ -2466,7 +2471,7 @@
 				_this.settings.callbackNearestLoc.call(this, _this.map, nearestLoc, infowindow, storeStart, page);
 			}
 
-			var markerId = 0;
+			var markerId = (nearestLoc.hasOwnProperty('markerid')) ? nearestLoc.markerid : 0;
 			var selectedMarker = markers[markerId];
 
 			_this.createInfowindow(selectedMarker, 'left', infowindow, storeStart, page);
@@ -2860,6 +2865,23 @@
 
 			// Sorting
 			if (_this.settings.sortBy !== null && typeof _this.settings.sortBy === 'object') {
+
+				// Sort the multi-dimensional array by distance to get the nearest location first when enabled
+				if (_this.settings.openNearest === true) {
+					this.sortNumerically(locationset, true);
+
+					// Save the closest location to a variable for openNearest setting
+					if (typeof locationset[0] !== 'undefined') {
+
+						if (this.settings.sortBy.hasOwnProperty('order') && this.settings.sortBy.order.toString() === 'desc') {
+							nearestLoc = locationset[locationset.length - 1];
+						} else {
+							nearestLoc = locationset[0];
+						}
+					}
+				}
+
+				// Custom sorting
 				_this.sortCustom(locationset);
 			} else {
 				// Sort the multi-dimensional array by distance
@@ -2887,7 +2909,7 @@
 					}
 				}
 
-				// Save the closest location to a variable for openNearest setting.
+				// Save the closest location to a variable for openNearest setting
 				if (typeof locationset[0] !== 'undefined') {
 					nearestLoc = locationset[0];
 				}
@@ -3025,7 +3047,7 @@
 				_this.settings.callbackMapSet.call(this, _this.map, originPoint, originalZoom, myOptions);
 			}
 
-			// Initialize the infowondow
+			// Initialize the infowindow
 			if ( typeof InfoBubble !== 'undefined' && _this.settings.infoBubble !== null ) {
 				var infoBubbleSettings = _this.settings.infoBubble;
 				infoBubbleSettings.map = _this.map;
@@ -3034,7 +3056,6 @@
 			} else {
 				infowindow = new google.maps.InfoWindow();
 			}
-
 
 			// Add origin marker if the setting is set
 			_this.originMarker(_this.map, origin, originPoint);
@@ -3064,6 +3085,10 @@
 				marker = _this.createMarker(point, locationset[y].name, locationset[y].address, letter, _this.map, locationset[y].category);
 				marker.set('id', y);
 				markers[y] = marker;
+
+				// Add marker ID to location data
+				locationset[y].markerid = marker.get('id');
+
 				if (
 					(_this.settings.fullMapStart === true && firstRun === true && _this.settings.querystringParams !== true) ||
 					(_this.settings.mapSettings.zoom === 0) ||
