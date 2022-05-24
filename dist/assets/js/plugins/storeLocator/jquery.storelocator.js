@@ -1,6 +1,6 @@
-/*! jQuery Google Maps Store Locator - v3.1.6 - 2021-12-05
+/*! jQuery Google Maps Store Locator - v3.1.6 - 2022-05-23
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
-* Copyright (c) 2021 Bjorn Holine; Licensed MIT */
+* Copyright (c) 2022 Bjorn Holine; Licensed MIT */
 
 ;(function ($, window, document, undefined) {
 	'use strict';
@@ -2454,7 +2454,12 @@
 		openNearestLocation: function(nearestLoc, infowindow, storeStart, page) {
 			this.writeDebug('openNearestLocation',arguments);
 
-			if (this.settings.openNearest !== true || typeof nearestLoc === 'undefined' || (this.settings.fullMapStart === true && firstRun === true) || (this.settings.defaultLoc === true && firstRun === true)) {
+			if (
+				this.settings.openNearest !== true ||
+				typeof nearestLoc === 'undefined' ||
+				(this.settings.fullMapStart === true && firstRun === true && this.settings.querystringParams === false) ||
+				(this.settings.defaultLoc === true && firstRun === true && this.settings.querystringParams === false)
+			) {
 				return;
 			}
 

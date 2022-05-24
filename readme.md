@@ -35,6 +35,10 @@ filtering.
 
 ## Changelog
 
+### Version 3.1.7
+
+* Fixed openNearest setting not working in combination with querystringParams setting.
+
 ### Version 3.1.6
 
 * Added extra check to make sure mapping doesn't fire twice when defaultLoc is enabled and fullMapStart is also enabled. 

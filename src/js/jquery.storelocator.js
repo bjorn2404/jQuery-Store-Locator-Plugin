@@ -2450,7 +2450,12 @@
 		openNearestLocation: function(nearestLoc, infowindow, storeStart, page) {
 			this.writeDebug('openNearestLocation',arguments);
 
-			if (this.settings.openNearest !== true || typeof nearestLoc === 'undefined' || (this.settings.fullMapStart === true && firstRun === true) || (this.settings.defaultLoc === true && firstRun === true)) {
+			if (
+				this.settings.openNearest !== true ||
+				typeof nearestLoc === 'undefined' ||
+				(this.settings.fullMapStart === true && firstRun === true && this.settings.querystringParams === false) ||
+				(this.settings.defaultLoc === true && firstRun === true && this.settings.querystringParams === false)
+			) {
 				return;
 			}
 
