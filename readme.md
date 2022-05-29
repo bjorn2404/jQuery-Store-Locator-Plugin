@@ -37,6 +37,7 @@ filtering.
 
 ### Version 3.1.7
 
+* Fixed empty name search value not clearing previous value.
 * Fixed openNearest setting not working in combination with querystringParams setting.
 * Fixed openNearest setting not opening correct location with custom sorting (sortBy) enabled.
 

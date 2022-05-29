@@ -2832,6 +2832,15 @@
 				if (typeof searchInput !== 'undefined' && '' !== searchInput) {
 					filters[_this.settings.nameAttribute] = [searchInput];
 				}
+
+				// Check for a previous value.
+				if (
+					typeof searchInput !== 'undefined' &&
+					'' === searchInput &&
+					filters.hasOwnProperty(_this.settings.nameAttribute)
+				) {
+					delete filters[_this.settings.nameAttribute];
+				}
 			}
 
 			// Taxonomy filtering setup
