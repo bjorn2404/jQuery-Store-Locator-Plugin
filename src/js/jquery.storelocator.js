@@ -3098,6 +3098,14 @@
 				// Add marker ID to location data
 				locationset[y].markerid = marker.get('id');
 
+				if (this.settings.dataRaw !== null) {
+					for (var l = 0; l < this.settings.dataRaw.length; l++) {
+						if (this.settings.dataRaw[l] && this.settings.dataRaw[l].hasOwnProperty('id') && this.settings.dataRaw[l].id === locationset[y].id) {
+							this.settings.dataRaw[l].markerid = locationset[y].markerid;
+						}
+					}
+				}
+
 				if (
 					(_this.settings.fullMapStart === true && firstRun === true && _this.settings.querystringParams !== true) ||
 					(_this.settings.mapSettings.zoom === 0) ||

@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.1.7 - 2022-05-28
+/*! jQuery Google Maps Store Locator - v3.1.7 - 2022-05-30
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2022 Bjorn Holine; Licensed MIT */
 
@@ -3101,6 +3101,14 @@
 
 				// Add marker ID to location data
 				locationset[y].markerid = marker.get('id');
+
+				if (this.settings.dataRaw !== null) {
+					for (var l = 0; l < this.settings.dataRaw.length; l++) {
+						if (this.settings.dataRaw[l] && this.settings.dataRaw[l].hasOwnProperty('id') && this.settings.dataRaw[l].id === locationset[y].id) {
+							this.settings.dataRaw[l].markerid = locationset[y].markerid;
+						}
+					}
+				}
 
 				if (
 					(_this.settings.fullMapStart === true && firstRun === true && _this.settings.querystringParams !== true) ||
