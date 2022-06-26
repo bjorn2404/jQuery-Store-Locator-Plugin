@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.1.7 - 2022-05-30
+/*! jQuery Google Maps Store Locator - v3.1.7 - 2022-06-26
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2022 Bjorn Holine; Licensed MIT */
 
@@ -2880,7 +2880,7 @@
 			if (_this.settings.sortBy !== null && typeof _this.settings.sortBy === 'object') {
 
 				// Sort the multi-dimensional array by distance to get the nearest location first when enabled
-				if (_this.settings.openNearest === true) {
+				if (_this.settings.openNearest === true && typeof originalOrigin !== 'undefined') {
 					this.sortNumerically(locationset, true);
 
 					// Save the closest location to a variable for openNearest setting

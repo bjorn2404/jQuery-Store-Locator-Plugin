@@ -2876,7 +2876,7 @@
 			if (_this.settings.sortBy !== null && typeof _this.settings.sortBy === 'object') {
 
 				// Sort the multi-dimensional array by distance to get the nearest location first when enabled
-				if (_this.settings.openNearest === true) {
+				if (_this.settings.openNearest === true && typeof originalOrigin !== 'undefined') {
 					this.sortNumerically(locationset, true);
 
 					// Save the closest location to a variable for openNearest setting
