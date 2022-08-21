@@ -388,6 +388,32 @@
 		},
 
 		/**
+		 * Range helper function for coordinate validation
+		 *
+		 * @param min {number} minimum number allowed
+		 * @param num {number} number to check
+		 * @param max {number} maximum number allowed
+		 *
+		 * @returns {boolean}
+		 */
+		inRange(min, num, max){
+			num = Math.abs(num);
+			return isFinite(num) && (num >= min) && (num <= max);
+		},
+
+		/**
+		 * Coordinate validation
+		 *
+		 * @param lat {number} latitude
+		 * @param lng {number} longitude
+		 *
+		 * @returns {boolean}
+		 */
+		coordinatesInRange: function (lat, lng) {
+			return this.inRange(-90, lat, 90) && this.inRange(-180, lng, 180);
+		},
+
+		/**
 		 * Check for query string
 		 *
 		 * @param param {string} query string parameter to test
@@ -1859,6 +1885,12 @@
 						data.altdistance = parseFloat(data.distance)/1.609344;
 					}
 				}
+			}
+
+			// Make sure the location coordinates are valid.
+			if (!this.coordinatesInRange(data.lat, data.lng)) {
+				this.writeDebug('locationsSetup', "location ignored because coordinates out of range: " + maxDistance, data);
+				return;
 			}
 
 			// Create the array

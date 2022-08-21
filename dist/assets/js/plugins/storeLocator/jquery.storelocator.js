@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.1.7 - 2022-06-26
+/*! jQuery Google Maps Store Locator - v3.1.7 - 2022-08-20
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2022 Bjorn Holine; Licensed MIT */
 
@@ -389,6 +389,32 @@
 		geoCodeCalcCalcDistance: function (lat1, lng1, lat2, lng2, radius) {
 			this.writeDebug('geoCodeCalcCalcDistance',arguments);
 			return radius * 2 * Math.asin(Math.min(1, Math.sqrt(( Math.pow(Math.sin((this.geoCodeCalcDiffRadian(lat1, lat2)) / 2.0), 2.0) + Math.cos(this.geoCodeCalcToRadian(lat1)) * Math.cos(this.geoCodeCalcToRadian(lat2)) * Math.pow(Math.sin((this.geoCodeCalcDiffRadian(lng1, lng2)) / 2.0), 2.0) ))));
+		},
+
+		/**
+		 * Range helper function for coordinate validation
+		 *
+		 * @param min {number} minimum number allowed
+		 * @param num {number} number to check
+		 * @param max {number} maximum number allowed
+		 *
+		 * @returns {boolean}
+		 */
+		inRange(min, num, max){
+			num = Math.abs(num);
+			return isFinite(num) && (num >= min) && (num <= max);
+		},
+
+		/**
+		 * Coordinate validation
+		 *
+		 * @param lat {number} latitude
+		 * @param lng {number} longitude
+		 *
+		 * @returns {boolean}
+		 */
+		coordinatesInRange: function (lat, lng) {
+			return this.inRange(-90, lat, 90) && this.inRange(-180, lng, 180);
 		},
 
 		/**
@@ -1863,6 +1889,12 @@
 						data.altdistance = parseFloat(data.distance)/1.609344;
 					}
 				}
+			}
+
+			// Make sure the location coordinates are valid.
+			if (!this.coordinatesInRange(data.lat, data.lng)) {
+				this.writeDebug('locationsSetup', "location ignored because coordinates out of range: " + maxDistance, data);
+				return;
 			}
 
 			// Create the array

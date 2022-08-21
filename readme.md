@@ -35,6 +35,10 @@ filtering.
 
 ## Changelog
 
+### Version 3.1.8
+
+* Added coordinate range check to exclude locations with invalid latitude and longitude values.
+
 ### Version 3.1.7
 
 * Fixed empty name search value not clearing previous value.
