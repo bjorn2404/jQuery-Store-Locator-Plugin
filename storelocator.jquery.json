@@ -3,10 +3,10 @@
     "title": "jQuery Google Maps Store Locator",
     "description": "This jQuery plugin takes advantage of Google Maps API version 3 to create an easy to implement store locator. No back-end programming is required, you just need to feed it KML, XML, or JSON data with all the location information.",
     "keywords": ["jquery","locator","store","dealer","location", "locations", "maps", "map", "stores", "find"],
-    "version": "3.1.7",
+    "version": "3.1.8",
     "author": {
         "name": "Bjorn Holine",
-        "url": "http://www.bjornblog.com/"
+        "url": "https://www.bjornblog.com/"
     },
 		"repository": {
 			"type": "git",

@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.1.7 - 2022-08-20
+/*! jQuery Google Maps Store Locator - v3.1.8 - 2022-08-21
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2022 Bjorn Holine; Licensed MIT */
 
@@ -401,6 +401,7 @@
 		 * @returns {boolean}
 		 */
 		inRange(min, num, max){
+			this.writeDebug('inRange',arguments);
 			num = Math.abs(num);
 			return isFinite(num) && (num >= min) && (num <= max);
 		},
@@ -414,6 +415,7 @@
 		 * @returns {boolean}
 		 */
 		coordinatesInRange: function (lat, lng) {
+			this.writeDebug('coordinatesInRange',arguments);
 			return this.inRange(-90, lat, 90) && this.inRange(-180, lng, 180);
 		},
 

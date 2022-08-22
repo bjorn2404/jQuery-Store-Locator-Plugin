@@ -397,6 +397,7 @@
 		 * @returns {boolean}
 		 */
 		inRange(min, num, max){
+			this.writeDebug('inRange',arguments);
 			num = Math.abs(num);
 			return isFinite(num) && (num >= min) && (num <= max);
 		},
@@ -410,6 +411,7 @@
 		 * @returns {boolean}
 		 */
 		coordinatesInRange: function (lat, lng) {
+			this.writeDebug('coordinatesInRange',arguments);
 			return this.inRange(-90, lat, 90) && this.inRange(-180, lng, 180);
 		},
 
