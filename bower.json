@@ -8,7 +8,7 @@
   },
   "keywords": ["jquery-plugin","locator","store","dealer","location","locations","maps","map","stores","find","finder"],
   "authors": [
-    "Bjorn Holine <bjorn2404@gmail.com> (http://www.bjornblog.com)"
+    "Bjorn Holine <bjorn2404@gmail.com> (https://www.bjornblog.com)"
   ],
   "license": "MIT",
   "dependencies": {
