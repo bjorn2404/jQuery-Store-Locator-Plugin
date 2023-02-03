@@ -1,6 +1,6 @@
-/*! jQuery Google Maps Store Locator - v3.1.8 - 2022-08-21
+/*! jQuery Google Maps Store Locator - v3.1.9 - 2023-02-02
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
-* Copyright (c) 2022 Bjorn Holine; Licensed MIT */
+* Copyright (c) 2023 Bjorn Holine; Licensed MIT */
 
 ;(function ($, window, document, undefined) {
 	'use strict';
@@ -680,7 +680,7 @@
 				_this.map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
 
 				// Re-center the map when the browser is re-sized
-				google.maps.event.addDomListener(window, 'resize', function() {
+        window.addEventListener('resize', function() {
 					var center = _this.map.getCenter();
 					google.maps.event.trigger(_this.map, 'resize');
 					_this.map.setCenter(center);
@@ -2496,6 +2496,7 @@
 			if (
 				this.settings.openNearest !== true ||
 				typeof nearestLoc === 'undefined' ||
+        typeof originalOrigin === 'undefined' ||
 				(this.settings.fullMapStart === true && firstRun === true && this.settings.querystringParams === false) ||
 				(this.settings.defaultLoc === true && firstRun === true && this.settings.querystringParams === false)
 			) {
@@ -2951,7 +2952,9 @@
 							}
 						}
 						else {
+							_this.emptyResult();
 							throw new Error('No locations found. Please check the dataLocation setting and path.');
+							return;
 						}
 					}
 				}
@@ -3020,6 +3023,16 @@
 				storeNum = _this.settings.storeLimit;
 			}
 
+      // If fullMapStart is enabled and taxFilters is reset and name search and origin are empty, swap back to the original length.
+      if (
+        _this.settings.fullMapStart === true &&
+        _this.isEmptyObject(taxFilters) &&
+        (searchInput === '' || typeof searchInput === 'undefined') &&
+        (addressInput === '' || typeof addressInput === 'undefined')
+      ) {
+        storeNum = locationset.length;
+      }
+
 			// If pagination is on, change the store limit to the setting and slice the locationset array
 			if (_this.settings.pagination === true) {
 				storeNumToShow = _this.settings.locationsPerPage;
@@ -3073,7 +3086,7 @@
 			_this.map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
 
 			// Re-center the map when the browser is re-sized
-			google.maps.event.addDomListener(window, 'resize', function() {
+      window.addEventListener('resize', function() {
 				var center = _this.map.getCenter();
 				google.maps.event.trigger(_this.map, 'resize');
 				_this.map.setCenter(center);
