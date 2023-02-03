@@ -37,6 +37,7 @@ filtering.
 
 ### Version 3.1.9
 
+* Temporary fix for missing Google Maps callback parameter console error - the parameter requirement was not previously enforced on the API side.
 * Fixed location set length scenario when fullMapStart is enabled and taxFilters is reset and name search and origin are empty.
 * Show empty result message if no locations with default sorting.
 * Updated deprecated google.maps.event.addDomListener usage with window.addEventListener.
