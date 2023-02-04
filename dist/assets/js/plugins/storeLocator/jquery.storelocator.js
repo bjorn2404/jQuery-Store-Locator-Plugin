@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.1.9 - 2023-02-02
+/*! jQuery Google Maps Store Locator - v3.1.9 - 2023-02-03
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2023 Bjorn Holine; Licensed MIT */
 
@@ -13,7 +13,7 @@
 	}
 
 	// Variables used across multiple methods
-	var $this, map, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom, dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService, prevSelectedMarkerBefore, prevSelectedMarkerAfter, firstRun, reload;
+	var $this, map, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom, dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService, prevSelectedMarkerBefore, prevSelectedMarkerAfter, firstRun, reload, nameAttrs;
 	var featuredset = [], locationset = [], normalset = [], markers = [];
 	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {};
 
@@ -1062,8 +1062,12 @@
 						}
 					}
 
-					if (testResults.indexOf(true) === -1) {
-						filterTest = false;
+					if (nameAttrs.indexOf(k) !== -1 && testResults.indexOf(true) !== -1) {
+						return true;
+					} else {
+						if (testResults.indexOf(true) === -1) {
+							filterTest = false;
+						}
 					}
 				}
 			}
@@ -2869,7 +2873,23 @@
 			// Name search - using taxonomy filter to handle
 			if (_this.settings.nameSearch === true) {
 				if (typeof searchInput !== 'undefined' && '' !== searchInput) {
-					filters[_this.settings.nameAttribute] = [searchInput];
+
+					if (_this.settings.nameAttribute.indexOf(',')) {
+						nameAttrs = _this.settings.nameAttribute.split(',');
+
+						// Multiple name attributes should swap to exclusive filtering.
+						if (_this.settings.exclusiveTax !== null) {
+							_this.settings.exclusiveTax.concat(nameAttrs);
+						} else {
+							_this.settings.exclusiveTax = nameAttrs;
+						}
+
+						for (var a = 0; a < nameAttrs.length; a++) {
+							filters[nameAttrs[a].trim()] = [searchInput];
+						}
+					} else {
+						filters[_this.settings.nameAttribute] = [searchInput];
+					}
 				}
 
 				// Check for a previous value.
@@ -2895,14 +2915,23 @@
 							}
 
 							// Swap pattern matching depending on name search vs. taxonomy filtering.
-							if ( k === _this.settings.nameAttribute ) {
-								taxFilters[k][z] = '(?:^|\\s)' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '');
+							if (typeof nameAttrs !== 'undefined') {
+								if (nameAttrs.indexOf(k) !== -1) {
+									taxFilters[k][z] = '(?:^|\\s)' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '');
+								} else {
+									taxFilters[k][z] = '(?=.*' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '') + '(?!\\s))';
+								}
 							} else {
-								taxFilters[k][z] = '(?=.*' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '') + '(?!\\s))';
+								if (k === _this.settings.nameAttribute) {
+									taxFilters[k][z] = '(?:^|\\s)' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '');
+								} else {
+									taxFilters[k][z] = '(?=.*' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '') + '(?!\\s))';
+								}
 							}
 						}
 					}
 				}
+
 				// Filter the data
 				if (!_this.isEmptyObject(taxFilters)) {
 					locationset = $.grep(locationset, function (val) {
