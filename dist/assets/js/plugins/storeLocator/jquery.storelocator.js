@@ -1062,7 +1062,8 @@
 						}
 					}
 
-					if (nameAttrs.indexOf(k) !== -1 && testResults.indexOf(true) !== -1) {
+					// First handle name search, then standard filtering.
+					if (typeof nameAttrs !== 'undefined' && nameAttrs.indexOf(k) !== -1 && testResults.indexOf(true) !== -1) {
 						return true;
 					} else {
 						if (testResults.indexOf(true) === -1) {
@@ -2895,10 +2896,17 @@
 				// Check for a previous value.
 				if (
 					typeof searchInput !== 'undefined' &&
-					'' === searchInput &&
-					filters.hasOwnProperty(_this.settings.nameAttribute)
+					'' === searchInput
 				) {
-					delete filters[_this.settings.nameAttribute];
+					if (typeof nameAttrs !== 'undefined') {
+						for (var pa = 0; pa < nameAttrs.length; pa++) {
+							if (nameAttrs[pa] in filters) {
+								delete filters[nameAttrs[pa]];
+							}
+						}
+					} else {
+						delete filters[_this.settings.nameAttribute];
+					}
 				}
 			}
 

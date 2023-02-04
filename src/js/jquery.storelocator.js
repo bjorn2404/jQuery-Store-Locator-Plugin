@@ -2892,10 +2892,17 @@
 				// Check for a previous value.
 				if (
 					typeof searchInput !== 'undefined' &&
-					'' === searchInput &&
-					filters.hasOwnProperty(_this.settings.nameAttribute)
+					'' === searchInput
 				) {
-					delete filters[_this.settings.nameAttribute];
+					if (typeof nameAttrs !== 'undefined') {
+						for (var pa = 0; pa < nameAttrs.length; pa++) {
+							if (nameAttrs[pa] in filters) {
+								delete filters[nameAttrs[pa]];
+							}
+						}
+					} else {
+						delete filters[_this.settings.nameAttribute];
+					}
 				}
 			}
 
