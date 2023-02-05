@@ -37,7 +37,8 @@ filtering.
 
 ### Version 3.1.9
 
-* Extended nameAttribute settings so multiple attributes can be searched. Separate attributes with commas.
+* Added functionality to disable input and option fields that don't have matching values in the current location set after filtering when inclusive filtering is used (default).
+* Extended nameAttribute settings so multiple attributes can be searched. Separate attribute names with commas.
 * Fixed location set length scenario when fullMapStart is enabled and taxFilters is reset and name search and origin are empty.
 * Show empty result message if no locations with default sorting.
 * Temporary fix for missing Google Maps callback parameter console error - the parameter requirement was not previously enforced on the API side.

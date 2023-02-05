@@ -867,6 +867,24 @@
 		},
 
 		/**
+		 * Checks to see if only a single taxonomy group has a selected value
+		 *
+		 * @param obj {Object} the object to check
+		 * @param key {string} Key value of current filter group
+		 *
+		 * @returns {boolean}
+		 */
+		hasSingleGroupFilterVal: function(obj, key) {
+			this.writeDebug('hasSingleGroupFilterVal',arguments);
+
+			// Copy the object so the original doesn't change.
+			var objCopy = Object.assign({}, obj);
+			delete objCopy[key];
+
+			return this.hasEmptyObjectVals(objCopy);
+		},
+
+		/**
 		 * Modal window close function
 		 */
 		modalClose: function () {
@@ -2759,6 +2777,67 @@
 		},
 
 		/**
+		 * Disable input fields that aren't available within the current location set
+		 */
+		maybeDisableFilterOptions: function() {
+			this.writeDebug('maybeDisableFilterOptions');
+			var availableValues = [];
+			var _this = this;
+
+			// Initially reset any input/option fields that were previously disabled.
+			for (var taxKey in this.settings.taxonomyFilters) {
+				if (this.settings.taxonomyFilters.hasOwnProperty(taxKey)) {
+					for (var x = 0; x < this.settings.taxonomyFilters[taxKey].length; x++) {
+						$('#' + this.settings.taxonomyFilters[taxKey] + ' input,option').each(function () {
+							var disabled = $(this).attr('disabled')
+
+							if (typeof disabled !== 'undefined') {
+								$(this).removeAttr('disabled');
+							}
+						});
+					}
+				}
+			}
+
+			// Loop through current location set to determine what filter values are still available.
+			for (var location in locationset) {
+				if (locationset.hasOwnProperty(location)) {
+					// Loop through the location values.
+					for (var locationKey in locationset[location]) {
+						if (filters.hasOwnProperty(locationKey) && locationset[location][locationKey] !== '') {
+							if (availableValues.hasOwnProperty(locationKey)) {
+								var availableVal = availableValues[locationKey].concat(',', locationset[location][locationKey].replace(', ', ',').trim());
+								availableValues[locationKey] = Array.from(new Set(availableVal.split(','))).toString();
+							} else {
+								availableValues[locationKey] = locationset[location][locationKey].replace(', ', ',').trim();
+							}
+						}
+					}
+				}
+			}
+
+			// Update input and option fields to disabled if they're not available.
+			for (var key in this.settings.taxonomyFilters) {
+				if (this.settings.taxonomyFilters.hasOwnProperty(key)) {
+					for (var i = 0; i < this.settings.taxonomyFilters[key].length; i++) {
+						if (availableValues.hasOwnProperty(key)) {
+							$('#' + this.settings.taxonomyFilters[key] + ' input, #' + this.settings.taxonomyFilters[key] + ' option').each(function () {
+								if ($(this).val() !== '' && Array.from(new Set(availableValues[key].split(','))).indexOf($(this).val()) === -1) {
+									// Select options should still be available if only a select option has been selected.
+									if ($(this).prop('tagName') === 'OPTION' && _this.hasSingleGroupFilterVal(filters, key)) {
+										return;
+									}
+
+									$(this).attr('disabled', true);
+								}
+							});
+						}
+					}
+				}
+			}
+		},
+
+		/**
 		 * Processes the location data
 		 *
 		 * @param mappingObject {Object} all the potential mapping properties - latitude, longitude, origin, name, max
@@ -3021,6 +3100,11 @@
 				// Combine the arrays
 				locationset = [];
 				locationset = featuredset.concat(normalset);
+			}
+
+			// Disable filter inputs of there are no locations with the values left.
+			if (firstRun !== true && _this.settings.exclusiveFiltering === false) {
+				_this.maybeDisableFilterOptions();
 			}
 
 			// Slide in the map container
