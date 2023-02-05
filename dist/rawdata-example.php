@@ -51,7 +51,7 @@ $data = '<?xml version="1.0" encoding="utf-8"?>
 				<input type="text" id="bh-sl-address" name="bh-sl-address" />
 			</div>
 
-			<button id="bh-sl-submit" type="submit">Submit</button>
+			<button id="bh-sl-submit" type="submit">Search</button>
 		</form>
 	</div>
 
