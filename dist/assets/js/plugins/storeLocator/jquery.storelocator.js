@@ -400,7 +400,7 @@
 		 *
 		 * @returns {boolean}
 		 */
-		inRange(min, num, max){
+		inRange: function(min, num, max){
 			this.writeDebug('inRange',arguments);
 			num = Math.abs(num);
 			return isFinite(num) && (num >= min) && (num <= max);
