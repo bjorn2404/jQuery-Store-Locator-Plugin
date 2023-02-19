@@ -37,8 +37,11 @@ filtering.
 
 ### Version 3.1.10
 
+* Added map marker accessibility.
+* Deprecated bounceMarker setting due to Google Charts API deprecation and poor animation results with Google marker labels.
 * Fixed issue with new disable filtering functionality when location objet property is missing.
 * Fixed marker labels not working with previous technique. Swapped to google.maps.Marker label parameter.
+* Updated package devDependencies.
 
 ### Version 3.1.9
 

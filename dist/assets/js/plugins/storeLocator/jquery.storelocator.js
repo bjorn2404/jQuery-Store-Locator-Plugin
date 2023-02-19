@@ -25,7 +25,7 @@
         'autoCompleteDisableListener': false,
         'autoCompleteOptions'        : {},
         'autoGeocode'                : false,
-        'bounceMarker'               : true,
+        'bounceMarker'               : true, // Deprecated.
         'catMarkers'                 : null,
         'dataLocation'               : 'data/locations.json',
         'dataRaw'                    : null,
@@ -1268,10 +1268,12 @@
 				// Create the default markers
 				if (this.settings.disableAlphaMarkers === true || this.settings.storeLimit === -1 || this.settings.storeLimit > 26 || this.settings.catMarkers !== null || this.settings.markerImg !== null || (this.settings.fullMapStart === true && firstRun === true && (isNaN(this.settings.fullMapStartListLimit) || this.settings.fullMapStartListLimit > 26 || this.settings.fullMapStartListLimit === -1))) {
 					marker = new google.maps.Marker({
-						position : point,
-						map      : map,
 						draggable: false,
-						icon: markerImg // Reverts to default marker if nothing is passed
+						icon     : markerImg, // Reverts to default marker if nothing is passed
+						map      : map,
+						optimized: false,
+						position : point,
+						title    : name,
 					});
 				}
 				else {
@@ -1280,7 +1282,9 @@
 						draggable: false,
 						label    : letter,
 						map      : map,
+						optimized: false,
 						position : point,
+						title    : name,
 					});
 				}
 			}
@@ -2569,17 +2573,7 @@
 
 				map.panTo(selectedMarker.getPosition());
 				var listLoc = 'left';
-				if (_this.settings.bounceMarker === true) {
-					selectedMarker.setAnimation(google.maps.Animation.BOUNCE);
-					setTimeout(function () {
-							selectedMarker.setAnimation(null);
-							_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
-						}, 700
-					);
-				}
-				else {
-					_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
-				}
+				_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
 
 				// Custom selected marker override
 				if (_this.settings.selectedMarkerImg !== null) {
