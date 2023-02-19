@@ -1271,17 +1271,12 @@
 					});
 				}
 				else {
-					// Letter markers image
-					letterMarkerImg = {
-						url: 'https://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-waypoint-b.png&text=' + letter + '&psize=16&font=fonts/Roboto-Regular.ttf&color=ff333333&ax=44&ay=48'
-					};
-
 					// Letter markers
 					marker = new google.maps.Marker({
-						position : point,
+						draggable: false,
+						label    : letter,
 						map      : map,
-						icon     : letterMarkerImg,
-						draggable: false
+						position : point,
 					});
 				}
 			}
@@ -2813,6 +2808,13 @@
 							}
 						}
 					}
+				}
+			}
+
+			// Account for missing filter properties in location set.
+			for (var keyName in filters) {
+				if (!availableValues.hasOwnProperty(keyName)) {
+					availableValues[keyName] = '';
 				}
 			}
 

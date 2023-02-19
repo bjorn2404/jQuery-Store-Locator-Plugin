@@ -35,6 +35,11 @@ filtering.
 
 ## Changelog
 
+### Version 3.1.10
+
+* Fixed issue with new disable filtering functionality when location objet property is missing.
+* Fixed marker labels not working with previous technique. Swapped to google.maps.Marker label parameter.
+
 ### Version 3.1.9
 
 * Added functionality to disable input and option fields that don't have matching values in the current location set after filtering when inclusive filtering is used (default).
