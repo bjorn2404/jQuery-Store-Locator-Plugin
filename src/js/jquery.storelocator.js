@@ -739,8 +739,7 @@
 				// Only do this once
 				_this.settings.fullMapStartBlank = false;
 				myOptions.zoom = originalZoom;
-			}
-			else {
+			} else {
 				// If a default location is set
 				if (this.settings.defaultLoc === true) {
 					this.defaultLocation();
