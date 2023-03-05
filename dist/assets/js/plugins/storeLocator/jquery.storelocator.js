@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.1.7 - 2023-03-04
+/*! jQuery Google Maps Store Locator - v3.1.10 - 2023-02-19
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2023 Bjorn Holine; Licensed MIT */
 
@@ -6,145 +6,141 @@
 	'use strict';
 
 	var pluginName = 'storeLocator';
-	var googleMapsScriptIsInjected = false;
-	var googleMapsAPIPromise = null;
 
-	// Only allow for one instantiation of this script
-	if (typeof $.fn[pluginName] !== 'undefined') {
+	// Only allow for one instantiation of this script and make sure Google Maps API is included
+	if (typeof $.fn[pluginName] !== 'undefined' || typeof google === 'undefined') {
 		return;
 	}
 
 	// Variables used across multiple methods
-	var $this, map, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom, dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService, prevSelectedMarkerBefore, prevSelectedMarkerAfter, firstRun, reload;
+	var $this, map, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom, dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService, prevSelectedMarkerBefore, prevSelectedMarkerAfter, firstRun, reload, nameAttrs;
 	var featuredset = [], locationset = [], normalset = [], markers = [];
 	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {};
 
-	// Create the defaults once. DO NOT change these settings in this file - settings should be overridden in the plugin call
-	var defaults = {
-			'ajaxData'                   : null,
-			'altDistanceNoResult'        : false,
-			'apiKey'									   : null,
-			'autoComplete'               : false,
-			'autoCompleteDisableListener': false,
-			'autoCompleteOptions'        : {},
-			'autoGeocode'                : false,
-			'bounceMarker'               : true,
-			'catMarkers'                 : null,
-			'dataLocation'               : 'data/locations.json',
-			'dataRaw'                    : null,
-			'dataType'                   : 'json',
-			'debug'                      : false,
-			'defaultLat'                 : null,
-			'defaultLng'                 : null,
-			'defaultLoc'                 : false,
-			'disableAlphaMarkers'        : false,
-			'distanceAlert'              : 60,
-			'dragSearch'                 : false,
-			'exclusiveFiltering'         : false,
-			'exclusiveTax'               : null,
-			'featuredDistance'           : null,
-			'featuredLocations'          : false,
-			'fullMapStart'               : false,
-			'fullMapStartBlank'          : false,
-			'fullMapStartListLimit'      : false,
-			'infoBubble'                 : null,
-			'inlineDirections'           : false,
-			'lazyLoadMap'								 : false,
-			'lengthUnit'                 : 'm',
-			'listColor1'                 : '#ffffff',
-			'listColor2'                 : '#eeeeee',
-			'loading'                    : false,
-			'locationsPerPage'           : 10,
-			'mapSettings'                : {
-					mapTypeId: 'roadmap',
-					zoom     : 12
-			},
-			'markerCluster'              : null,
-			'markerImg'                  : null,
-			'markerDim'                  : null,
-			'maxDistance'                : false,
-			'modal'                      : false,
-			'nameAttribute'              : 'name',
-			'nameSearch'                 : false,
-			'noForm'                     : false,
-			'openNearest'                : false,
-			'originMarker'               : false,
-			'originMarkerDim'            : null,
-			'originMarkerImg'            : null,
-			'pagination'                 : false,
-			'querystringParams'          : false,
-			'selectedMarkerImg'          : null,
-			'selectedMarkerImgDim'       : null,
-			'sessionStorage'             : false,
-			'slideMap'                   : true,
-			'sortBy'                     : null,
-			'storeLimit'                 : 26,
-			'taxonomyFilters'            : null,
-			'visibleMarkersList'         : false,
-			'xmlElement'                 : 'marker',
-			// HTML elements
-			'addressID'                  : 'bh-sl-address',
-			'closeIcon'                  : 'bh-sl-close-icon',
-			'formContainer'              : 'bh-sl-form-container',
-			'formID'                     : 'bh-sl-user-location',
-			'geocodeID'                  : null,
-			'lengthSwapID'               : 'bh-sl-length-swap',
-			'loadingContainer'           : 'bh-sl-loading',
-			'locationList'               : 'bh-sl-loc-list',
-			'mapID'                      : 'bh-sl-map',
-			'maxDistanceID'              : 'bh-sl-maxdistance',
-			'modalContent'               : 'bh-sl-modal-content',
-			'modalWindow'                : 'bh-sl-modal-window',
-			'orderID'                    : 'bh-sl-order',
-			'overlay'                    : 'bh-sl-overlay',
-			'regionID'                   : 'bh-sl-region',
-			'searchID'                   : 'bh-sl-search',
-			'sortID'                     : 'bh-sl-sort',
-			'taxonomyFiltersContainer'   : 'bh-sl-filters-container',
-			// Templates
-			'infowindowTemplatePath'     : 'assets/js/plugins/storeLocator/templates/infowindow-description.html',
-			'listTemplatePath'           : 'assets/js/plugins/storeLocator/templates/location-list-description.html',
-			'KMLinfowindowTemplatePath'  : 'assets/js/plugins/storeLocator/templates/kml-infowindow-description.html',
-			'KMLlistTemplatePath'        : 'assets/js/plugins/storeLocator/templates/kml-location-list-description.html',
-			'listTemplateID'             : null,
-			'infowindowTemplateID'       : null,
-			// Callbacks
-			'callbackAutoGeoSuccess'     : null,
-			'callbackBeforeSend'         : null,
-			'callbackCloseDirections'    : null,
-			'callbackCreateMarker'       : null,
-			'callbackDirectionsRequest'  : null,
-			'callbackFilters'            : null,
-			'callbackFormVals'           : null,
-			'callbackGeocodeRestrictions': null,
-			'callbackJsonp'              : null,
-			'callbackListClick'          : null,
-			'callbackMapSet'             : null,
-			'callbackMarkerClick'        : null,
-			'callbackModalClose'         : null,
-			'callbackModalOpen'          : null,
-			'callbackModalReady'         : null,
-			'callbackNearestLoc'         : null,
-			'callbackNoResults'          : null,
-			'callbackNotify'             : null,
-			'callbackOrder'              : null,
-			'callbackPageChange'         : null,
-			'callbackRegion'             : null,
-			'callbackSorting'            : null,
-			'callbackSuccess'            : null,
-			// Language options
-			'addressErrorAlert'          : 'Unable to find address',
-			'autoGeocodeErrorAlert'      : 'Automatic location detection failed. Please fill in your address or zip code.',
-			'distanceErrorAlert'         : 'Unfortunately, our closest location is more than ',
-			'kilometerLang'              : 'kilometer',
-			'kilometersLang'             : 'kilometers',
-			'mileLang'                   : 'mile',
-			'milesLang'                  : 'miles',
-			'noResultsTitle'             : 'No results',
-			'noResultsDesc'              : 'No locations were found with the given criteria. Please modify your selections or input.',
-			'nextPage'                   : 'Next &raquo;',
-			'prevPage'                   : '&laquo; Prev'
-	};
+    // Create the defaults once. DO NOT change these settings in this file - settings should be overridden in the plugin call
+    var defaults = {
+        'ajaxData'                   : null,
+        'altDistanceNoResult'        : false,
+        'autoComplete'               : false,
+        'autoCompleteDisableListener': false,
+        'autoCompleteOptions'        : {},
+        'autoGeocode'                : false,
+        'bounceMarker'               : true, // Deprecated.
+        'catMarkers'                 : null,
+        'dataLocation'               : 'data/locations.json',
+        'dataRaw'                    : null,
+        'dataType'                   : 'json',
+        'debug'                      : false,
+        'defaultLat'                 : null,
+        'defaultLng'                 : null,
+        'defaultLoc'                 : false,
+        'disableAlphaMarkers'        : false,
+        'distanceAlert'              : 60,
+        'dragSearch'                 : false,
+        'exclusiveFiltering'         : false,
+        'exclusiveTax'               : null,
+        'featuredDistance'           : null,
+        'featuredLocations'          : false,
+        'fullMapStart'               : false,
+        'fullMapStartBlank'          : false,
+        'fullMapStartListLimit'      : false,
+        'infoBubble'                 : null,
+        'inlineDirections'           : false,
+        'lengthUnit'                 : 'm',
+        'listColor1'                 : '#ffffff',
+        'listColor2'                 : '#eeeeee',
+        'loading'                    : false,
+        'locationsPerPage'           : 10,
+        'mapSettings'                : {
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            zoom     : 12
+        },
+        'markerCluster'              : null,
+        'markerImg'                  : null,
+        'markerDim'                  : null,
+        'maxDistance'                : false,
+        'modal'                      : false,
+        'nameAttribute'              : 'name',
+        'nameSearch'                 : false,
+        'noForm'                     : false,
+        'openNearest'                : false,
+        'originMarker'               : false,
+        'originMarkerDim'            : null,
+        'originMarkerImg'            : null,
+        'pagination'                 : false,
+        'querystringParams'          : false,
+        'selectedMarkerImg'          : null,
+        'selectedMarkerImgDim'       : null,
+        'sessionStorage'             : false,
+        'slideMap'                   : true,
+        'sortBy'                     : null,
+        'storeLimit'                 : 26,
+        'taxonomyFilters'            : null,
+        'visibleMarkersList'         : false,
+        'xmlElement'                 : 'marker',
+        // HTML elements
+        'addressID'                  : 'bh-sl-address',
+        'closeIcon'                  : 'bh-sl-close-icon',
+        'formContainer'              : 'bh-sl-form-container',
+        'formID'                     : 'bh-sl-user-location',
+        'geocodeID'                  : null,
+        'lengthSwapID'               : 'bh-sl-length-swap',
+        'loadingContainer'           : 'bh-sl-loading',
+        'locationList'               : 'bh-sl-loc-list',
+        'mapID'                      : 'bh-sl-map',
+        'maxDistanceID'              : 'bh-sl-maxdistance',
+        'modalContent'               : 'bh-sl-modal-content',
+        'modalWindow'                : 'bh-sl-modal-window',
+        'orderID'                    : 'bh-sl-order',
+        'overlay'                    : 'bh-sl-overlay',
+        'regionID'                   : 'bh-sl-region',
+        'searchID'                   : 'bh-sl-search',
+        'sortID'                     : 'bh-sl-sort',
+        'taxonomyFiltersContainer'   : 'bh-sl-filters-container',
+        // Templates
+        'infowindowTemplatePath'     : 'assets/js/plugins/storeLocator/templates/infowindow-description.html',
+        'listTemplatePath'           : 'assets/js/plugins/storeLocator/templates/location-list-description.html',
+        'KMLinfowindowTemplatePath'  : 'assets/js/plugins/storeLocator/templates/kml-infowindow-description.html',
+        'KMLlistTemplatePath'        : 'assets/js/plugins/storeLocator/templates/kml-location-list-description.html',
+        'listTemplateID'             : null,
+        'infowindowTemplateID'       : null,
+        // Callbacks
+        'callbackAutoGeoSuccess'     : null,
+        'callbackBeforeSend'         : null,
+        'callbackCloseDirections'    : null,
+        'callbackCreateMarker'       : null,
+        'callbackDirectionsRequest'  : null,
+        'callbackFilters'            : null,
+        'callbackFormVals'           : null,
+        'callbackGeocodeRestrictions': null,
+        'callbackJsonp'              : null,
+        'callbackListClick'          : null,
+        'callbackMapSet'             : null,
+        'callbackMarkerClick'        : null,
+        'callbackModalClose'         : null,
+        'callbackModalOpen'          : null,
+        'callbackModalReady'         : null,
+        'callbackNearestLoc'         : null,
+        'callbackNoResults'          : null,
+        'callbackNotify'             : null,
+        'callbackOrder'              : null,
+        'callbackPageChange'         : null,
+        'callbackRegion'             : null,
+        'callbackSorting'            : null,
+        'callbackSuccess'            : null,
+        // Language options
+        'addressErrorAlert'          : 'Unable to find address',
+        'autoGeocodeErrorAlert'      : 'Automatic location detection failed. Please fill in your address or zip code.',
+        'distanceErrorAlert'         : 'Unfortunately, our closest location is more than ',
+        'kilometerLang'              : 'kilometer',
+        'kilometersLang'             : 'kilometers',
+        'mileLang'                   : 'mile',
+        'milesLang'                  : 'miles',
+        'noResultsTitle'             : 'No results',
+        'noResultsDesc'              : 'No locations were found with the given criteria. Please modify your selections or input.',
+        'nextPage'                   : 'Next &raquo;',
+        'prevPage'                   : '&laquo; Prev'
+    };
 
 	// Plugin constructor
 	function Plugin(element, options) {
@@ -153,17 +149,7 @@
 		this.settings = $.extend({}, defaults, options);
 		this._defaults = defaults;
 		this._name = pluginName;
-
-		// Load Google Maps API when lazy load is enabled.
-		if (this.settings.lazyLoadMap && this.settings.apiKey !== null && typeof google === 'undefined') {
-			this.loadMapsAPI(this.settings.apiKey)
-				.then((map) => {
-					this.map = map;
-					this.init();
-				});
-		} else {
-			this.init();
-		}
+		this.init();
 	}
 
 	// Avoid Plugin.prototype conflicts
@@ -175,7 +161,6 @@
 		init: function () {
 			var _this = this;
 			this.writeDebug('init');
-
 			// Calculate geocode distance functions
 			if (this.settings.lengthUnit === 'km') {
 				// Kilometers
@@ -246,45 +231,6 @@
 
 			// Load the templates and continue from there
 			this._loadTemplates();
-		},
-
-		injectGoogleMapsScript: function (options = {}) {
-			if (googleMapsScriptIsInjected) {
-				throw new Error('Google Maps API is already loaded.');
-			}
-
-			var optionsQuery = Object.keys(options)
-				.map(k => encodeURIComponent(k) + '=' + encodeURIComponent(options[k]))
-				.join('&');
-			var apiURL = 'https://maps.googleapis.com/maps/api/js?' + optionsQuery;
-			var mapScript = document.createElement('script');
-			mapScript.setAttribute('src', apiURL);
-			mapScript.setAttribute('async', '');
-			mapScript.setAttribute('defer', '');
-
-			// Append the script to the document head.
-			document.head.appendChild(mapScript);
-			googleMapsScriptIsInjected = true;
-		},
-
-		loadMapsAPI: function (apiKey, options = {}) {
-			if (!googleMapsAPIPromise) {
-				googleMapsAPIPromise = new Promise((resolve, reject) => {
-					try {
-						window.onGoogleMapsAPILoaded = resolve;
-
-						this.injectGoogleMapsScript({
-							key: apiKey,
-							callback: 'onGoogleMapsAPILoaded',
-							...options,
-						});
-					} catch (error) {
-						reject(error);
-					}
-				}).then(() => window.google.maps);
-			}
-
-			return googleMapsAPIPromise;
 		},
 
 		/**
@@ -443,6 +389,34 @@
 		geoCodeCalcCalcDistance: function (lat1, lng1, lat2, lng2, radius) {
 			this.writeDebug('geoCodeCalcCalcDistance',arguments);
 			return radius * 2 * Math.asin(Math.min(1, Math.sqrt(( Math.pow(Math.sin((this.geoCodeCalcDiffRadian(lat1, lat2)) / 2.0), 2.0) + Math.cos(this.geoCodeCalcToRadian(lat1)) * Math.cos(this.geoCodeCalcToRadian(lat2)) * Math.pow(Math.sin((this.geoCodeCalcDiffRadian(lng1, lng2)) / 2.0), 2.0) ))));
+		},
+
+		/**
+		 * Range helper function for coordinate validation
+		 *
+		 * @param min {number} minimum number allowed
+		 * @param num {number} number to check
+		 * @param max {number} maximum number allowed
+		 *
+		 * @returns {boolean}
+		 */
+		inRange: function(min, num, max){
+			this.writeDebug('inRange',arguments);
+			num = Math.abs(num);
+			return isFinite(num) && (num >= min) && (num <= max);
+		},
+
+		/**
+		 * Coordinate validation
+		 *
+		 * @param lat {number} latitude
+		 * @param lng {number} longitude
+		 *
+		 * @returns {boolean}
+		 */
+		coordinatesInRange: function (lat, lng) {
+			this.writeDebug('coordinatesInRange',arguments);
+			return this.inRange(-90, lat, 90) && this.inRange(-180, lng, 180);
 		},
 
 		/**
@@ -706,7 +680,7 @@
 				_this.map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
 
 				// Re-center the map when the browser is re-sized
-				google.maps.event.addDomListener(window, 'resize', function() {
+        window.addEventListener('resize', function() {
 					var center = _this.map.getCenter();
 					google.maps.event.trigger(_this.map, 'resize');
 					_this.map.setCenter(center);
@@ -894,6 +868,24 @@
 				}
 
 				return objTest;
+		},
+
+		/**
+		 * Checks to see if only a single taxonomy group has a selected value
+		 *
+		 * @param obj {Object} the object to check
+		 * @param key {string} Key value of current filter group
+		 *
+		 * @returns {boolean}
+		 */
+		hasSingleGroupFilterVal: function(obj, key) {
+			this.writeDebug('hasSingleGroupFilterVal',arguments);
+
+			// Copy the object so the original doesn't change.
+			var objCopy = Object.assign({}, obj);
+			delete objCopy[key];
+
+			return this.hasEmptyObjectVals(objCopy);
 		},
 
 		/**
@@ -1088,8 +1080,13 @@
 						}
 					}
 
-					if (testResults.indexOf(true) === -1) {
-						filterTest = false;
+					// First handle name search, then standard filtering.
+					if (typeof nameAttrs !== 'undefined' && nameAttrs.indexOf(k) !== -1 && testResults.indexOf(true) !== -1) {
+						return true;
+					} else {
+						if (testResults.indexOf(true) === -1) {
+							filterTest = false;
+						}
 					}
 				}
 			}
@@ -1271,24 +1268,23 @@
 				// Create the default markers
 				if (this.settings.disableAlphaMarkers === true || this.settings.storeLimit === -1 || this.settings.storeLimit > 26 || this.settings.catMarkers !== null || this.settings.markerImg !== null || (this.settings.fullMapStart === true && firstRun === true && (isNaN(this.settings.fullMapStartListLimit) || this.settings.fullMapStartListLimit > 26 || this.settings.fullMapStartListLimit === -1))) {
 					marker = new google.maps.Marker({
-						position : point,
-						map      : map,
 						draggable: false,
-						icon: markerImg // Reverts to default marker if nothing is passed
+						icon     : markerImg, // Reverts to default marker if nothing is passed
+						map      : map,
+						optimized: false,
+						position : point,
+						title    : name,
 					});
 				}
 				else {
-					// Letter markers image
-					letterMarkerImg = {
-						url: 'https://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-waypoint-b.png&text=' + letter + '&psize=16&font=fonts/Roboto-Regular.ttf&color=ff333333&ax=44&ay=48'
-					};
-
 					// Letter markers
 					marker = new google.maps.Marker({
-						position : point,
+						draggable: false,
+						label    : letter,
 						map      : map,
-						icon     : letterMarkerImg,
-						draggable: false
+						optimized: false,
+						position : point,
+						title    : name,
 					});
 				}
 			}
@@ -1919,6 +1915,12 @@
 				}
 			}
 
+			// Make sure the location coordinates are valid.
+			if (!this.coordinatesInRange(data.lat, data.lng)) {
+				this.writeDebug('locationsSetup', "location ignored because coordinates out of range: " + maxDistance, data);
+				return;
+			}
+
 			// Create the array
 			if (this.settings.maxDistance === true && typeof maxDistance !== 'undefined' && maxDistance !== null) {
 				if (data.distance <= maxDistance) {
@@ -2516,6 +2518,7 @@
 			if (
 				this.settings.openNearest !== true ||
 				typeof nearestLoc === 'undefined' ||
+        typeof originalOrigin === 'undefined' ||
 				(this.settings.fullMapStart === true && firstRun === true && this.settings.querystringParams === false) ||
 				(this.settings.defaultLoc === true && firstRun === true && this.settings.querystringParams === false)
 			) {
@@ -2570,17 +2573,7 @@
 
 				map.panTo(selectedMarker.getPosition());
 				var listLoc = 'left';
-				if (_this.settings.bounceMarker === true) {
-					selectedMarker.setAnimation(google.maps.Animation.BOUNCE);
-					setTimeout(function () {
-							selectedMarker.setAnimation(null);
-							_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
-						}, 700
-					);
-				}
-				else {
-					_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
-				}
+				_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
 
 				// Custom selected marker override
 				if (_this.settings.selectedMarkerImg !== null) {
@@ -2777,6 +2770,74 @@
 		},
 
 		/**
+		 * Disable input fields that aren't available within the current location set
+		 */
+		maybeDisableFilterOptions: function() {
+			this.writeDebug('maybeDisableFilterOptions');
+			var availableValues = [];
+			var _this = this;
+
+			// Initially reset any input/option fields that were previously disabled.
+			for (var taxKey in this.settings.taxonomyFilters) {
+				if (this.settings.taxonomyFilters.hasOwnProperty(taxKey)) {
+					for (var x = 0; x < this.settings.taxonomyFilters[taxKey].length; x++) {
+						$('#' + this.settings.taxonomyFilters[taxKey] + ' input,option').each(function () {
+							var disabled = $(this).attr('disabled')
+
+							if (typeof disabled !== 'undefined') {
+								$(this).removeAttr('disabled');
+							}
+						});
+					}
+				}
+			}
+
+			// Loop through current location set to determine what filter values are still available.
+			for (var location in locationset) {
+				if (locationset.hasOwnProperty(location)) {
+					// Loop through the location values.
+					for (var locationKey in locationset[location]) {
+						if (filters.hasOwnProperty(locationKey) && locationset[location][locationKey] !== '') {
+							if (availableValues.hasOwnProperty(locationKey)) {
+								var availableVal = availableValues[locationKey].concat(',', locationset[location][locationKey].replace(', ', ',').trim());
+								availableValues[locationKey] = Array.from(new Set(availableVal.split(','))).toString();
+							} else {
+								availableValues[locationKey] = locationset[location][locationKey].replace(', ', ',').trim();
+							}
+						}
+					}
+				}
+			}
+
+			// Account for missing filter properties in location set.
+			for (var keyName in filters) {
+				if (!availableValues.hasOwnProperty(keyName)) {
+					availableValues[keyName] = '';
+				}
+			}
+
+			// Update input and option fields to disabled if they're not available.
+			for (var key in this.settings.taxonomyFilters) {
+				if (this.settings.taxonomyFilters.hasOwnProperty(key)) {
+					for (var i = 0; i < this.settings.taxonomyFilters[key].length; i++) {
+						if (availableValues.hasOwnProperty(key)) {
+							$('#' + this.settings.taxonomyFilters[key] + ' input, #' + this.settings.taxonomyFilters[key] + ' option').each(function () {
+								if ($(this).val() !== '' && Array.from(new Set(availableValues[key].split(','))).indexOf($(this).val()) === -1) {
+									// Select options should still be available if only a select option has been selected.
+									if ($(this).prop('tagName') === 'OPTION' && _this.hasSingleGroupFilterVal(filters, key)) {
+										return;
+									}
+
+									$(this).attr('disabled', true);
+								}
+							});
+						}
+					}
+				}
+			}
+		},
+
+		/**
 		 * Processes the location data
 		 *
 		 * @param mappingObject {Object} all the potential mapping properties - latitude, longitude, origin, name, max
@@ -2888,16 +2949,39 @@
 			// Name search - using taxonomy filter to handle
 			if (_this.settings.nameSearch === true) {
 				if (typeof searchInput !== 'undefined' && '' !== searchInput) {
-					filters[_this.settings.nameAttribute] = [searchInput];
+
+					if (_this.settings.nameAttribute.indexOf(',')) {
+						nameAttrs = _this.settings.nameAttribute.split(',');
+
+						// Multiple name attributes should swap to exclusive filtering.
+						if (_this.settings.exclusiveTax !== null) {
+							_this.settings.exclusiveTax.concat(nameAttrs);
+						} else {
+							_this.settings.exclusiveTax = nameAttrs;
+						}
+
+						for (var a = 0; a < nameAttrs.length; a++) {
+							filters[nameAttrs[a].trim()] = [searchInput];
+						}
+					} else {
+						filters[_this.settings.nameAttribute] = [searchInput];
+					}
 				}
 
 				// Check for a previous value.
 				if (
 					typeof searchInput !== 'undefined' &&
-					'' === searchInput &&
-					filters.hasOwnProperty(_this.settings.nameAttribute)
+					'' === searchInput
 				) {
-					delete filters[_this.settings.nameAttribute];
+					if (typeof nameAttrs !== 'undefined') {
+						for (var pa = 0; pa < nameAttrs.length; pa++) {
+							if (nameAttrs[pa] in filters) {
+								delete filters[nameAttrs[pa]];
+							}
+						}
+					} else {
+						delete filters[_this.settings.nameAttribute];
+					}
 				}
 			}
 
@@ -2914,14 +2998,23 @@
 							}
 
 							// Swap pattern matching depending on name search vs. taxonomy filtering.
-							if ( k === _this.settings.nameAttribute ) {
-								taxFilters[k][z] = '(?:^|\\s)' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '');
+							if (typeof nameAttrs !== 'undefined') {
+								if (nameAttrs.indexOf(k) !== -1) {
+									taxFilters[k][z] = '(?:^|\\s)' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '');
+								} else {
+									taxFilters[k][z] = '(?=.*' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '') + '(?!\\s))';
+								}
 							} else {
-								taxFilters[k][z] = '(?=.*' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '') + '(?!\\s))';
+								if (k === _this.settings.nameAttribute) {
+									taxFilters[k][z] = '(?:^|\\s)' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '');
+								} else {
+									taxFilters[k][z] = '(?=.*' + filters[k][z].replace(/([.*+?^=!:${}()|\[\]\/\\]|&\s+)/g, '') + '(?!\\s))';
+								}
 							}
 						}
 					}
 				}
+
 				// Filter the data
 				if (!_this.isEmptyObject(taxFilters)) {
 					locationset = $.grep(locationset, function (val) {
@@ -2971,7 +3064,9 @@
 							}
 						}
 						else {
+							_this.emptyResult();
 							throw new Error('No locations found. Please check the dataLocation setting and path.');
+							return;
 						}
 					}
 				}
@@ -3007,6 +3102,11 @@
 				locationset = featuredset.concat(normalset);
 			}
 
+			// Disable filter inputs of there are no locations with the values left.
+			if (firstRun !== true && _this.settings.exclusiveFiltering === false) {
+				_this.maybeDisableFilterOptions();
+			}
+
 			// Slide in the map container
 			if (_this.settings.slideMap === true) {
 				$this.slideDown();
@@ -3039,6 +3139,16 @@
 			else {
 				storeNum = _this.settings.storeLimit;
 			}
+
+      // If fullMapStart is enabled and taxFilters is reset and name search and origin are empty, swap back to the original length.
+      if (
+        _this.settings.fullMapStart === true &&
+        _this.isEmptyObject(taxFilters) &&
+        (searchInput === '' || typeof searchInput === 'undefined') &&
+        (addressInput === '' || typeof addressInput === 'undefined')
+      ) {
+        storeNum = locationset.length;
+      }
 
 			// If pagination is on, change the store limit to the setting and slice the locationset array
 			if (_this.settings.pagination === true) {
@@ -3093,7 +3203,7 @@
 			_this.map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
 
 			// Re-center the map when the browser is re-sized
-			google.maps.event.addDomListener(window, 'resize', function() {
+      window.addEventListener('resize', function() {
 				var center = _this.map.getCenter();
 				google.maps.event.trigger(_this.map, 'resize');
 				_this.map.setCenter(center);

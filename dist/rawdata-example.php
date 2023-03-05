@@ -28,7 +28,7 @@ $data = '<?xml version="1.0" encoding="utf-8"?>
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 	<title>Map Example - Raw Data</title>
 	<meta charset="UTF-8">
@@ -51,7 +51,7 @@ $data = '<?xml version="1.0" encoding="utf-8"?>
 				<input type="text" id="bh-sl-address" name="bh-sl-address" />
 			</div>
 
-			<button id="bh-sl-submit" type="submit">Submit</button>
+			<button id="bh-sl-submit" type="submit">Search</button>
 		</form>
 	</div>
 
@@ -63,9 +63,9 @@ $data = '<?xml version="1.0" encoding="utf-8"?>
 	</div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
 <script src="assets/js/libs/handlebars.min.js"></script>
-<script src="https://maps.google.com/maps/api/js"></script>
+<script src="https://maps.google.com/maps/api/js?callback=Function.prototype"></script>
 <script src="assets/js/plugins/storeLocator/jquery.storelocator.js"></script>
 <script>
 	$(function() {

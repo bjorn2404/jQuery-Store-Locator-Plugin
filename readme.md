@@ -35,6 +35,27 @@ filtering.
 
 ## Changelog
 
+### Version 3.1.10
+
+* Added map marker accessibility.
+* Deprecated bounceMarker setting due to Google Charts API deprecation and poor animation results with Google marker labels.
+* Fixed issue with new disable filtering functionality when location objet property is missing.
+* Fixed marker labels not working with previous technique. Swapped to google.maps.Marker label parameter.
+* Updated package devDependencies.
+
+### Version 3.1.9
+
+* Added functionality to disable input and option fields that don't have matching values in the current location set after filtering when inclusive filtering is used (default).
+* Extended nameAttribute settings so multiple attributes can be searched. Separate attribute names with commas.
+* Fixed location set length scenario when fullMapStart is enabled and taxFilters is reset and name search and origin are empty.
+* Show empty result message if no locations with default sorting.
+* Temporary fix for missing Google Maps callback parameter console error - the parameter requirement was not previously enforced on the API side.
+* Updated deprecated google.maps.event.addDomListener usage with window.addEventListener.
+
+### Version 3.1.8
+
+* Added coordinate range check to exclude locations with invalid latitude and longitude values.
+
 ### Version 3.1.7
 
 * Fixed empty name search value not clearing previous value.
