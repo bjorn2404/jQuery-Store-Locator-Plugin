@@ -149,7 +149,17 @@
 		this.settings = $.extend({}, defaults, options);
 		this._defaults = defaults;
 		this._name = pluginName;
-		this.init();
+
+		// Load Google Maps API when lazy load is enabled.
+		if (this.settings.lazyLoadMap && this.settings.apiKey !== null && typeof google === 'undefined') {
+			this.loadMapsAPI(this.settings.apiKey)
+				.then((map) => {
+					this.map = map;
+					this.init();
+				});
+		} else {
+			this.init();
+		}
 	}
 
 	// Avoid Plugin.prototype conflicts
@@ -161,14 +171,6 @@
 		init: function () {
 			var _this = this;
 			this.writeDebug('init');
-
-			// Load Google Maps API when lazy load is enabled.
-			if (_this.settings.lazyLoadMap && _this.settings.apiKey !== null && typeof google === 'undefined') {
-				_this.loadMapsAPI(_this.settings.apiKey)
-					.then((map) => {
-						_this.map = map;
-					});
-			}
 
 			// Calculate geocode distance functions
 			if (this.settings.lengthUnit === 'km') {
