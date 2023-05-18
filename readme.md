@@ -35,6 +35,10 @@ filtering.
 
 ## Changelog
 
+### Version 3.1.11
+
+* Fixed issue with new disable filtering functionality with radio buttons.
+
 ### Version 3.1.10
 
 * Added map marker accessibility.

@@ -9,7 +9,7 @@
 	}
 
 	// Variables used across multiple methods
-	var $this, map, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom, dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService, prevSelectedMarkerBefore, prevSelectedMarkerAfter, firstRun, reload, nameAttrs;
+	var $this, map, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom, dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService, prevSelectedMarkerBefore, prevSelectedMarkerAfter, firstRun, reload, nameAttrs, originalFilterVals;
 	var featuredset = [], locationset = [], normalset = [], markers = [];
 	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {};
 
@@ -879,9 +879,8 @@
 
 			// Copy the object so the original doesn't change.
 			var objCopy = Object.assign({}, obj);
-			delete objCopy[key];
 
-			return this.hasEmptyObjectVals(objCopy);
+			return !this.hasEmptyObjectVals(objCopy[key]);
 		},
 
 		/**
@@ -2778,7 +2777,7 @@
 				if (this.settings.taxonomyFilters.hasOwnProperty(taxKey)) {
 					for (var x = 0; x < this.settings.taxonomyFilters[taxKey].length; x++) {
 						$('#' + this.settings.taxonomyFilters[taxKey] + ' input,option').each(function () {
-							var disabled = $(this).attr('disabled')
+							var disabled = $(this).attr('disabled');
 
 							if (typeof disabled !== 'undefined') {
 								$(this).removeAttr('disabled');
@@ -2812,15 +2811,32 @@
 				}
 			}
 
+			// Save the original filter values for reference.
+			if (typeof originalFilterVals === 'undefined') {
+				originalFilterVals = availableValues;
+			}
+
 			// Update input and option fields to disabled if they're not available.
 			for (var key in this.settings.taxonomyFilters) {
 				if (this.settings.taxonomyFilters.hasOwnProperty(key)) {
+
+					// Loop through the taxonomy filter group items.
 					for (var i = 0; i < this.settings.taxonomyFilters[key].length; i++) {
-						if (availableValues.hasOwnProperty(key)) {
+						if (this.settings.taxonomyFilters.hasOwnProperty(key)) {
 							$('#' + this.settings.taxonomyFilters[key] + ' input, #' + this.settings.taxonomyFilters[key] + ' option').each(function () {
 								if ($(this).val() !== '' && Array.from(new Set(availableValues[key].split(','))).indexOf($(this).val()) === -1) {
+
 									// Select options should still be available if only a select option has been selected.
 									if ($(this).prop('tagName') === 'OPTION' && _this.hasSingleGroupFilterVal(filters, key)) {
+										return;
+									}
+
+									// Radio buttons should still be available after selection.
+									if (
+										$(this).prop('type') === 'radio' &&
+										_this.hasSingleGroupFilterVal(filters, key) &&
+										Array.from(new Set(originalFilterVals[key].split(','))).indexOf($(this).val()) !== -1
+									) {
 										return;
 									}
 
