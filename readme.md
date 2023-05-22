@@ -38,6 +38,7 @@ filtering.
 ### Version 3.1.11
 
 * Fixed issue with new disable filtering functionality with radio buttons.
+* Fixed issue with reset button where all locations were duplicated - introduced in v3.0.1
 
 ### Version 3.1.10
 
