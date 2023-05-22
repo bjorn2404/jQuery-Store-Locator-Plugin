@@ -2893,14 +2893,15 @@
 
 			// Set a variable for fullMapStart so we can detect the first run
 			if (
-				( _this.settings.fullMapStart === true && openMap === false ) ||
-				( _this.settings.autoGeocode === true && openMap === false ) ||
-				( _this.settings.defaultLoc === true && openMap === false ) ||
-				reload === true
+				(_this.settings.fullMapStart === true && openMap === false) ||
+				(_this.settings.autoGeocode === true && openMap === false) ||
+				(_this.settings.defaultLoc === true && openMap === false)
 			) {
 				firstRun = true;
-			}
-			else {
+			} else if (reload === true) {
+				_this.reset();
+				firstRun = true;
+			} else {
 				_this.reset();
 			}
 

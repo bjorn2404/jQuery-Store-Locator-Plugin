@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.1.10 - 2023-05-17
+/*! jQuery Google Maps Store Locator - v3.1.10 - 2023-05-21
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2023 Bjorn Holine; Licensed MIT */
 
@@ -2897,14 +2897,15 @@
 
 			// Set a variable for fullMapStart so we can detect the first run
 			if (
-				( _this.settings.fullMapStart === true && openMap === false ) ||
-				( _this.settings.autoGeocode === true && openMap === false ) ||
-				( _this.settings.defaultLoc === true && openMap === false ) ||
-				reload === true
+				(_this.settings.fullMapStart === true && openMap === false) ||
+				(_this.settings.autoGeocode === true && openMap === false) ||
+				(_this.settings.defaultLoc === true && openMap === false)
 			) {
 				firstRun = true;
-			}
-			else {
+			} else if (reload === true) {
+				_this.reset();
+				firstRun = true;
+			} else {
 				_this.reset();
 			}
 
