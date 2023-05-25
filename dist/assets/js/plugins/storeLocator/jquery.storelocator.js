@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.1.10 - 2023-05-21
+/*! jQuery Google Maps Store Locator - v3.1.10 - 2023-05-24
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2023 Bjorn Holine; Licensed MIT */
 
@@ -285,6 +285,7 @@
 			featuredset = [];
 			normalset = [];
 			markers = [];
+			originalFilterVals = [];
 			firstRun = false;
 			$(document).off('click.'+pluginName, '.' + this.settings.locationList + ' li');
 
@@ -345,8 +346,9 @@
 			this.reset();
 			reload = true;
 
-			if ( this.settings.taxonomyFilters !== null ) {
+			if (this.settings.taxonomyFilters !== null) {
 				this.formFiltersReset();
+				this.resetDisabledFilterVals();
 				this.taxonomyFiltersInit();
 			}
 
@@ -2769,14 +2771,11 @@
 		},
 
 		/**
-		 * Disable input fields that aren't available within the current location set
+		 * Reset disabled form fields
 		 */
-		maybeDisableFilterOptions: function() {
-			this.writeDebug('maybeDisableFilterOptions');
-			var availableValues = [];
-			var _this = this;
+		resetDisabledFilterVals: function() {
+			this.writeDebug('resetDisabledFilterVals');
 
-			// Initially reset any input/option fields that were previously disabled.
 			for (var taxKey in this.settings.taxonomyFilters) {
 				if (this.settings.taxonomyFilters.hasOwnProperty(taxKey)) {
 					for (var x = 0; x < this.settings.taxonomyFilters[taxKey].length; x++) {
@@ -2790,6 +2789,18 @@
 					}
 				}
 			}
+		},
+
+		/**
+		 * Disable input fields that aren't available within the current location set
+		 */
+		maybeDisableFilterOptions: function() {
+			this.writeDebug('maybeDisableFilterOptions');
+			var availableValues = [];
+			var _this = this;
+
+			// Initially reset any input/option fields that were previously disabled.
+			this.resetDisabledFilterVals();
 
 			// Loop through current location set to determine what filter values are still available.
 			for (var location in locationset) {
@@ -3119,8 +3130,8 @@
 				locationset = featuredset.concat(normalset);
 			}
 
-			// Disable filter inputs of there are no locations with the values left.
-			if (firstRun !== true && _this.settings.exclusiveFiltering === false) {
+			// Disable filter inputs if there are no locations with the values left.
+			if (firstRun !== true && this.settings.taxonomyFilters !== null && this.settings.exclusiveFiltering === false) {
 				_this.maybeDisableFilterOptions();
 			}
 

@@ -39,6 +39,7 @@ filtering.
 
 * Fixed issue with new disable filtering functionality with radio buttons.
 * Fixed issue with reset button where all locations were duplicated - introduced in v3.0.1
+* Updated functionality reset disabled form filters when Reset button is clicked.
 
 ### Version 3.1.10
 
