@@ -281,7 +281,6 @@
 			featuredset = [];
 			normalset = [];
 			markers = [];
-			originalFilterVals = [];
 			firstRun = false;
 			$(document).off('click.'+pluginName, '.' + this.settings.locationList + ' li');
 
@@ -2902,16 +2901,19 @@
 
 			openMap = $mapDiv.hasClass('bh-sl-map-open');
 
-			// Set a variable for fullMapStart so we can detect the first run
+			// Set a variable for fullMapStart, so we can detect the first run
 			if (
 				(_this.settings.fullMapStart === true && openMap === false) ||
 				(_this.settings.autoGeocode === true && openMap === false) ||
 				(_this.settings.defaultLoc === true && openMap === false)
 			) {
 				firstRun = true;
-			} else if (reload === true) {
+			} else if (
+				(_this.settings.fullMapStart === true && reload === true) ||
+				(_this.settings.autoGeocode === true && reload === true) ||
+				(_this.settings.defaultLoc === true && reload === true)
+			) {
 				_this.reset();
-				firstRun = true;
 			} else {
 				_this.reset();
 			}
