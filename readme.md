@@ -38,7 +38,7 @@ filtering.
 ### Version 3.1.11
 
 * Fixed issue with new disable filtering functionality with radio buttons.
-* Fixed issue with reset button where all locations were duplicated - introduced in v3.0.1. Reported in (#293)[https://github.com/bjorn2404/jQuery-Store-Locator-Plugin/issues/293].
+* Fixed issue with reset button where all locations were duplicated - introduced in v3.0.1. Reported in https://github.com/bjorn2404/jQuery-Store-Locator-Plugin/issues/293.
 * Updated functionality to reset disabled form filters when Reset button is clicked.
 
 ### Version 3.1.10
