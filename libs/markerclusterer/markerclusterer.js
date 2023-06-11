@@ -1076,16 +1076,16 @@ ClusterIcon.prototype.onAdd = function() {
 
 	var that = this;
 	var isDragging = false;
-	google.maps.event.addDomListener(this.div_, 'click', function(event) {
+	this.div_.addEventListener('click', function(event) {
 		// Only perform click when not preceded by a drag
 		if (!isDragging) {
 			that.triggerClusterClick(event);
 		}
 	});
-	google.maps.event.addDomListener(this.div_, 'mousedown', function() {
+	this.div_.addEventListener('mousedown', function() {
 		isDragging = false;
 	});
-	google.maps.event.addDomListener(this.div_, 'mousemove', function() {
+	this.div_.addEventListener('mousemove', function() {
 		isDragging = true;
 	});
 };
