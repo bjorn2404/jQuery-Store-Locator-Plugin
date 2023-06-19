@@ -557,6 +557,27 @@
 					_this.mapReload();
 				});
 			}
+
+			// Track changes to the address search field
+			$('#' + this.settings.addressID).on('change.'+pluginName, function () {
+
+				// Unset origin tracking if input field is removed
+				if (
+					$.trim($('#' + _this.settings.addressID).val()) === '' &&
+					(typeof searchInput === 'undefined' || searchInput === '')
+				) {
+
+						// Reset the origin, mapping object, and disabled filter values
+						if (_this.settings.taxonomyFilters !== null && _this.settings.exclusiveFiltering === false) {
+							olat = undefined;
+							olng = undefined;
+							originalOrigin = undefined;
+							mappingObj = {};
+							_this.resetDisabledFilterVals();
+							_this.mapping(null);
+						}
+				}
+			});
 		},
 
 		/**

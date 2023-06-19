@@ -35,6 +35,10 @@ filtering.
 
 ## Changelog
 
+### Version 3.1.12
+
+* Added automatic reset functionality that fires when address input field value is removed (changed to blank).
+
 ### Version 3.1.11
 
 * Fixed issue with new disable filtering functionality with radio buttons.
