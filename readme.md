@@ -41,6 +41,7 @@ filtering.
 * Fixed additional issues with new disable filtering functionality with select fields, radio buttons, and updated address input value.
 * Fixed markerClusterer library usage of deprecated Google Maps addDomListener. Props [@marcohanke](https://github.com/marcohanke) via [#294](https://github.com/bjorn2404/jQuery-Store-Locator-Plugin/pull/294/)
 * Updated jQuery version in example files.
+* Updated query string functionality to fill in address and name search with query string values in search form.
 
 ### Version 3.1.11
 

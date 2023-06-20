@@ -1784,7 +1784,7 @@
 					searchInput = this.getQueryString(this.settings.searchID);
 					distance = this.getQueryString(this.settings.maxDistanceID);
 
-					// The form should override the query string parameters
+					// The form should override the query string parameters.
 					if ($addressInput.val() !== '') {
 						addressInput = $addressInput.val();
 					}
@@ -3426,6 +3426,22 @@
 
 			// Visible markers list
 			_this.visibleMarkersList(_this.map, markers);
+
+			// Fill in form values from query string parameters.
+			if (_this.settings.querystringParams === true) {
+				var $addressInput = $('#' + _this.settings.addressID);
+				var $searchInput = $('#' + _this.settings.searchID);
+
+				// Address field.
+				if (typeof mappingObj !== 'undefined' && mappingObj.hasOwnProperty('origin') && $addressInput.val() === '') {
+					$addressInput.val(mappingObj.origin);
+				}
+
+				// Name search field.
+				if (typeof mappingObj !== 'undefined' && mappingObj.hasOwnProperty('name') && $searchInput.val() === '') {
+					$searchInput.val(mappingObj.name);
+				}
+			}
 
 			// Modal ready callback
 			if (_this.settings.modal === true && _this.settings.callbackModalReady) {
