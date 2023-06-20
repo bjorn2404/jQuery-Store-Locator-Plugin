@@ -398,5 +398,25 @@
     "featured": "",
     "features": "Fresh Guacamole",
     "date": "03/17/17"
+  },
+  {
+    "id": "21",
+    "name": "Chipotle Hudson",
+    "lat": "44.9594046",
+    "lng": "-92.7208174",
+    "category": "Restaurant",
+    "address": "1021 Pearson Dr",
+    "address2": "",
+    "city": "Hudson",
+    "state": "WI",
+    "postal": "54016",
+    "phone": "715-386-3010",
+    "web": "http:\/\/www.chipotle.com",
+    "hours1": "Mon-Sun 11am-10pm",
+    "hours2": "",
+    "hours3": "",
+    "featured": "",
+    "features": "Online Ordering",
+    "date": "03/17/23"
   }
 ]
