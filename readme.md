@@ -39,7 +39,7 @@ filtering.
 
 * Added automatic reset functionality that fires when address input field value is removed (changed to blank).
 * Fixed additional issues with new disable filtering functionality with select fields, radio buttons, and updated address input value.
-* Fixed markerClusterer library usage of deprecated Google Maps addDomListener. Props @marcohanke via [#294](https://github.com/bjorn2404/jQuery-Store-Locator-Plugin/pull/294/)
+* Fixed markerClusterer library usage of deprecated Google Maps addDomListener. Props [@marcohanke](https://github.com/marcohanke) via [#294](https://github.com/bjorn2404/jQuery-Store-Locator-Plugin/pull/294/)
 * Updated jQuery version in example files.
 
 ### Version 3.1.11
