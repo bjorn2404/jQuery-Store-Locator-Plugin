@@ -18,6 +18,9 @@
 	<div class="bh-sl-form-container">
 		<form id="bh-sl-user-location" method="post" action="#">
 			<div class="form-input">
+				<label for="bh-sl-search">Location name search:</label>
+				<input type="text" id="bh-sl-search" name="bh-sl-search" />
+
 				<label for="bh-sl-address">Enter Address or Zip Code:</label>
 				<input type="text" id="bh-sl-address" name="bh-sl-address" />
 			</div>
@@ -43,6 +46,7 @@
 		$('#bh-sl-map-container').storeLocator({
 			querystringParams : true,
 			fullMapStart: true,
+            nameSearch: true,
 			// The following paths are set because this example is in a subdirectory
 			dataLocation: '../data/locations.json',
 			infowindowTemplatePath: '../assets/js/plugins/storeLocator/templates/infowindow-description.html',
