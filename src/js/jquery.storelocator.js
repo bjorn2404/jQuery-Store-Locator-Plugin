@@ -551,29 +551,31 @@
 				});
 			}
 
-			// Reset button trigger
+			// Reset button trigger.
 			if ($('.bh-sl-reset').length && $('#' + this.settings.mapID).length) {
 				$(document).on('click.' + pluginName, '.bh-sl-reset', function () {
 					_this.mapReload();
 				});
 			}
 
-			// Track changes to the address search field
+			// Track changes to the address search field.
 			$('#' + this.settings.addressID).on('change.'+pluginName, function () {
+				originalFilterVals = undefined;
 
-				// Unset origin tracking if input field is removed
+				// Unset origin tracking if input field is removed.
 				if (
 					$.trim($('#' + _this.settings.addressID).val()) === '' &&
 					(typeof searchInput === 'undefined' || searchInput === '')
 				) {
 
-						// Reset the origin, mapping object, and disabled filter values
+						// Reset the origin, mapping object, and disabled filter values.
 						if (_this.settings.taxonomyFilters !== null && _this.settings.exclusiveFiltering === false) {
 							olat = undefined;
 							olng = undefined;
 							originalOrigin = undefined;
 							mappingObj = {};
 							_this.resetDisabledFilterVals();
+							_this.taxonomyFiltersInit();
 							_this.mapping(null);
 						}
 				}
@@ -1766,7 +1768,7 @@
 				$distanceInput = $('#' + this.settings.maxDistanceID),
 				region = '';
 
-			// Stop the form submission
+			// Stop the form submission.
 			if (typeof e !== 'undefined' && e !== null) {
 				e.preventDefault();
 			}
@@ -2808,17 +2810,14 @@
 		},
 
 		/**
-		 * Disable input fields that aren't available within the current location set
+		 * Get available filter values
+		 *
+		 * @param callback
 		 */
-		maybeDisableFilterOptions: function() {
-			this.writeDebug('maybeDisableFilterOptions');
+		getAvailableFilters: function(callback) {
+			this.writeDebug('getAvailableFilters');
 			var availableValues = [];
-			var _this = this;
 
-			// Initially reset any input/option fields that were previously disabled.
-			this.resetDisabledFilterVals();
-
-			// Loop through current location set to determine what filter values are still available.
 			for (var location in locationset) {
 				if (locationset.hasOwnProperty(location)) {
 					// Loop through the location values.
@@ -2842,42 +2841,66 @@
 				}
 			}
 
-			// Save the original filter values for reference.
-			if (typeof originalFilterVals === 'undefined') {
-				originalFilterVals = availableValues;
-			}
+			callback(availableValues);
+		},
 
-			// Update input and option fields to disabled if they're not available.
-			for (var key in this.settings.taxonomyFilters) {
-				if (this.settings.taxonomyFilters.hasOwnProperty(key)) {
+		/**
+		 * Disable input fields that aren't available within the current location set
+		 */
+		maybeDisableFilterOptions: function() {
+			this.writeDebug('maybeDisableFilterOptions');
+			var availableValues = [];
+			var _this = this;
 
-					// Loop through the taxonomy filter group items.
-					for (var i = 0; i < this.settings.taxonomyFilters[key].length; i++) {
-						if (this.settings.taxonomyFilters.hasOwnProperty(key)) {
-							$('#' + this.settings.taxonomyFilters[key] + ' input, #' + this.settings.taxonomyFilters[key] + ' option').each(function () {
-								if ($(this).val() !== '' && Array.from(new Set(availableValues[key].split(','))).indexOf($(this).val()) === -1) {
+			// Initially reset any input/option fields that were previously disabled.
+			this.resetDisabledFilterVals();
 
-									// Select options should still be available if only a select option has been selected.
-									if ($(this).prop('tagName') === 'OPTION' && _this.hasSingleGroupFilterVal(filters, key)) {
-										return;
+			// Loop through current location set to determine what filter values are still available.
+			this.getAvailableFilters( function(values) {
+				availableValues = values;
+
+				// Save the original filter values for reference.
+				if (typeof originalFilterVals === 'undefined') {
+					originalFilterVals = availableValues;
+				}
+
+				// Update input and option fields to disabled if they're not available.
+				for (var key in _this.settings.taxonomyFilters) {
+					if (_this.settings.taxonomyFilters.hasOwnProperty(key)) {
+
+						// Loop through the taxonomy filter group items.
+						for (var i = 0; i < _this.settings.taxonomyFilters[key].length; i++) {
+							if (_this.settings.taxonomyFilters.hasOwnProperty(key)) {
+								$('#' + _this.settings.taxonomyFilters[key] + ' input, #' + _this.settings.taxonomyFilters[key] + ' option').each(function () {
+									if ($(this).val() !== '' && Array.from(new Set(availableValues[key].split(','))).indexOf($(this).val()) === -1) {
+
+										// Handle select options and radio button values when there is no address input.
+										if (
+											(typeof addressInput === 'undefined' || addressInput === '') &&
+											($(this).prop('tagName') === 'OPTION' || $(this).prop('type') === 'radio') &&
+											_this.hasSingleGroupFilterVal(filters, key)
+										) {
+											return;
+										}
+
+										// Handle select options and radio button values when there is address input.
+										if (
+											(typeof addressInput !== 'undefined' || addressInput !== '') &&
+											($(this).prop('tagName') === 'OPTION' || $(this).prop('type') === 'radio') &&
+											_this.hasSingleGroupFilterVal(filters, key) &&
+											Array.from(new Set(originalFilterVals[key].split(','))).indexOf($(this).val()) !== -1
+										) {
+											return;
+										}
+
+										$(this).attr('disabled', true);
 									}
-
-									// Radio buttons should still be available after selection.
-									if (
-										$(this).prop('type') === 'radio' &&
-										_this.hasSingleGroupFilterVal(filters, key) &&
-										Array.from(new Set(originalFilterVals[key].split(','))).indexOf($(this).val()) !== -1
-									) {
-										return;
-									}
-
-									$(this).attr('disabled', true);
-								}
-							});
+								});
+							}
 						}
 					}
 				}
-			}
+			});
 		},
 
 		/**
