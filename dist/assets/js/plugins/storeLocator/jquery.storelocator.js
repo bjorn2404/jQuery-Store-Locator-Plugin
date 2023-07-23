@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.1.12 - 2023-06-19
+/*! jQuery Google Maps Store Locator - v3.1.12 - 2023-07-22
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2023 Bjorn Holine; Licensed MIT */
 
@@ -2854,6 +2854,7 @@
 		maybeDisableFilterOptions: function() {
 			this.writeDebug('maybeDisableFilterOptions');
 			var availableValues = [];
+			var disabledValues = [];
 			var _this = this;
 
 			// Initially reset any input/option fields that were previously disabled.
@@ -2882,7 +2883,8 @@
 										if (
 											(typeof addressInput === 'undefined' || addressInput === '') &&
 											($(this).prop('tagName') === 'OPTION' || $(this).prop('type') === 'radio') &&
-											_this.hasSingleGroupFilterVal(filters, key)
+											_this.hasSingleGroupFilterVal(filters, key) &&
+											Array.from(new Set(originalFilterVals[key].split(','))).includes($(this).val())
 										) {
 											return;
 										}
@@ -2892,10 +2894,26 @@
 											(typeof addressInput !== 'undefined' || addressInput !== '') &&
 											($(this).prop('tagName') === 'OPTION' || $(this).prop('type') === 'radio') &&
 											_this.hasSingleGroupFilterVal(filters, key) &&
-											Array.from(new Set(originalFilterVals[key].split(','))).indexOf($(this).val()) !== -1
+											Array.from(new Set(originalFilterVals[key].split(','))).includes($(this).val()) &&
+											_this.countFilters() === 1
 										) {
 											return;
 										}
+
+										// Keep radio button available values after one filter has been selected.
+										if (
+											$(this).prop('type') === 'radio' &&
+											_this.hasSingleGroupFilterVal(filters, key) &&
+											_this.countFilters() > 1 &&
+											disabledValues.hasOwnProperty(key) &&
+											Array.from(new Set(originalFilterVals[key].split(','))).includes($(this).val()) &&
+											! Array.from(new Set(disabledValues[key].split(','))).includes($(this).val())
+										) {
+											return;
+										}
+
+										// Track disabled values.
+										disabledValues[key] = $(this).val();
 
 										$(this).attr('disabled', true);
 									}
@@ -3177,7 +3195,11 @@
 			}
 
 			// Disable filter inputs if there are no locations with the values left.
-			if (firstRun !== true && this.settings.taxonomyFilters !== null && this.settings.exclusiveFiltering === false) {
+			if (
+				(firstRun !== true && _this.settings.exclusiveFiltering === false) ||
+				(_this.settings.fullMapStart === true && _this.settings.exclusiveFiltering === false) ||
+				(_this.settings.defaultLoc === true && _this.settings.exclusiveFiltering === false)
+			) {
 				_this.maybeDisableFilterOptions();
 			}
 
