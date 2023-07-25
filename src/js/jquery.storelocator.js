@@ -11,7 +11,7 @@
 	// Variables used across multiple methods
 	var $this, map, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom, dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService, prevSelectedMarkerBefore, prevSelectedMarkerAfter, firstRun, reload, nameAttrs, originalFilterVals;
 	var featuredset = [], locationset = [], normalset = [], markers = [];
-	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {};
+	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {}, disabledFilterVals = {};
 
     // Create the defaults once. DO NOT change these settings in this file - settings should be overridden in the plugin call
     var defaults = {
@@ -561,6 +561,7 @@
 			// Track changes to the address search field.
 			$('#' + this.settings.addressID).on('change.'+pluginName, function () {
 				originalFilterVals = undefined;
+				disabledFilterVals = {};
 
 				// Unset origin tracking if input field is removed.
 				if (
@@ -2850,7 +2851,6 @@
 		maybeDisableFilterOptions: function() {
 			this.writeDebug('maybeDisableFilterOptions');
 			var availableValues = [];
-			var disabledValues = [];
 			var _this = this;
 
 			// Initially reset any input/option fields that were previously disabled.
@@ -2873,7 +2873,12 @@
 						for (var i = 0; i < _this.settings.taxonomyFilters[key].length; i++) {
 							if (_this.settings.taxonomyFilters.hasOwnProperty(key)) {
 								$('#' + _this.settings.taxonomyFilters[key] + ' input, #' + _this.settings.taxonomyFilters[key] + ' option').each(function () {
-									if ($(this).val() !== '' && Array.from(new Set(availableValues[key].split(','))).indexOf($(this).val()) === -1) {
+
+									// Initial determination of values that should be disabled.
+									if ($(this).val() !== '' && ! Array.from(new Set(availableValues[key].split(','))).includes($(this).val())) {
+										if (! disabledFilterVals.hasOwnProperty(key)) {
+											disabledFilterVals[key] = [];
+										}
 
 										// Handle select options and radio button values when there is no address input.
 										if (
@@ -2896,20 +2901,25 @@
 											return;
 										}
 
-										// Keep radio button available values after one filter has been selected.
+										// Keep select options and radio button available values after one filter has been selected.
 										if (
-											$(this).prop('type') === 'radio' &&
+											($(this).prop('tagName') === 'OPTION' || $(this).prop('type') === 'radio') &&
 											_this.hasSingleGroupFilterVal(filters, key) &&
 											_this.countFilters() > 1 &&
-											disabledValues.hasOwnProperty(key) &&
 											Array.from(new Set(originalFilterVals[key].split(','))).includes($(this).val()) &&
-											! Array.from(new Set(disabledValues[key].split(','))).includes($(this).val())
+											! disabledFilterVals[key].includes($(this).val())
 										) {
 											return;
 										}
 
 										// Track disabled values.
-										disabledValues[key] = $(this).val();
+										if (
+											disabledFilterVals.hasOwnProperty(key) &&
+											Array.isArray(disabledFilterVals[key]) &&
+											! disabledFilterVals[key].includes($(this).val())
+										) {
+											disabledFilterVals[key].push($(this).val());
+										}
 
 										$(this).attr('disabled', true);
 									}
