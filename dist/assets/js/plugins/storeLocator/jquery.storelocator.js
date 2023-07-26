@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.1.12 - 2023-07-24
+/*! jQuery Google Maps Store Locator - v3.1.12 - 2023-07-25
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2023 Bjorn Holine; Licensed MIT */
 
@@ -2277,7 +2277,6 @@
 
 							if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
 								if ((olat) && (olng)) {
-									_this.settings.mapSettings.zoom = 0;
 									_this.processForm();
 								}
 								else {
@@ -2295,9 +2294,7 @@
 										if (_this.countFilters() === 0) {
 											_this.settings.mapSettings.zoom = originalZoom;
 										}
-										else {
-											_this.settings.mapSettings.zoom = 0;
-										}
+
 										_this.processForm();
 									}
 									else {
@@ -2323,7 +2320,6 @@
 							filters[filterKey] = [filterVal];
 							if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
 								if ((olat) && (olng)) {
-									_this.settings.mapSettings.zoom = 0;
 									_this.processForm();
 								}
 								else {

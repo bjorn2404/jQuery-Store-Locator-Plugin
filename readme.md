@@ -35,6 +35,12 @@ filtering.
 
 ## Changelog
 
+### Version 3.1.13
+
+* Fixed additional disable filtering functionality related to select options and radio buttons by globally tracking the disabled values.
+* Removed zoom reset to zero on taxonomy filtering to keep searched location in view.
+* Updated maybeDisableFilterOptions to run when full map start or default location settings are enabled.
+
 ### Version 3.1.12
 
 * Added automatic reset functionality that fires when address input field value is removed (changed to blank).

@@ -2273,7 +2273,6 @@
 
 							if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
 								if ((olat) && (olng)) {
-									_this.settings.mapSettings.zoom = 0;
 									_this.processForm();
 								}
 								else {
@@ -2291,9 +2290,7 @@
 										if (_this.countFilters() === 0) {
 											_this.settings.mapSettings.zoom = originalZoom;
 										}
-										else {
-											_this.settings.mapSettings.zoom = 0;
-										}
+
 										_this.processForm();
 									}
 									else {
@@ -2319,7 +2316,6 @@
 							filters[filterKey] = [filterVal];
 							if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
 								if ((olat) && (olng)) {
-									_this.settings.mapSettings.zoom = 0;
 									_this.processForm();
 								}
 								else {
