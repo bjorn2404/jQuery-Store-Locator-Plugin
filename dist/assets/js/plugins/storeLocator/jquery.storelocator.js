@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.1.12 - 2023-06-19
+/*! jQuery Google Maps Store Locator - v3.1.13 - 2023-07-25
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2023 Bjorn Holine; Licensed MIT */
 
@@ -15,7 +15,7 @@
 	// Variables used across multiple methods
 	var $this, map, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom, dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService, prevSelectedMarkerBefore, prevSelectedMarkerAfter, firstRun, reload, nameAttrs, originalFilterVals;
 	var featuredset = [], locationset = [], normalset = [], markers = [];
-	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {};
+	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {}, disabledFilterVals = {};
 
     // Create the defaults once. DO NOT change these settings in this file - settings should be overridden in the plugin call
     var defaults = {
@@ -565,6 +565,7 @@
 			// Track changes to the address search field.
 			$('#' + this.settings.addressID).on('change.'+pluginName, function () {
 				originalFilterVals = undefined;
+				disabledFilterVals = {};
 
 				// Unset origin tracking if input field is removed.
 				if (
@@ -2276,7 +2277,6 @@
 
 							if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
 								if ((olat) && (olng)) {
-									_this.settings.mapSettings.zoom = 0;
 									_this.processForm();
 								}
 								else {
@@ -2294,9 +2294,7 @@
 										if (_this.countFilters() === 0) {
 											_this.settings.mapSettings.zoom = originalZoom;
 										}
-										else {
-											_this.settings.mapSettings.zoom = 0;
-										}
+
 										_this.processForm();
 									}
 									else {
@@ -2322,7 +2320,6 @@
 							filters[filterKey] = [filterVal];
 							if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
 								if ((olat) && (olng)) {
-									_this.settings.mapSettings.zoom = 0;
 									_this.processForm();
 								}
 								else {
@@ -2876,13 +2873,19 @@
 						for (var i = 0; i < _this.settings.taxonomyFilters[key].length; i++) {
 							if (_this.settings.taxonomyFilters.hasOwnProperty(key)) {
 								$('#' + _this.settings.taxonomyFilters[key] + ' input, #' + _this.settings.taxonomyFilters[key] + ' option').each(function () {
-									if ($(this).val() !== '' && Array.from(new Set(availableValues[key].split(','))).indexOf($(this).val()) === -1) {
+
+									// Initial determination of values that should be disabled.
+									if ($(this).val() !== '' && ! Array.from(new Set(availableValues[key].split(','))).includes($(this).val())) {
+										if (! disabledFilterVals.hasOwnProperty(key)) {
+											disabledFilterVals[key] = [];
+										}
 
 										// Handle select options and radio button values when there is no address input.
 										if (
 											(typeof addressInput === 'undefined' || addressInput === '') &&
 											($(this).prop('tagName') === 'OPTION' || $(this).prop('type') === 'radio') &&
-											_this.hasSingleGroupFilterVal(filters, key)
+											_this.hasSingleGroupFilterVal(filters, key) &&
+											Array.from(new Set(originalFilterVals[key].split(','))).includes($(this).val())
 										) {
 											return;
 										}
@@ -2892,9 +2895,30 @@
 											(typeof addressInput !== 'undefined' || addressInput !== '') &&
 											($(this).prop('tagName') === 'OPTION' || $(this).prop('type') === 'radio') &&
 											_this.hasSingleGroupFilterVal(filters, key) &&
-											Array.from(new Set(originalFilterVals[key].split(','))).indexOf($(this).val()) !== -1
+											Array.from(new Set(originalFilterVals[key].split(','))).includes($(this).val()) &&
+											_this.countFilters() === 1
 										) {
 											return;
+										}
+
+										// Keep select options and radio button available values after one filter has been selected.
+										if (
+											($(this).prop('tagName') === 'OPTION' || $(this).prop('type') === 'radio') &&
+											_this.hasSingleGroupFilterVal(filters, key) &&
+											_this.countFilters() > 1 &&
+											Array.from(new Set(originalFilterVals[key].split(','))).includes($(this).val()) &&
+											! disabledFilterVals[key].includes($(this).val())
+										) {
+											return;
+										}
+
+										// Track disabled values.
+										if (
+											disabledFilterVals.hasOwnProperty(key) &&
+											Array.isArray(disabledFilterVals[key]) &&
+											! disabledFilterVals[key].includes($(this).val())
+										) {
+											disabledFilterVals[key].push($(this).val());
 										}
 
 										$(this).attr('disabled', true);
@@ -3177,7 +3201,11 @@
 			}
 
 			// Disable filter inputs if there are no locations with the values left.
-			if (firstRun !== true && this.settings.taxonomyFilters !== null && this.settings.exclusiveFiltering === false) {
+			if (
+				(firstRun !== true && _this.settings.exclusiveFiltering === false) ||
+				(_this.settings.fullMapStart === true && _this.settings.exclusiveFiltering === false) ||
+				(_this.settings.defaultLoc === true && _this.settings.exclusiveFiltering === false)
+			) {
 				_this.maybeDisableFilterOptions();
 			}
 
