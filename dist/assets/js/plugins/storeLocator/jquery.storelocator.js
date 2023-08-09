@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.1.13 - 2023-07-25
+/*! jQuery Google Maps Store Locator - v3.1.14 - 2023-08-08
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2023 Bjorn Holine; Licensed MIT */
 
@@ -2277,6 +2277,7 @@
 
 							if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
 								if ((olat) && (olng)) {
+									_this.settings.mapSettings.zoom = 0;
 									_this.processForm();
 								}
 								else {
@@ -2293,6 +2294,8 @@
 									if ((olat) && (olng)) {
 										if (_this.countFilters() === 0) {
 											_this.settings.mapSettings.zoom = originalZoom;
+										} else {
+											_this.settings.mapSettings.zoom = 0;
 										}
 
 										_this.processForm();
@@ -2320,9 +2323,9 @@
 							filters[filterKey] = [filterVal];
 							if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
 								if ((olat) && (olng)) {
+									_this.settings.mapSettings.zoom = 0;
 									_this.processForm();
-								}
-								else {
+								} else {
 									_this.mapping(mappingObj);
 								}
 							}
@@ -2394,7 +2397,7 @@
 			olat = mappingObj.lat = newCenter.lat();
 			olng = mappingObj.lng = newCenter.lng();
 
-			// Determine the new origin addresss
+			// Determine the new origin address
 			var newAddress = new this.reverseGoogleGeocode(this);
 			newCenterCoords = new google.maps.LatLng(mappingObj.lat, mappingObj.lng);
 			newAddress.geocode({'latLng': newCenterCoords}, function (data) {
@@ -2756,7 +2759,7 @@
 				dataRequest = _this._getData();
 			}
 			else {
-				// Setup the origin point
+				// Set up the origin point
 				originPoint = new google.maps.LatLng(orig_lat, orig_lng);
 
 				// If the origin hasn't changed use the existing data so we aren't making unneeded AJAX requests

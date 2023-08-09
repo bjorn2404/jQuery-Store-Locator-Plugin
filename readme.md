@@ -27,13 +27,19 @@ for even faster loading.
 
 ### WordPress version
 
-[Cardinal Store Locator plugin for WordPress](https://cardinalwp.com/) is now available, which uses this jQuery plugin 
+[Cardinal Locator - WordPress store locator plugin](https://cardinalwp.com/) is now available, which uses this jQuery plugin 
 as a base and all of the settings can be set via a settings page in the WP dashboard. It also integrates with core 
 WordPress features such as custom post types for location data and custom taxonomies for location categorization and 
 filtering.
 
 
 ## Changelog
+
+### Version 3.1.14
+
+* Added label tags to radio button markup in categories example file.
+* Fix - reverted removal of zoom reset to 0 after taxonomy filtering due to introduction of new issue.
+* Fixed comment typos.
 
 ### Version 3.1.13
 
