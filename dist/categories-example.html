@@ -97,19 +97,34 @@
 					</li>
 				</ul>
 
+				<ul id="state-filter" class="bh-sl-filters">
+					<li><h3>State</h3></li>
+					<li>
+						<select name="state">
+							<option value="">All states</option>
+							<option value="MN">Minnesota</option>
+							<option value="WI">Wisconsin</option>
+						</select>
+					</li>
+				</ul>
+
 				<ul id="postal-filter" class="bh-sl-filters">
 					<li><h3>Zip</h3></li>
 					<li>
-						<input type="radio" name="postal" value="55416">55416
+						<input id="zip-55416" type="radio" name="postal" value="55416">
+						<label for="zip-55416">55416</label>
 					</li>
 					<li>
-						<input type="radio" name="postal" value="55343">55343
+						<input id="zip-55343" type="radio" name="postal" value="55343">
+						<label for="zip-55343">55343</label>
 					</li>
 					<li>
-						<input type="radio" name="postal" value="55402">55402
+						<input id="zip-55402" type="radio" name="postal" value="55402">
+						<label for="zip-55402">55402</label>
 					</li>
 					<li>
-						<input type="radio" name="postal" value="55317">55317
+						<input id="zip-55317" type="radio" name="postal" value="55317">
+						<label for="zip-55317">55317</label>
 					</li>
 				</ul>
 			</div>
@@ -125,19 +140,21 @@
 	</div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="assets/js/libs/handlebars.min.js"></script>
 <script src="https://maps.google.com/maps/api/js?callback=Function.prototype"></script>
 <script src="assets/js/plugins/storeLocator/jquery.storelocator.js"></script>
 <script>
 	$(function() {
 		$('#bh-sl-map-container').storeLocator({
+		    fullMapStart: true,
 			maxDistance: true,
 			taxonomyFilters : {
 				'category' : 'category-filters-container1',
 				'features' : 'category-filters-container2',
 				'city' : 'city-filter',
-				'postal': 'postal-filter'
+			    'state': 'state-filter',
+				'postal': 'postal-filter',
 			}
 		});
 	});

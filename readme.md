@@ -27,13 +27,39 @@ for even faster loading.
 
 ### WordPress version
 
-[Cardinal Store Locator plugin for WordPress](https://cardinalwp.com/) is now available, which uses this jQuery plugin 
+[Cardinal Locator - WordPress store locator plugin](https://cardinalwp.com/) is now available, which uses this jQuery plugin 
 as a base and all of the settings can be set via a settings page in the WP dashboard. It also integrates with core 
 WordPress features such as custom post types for location data and custom taxonomies for location categorization and 
 filtering.
 
 
 ## Changelog
+
+### Version 3.1.14
+
+* Added label tags to radio button markup in categories example file.
+* Fix - reverted removal of zoom reset to 0 after taxonomy filtering due to introduction of new issue.
+* Fixed comment typos.
+
+### Version 3.1.13
+
+* Fixed additional disable filtering functionality related to select options and radio buttons by globally tracking the disabled values.
+* Removed zoom reset to zero on taxonomy filtering to keep searched location in view.
+* Updated maybeDisableFilterOptions to run when full map start or default location settings are enabled.
+
+### Version 3.1.12
+
+* Added automatic reset functionality that fires when address input field value is removed (changed to blank).
+* Fixed additional issues with new disable filtering functionality with select fields, radio buttons, and updated address input value.
+* Fixed markerClusterer library usage of deprecated Google Maps addDomListener. Props [@marcohanke](https://github.com/marcohanke) via [#294](https://github.com/bjorn2404/jQuery-Store-Locator-Plugin/pull/294/)
+* Updated jQuery version in example files.
+* Updated query string functionality to fill in address and name search with query string values in search form.
+
+### Version 3.1.11
+
+* Fixed issue with new disable filtering functionality with radio buttons.
+* Fixed issue with reset button where all locations were duplicated - introduced in v3.0.1. Reported in https://github.com/bjorn2404/jQuery-Store-Locator-Plugin/issues/293.
+* Updated functionality to reset disabled form filters when Reset button is clicked.
 
 ### Version 3.1.10
 
