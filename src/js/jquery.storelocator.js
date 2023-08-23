@@ -152,10 +152,18 @@
 
 		// Load Google Maps API when lazy load is enabled.
 		if (this.settings.lazyLoadMap && this.settings.apiKey !== null && typeof google === 'undefined') {
-			this.loadMapsAPI(this.settings.apiKey)
+			var _this = this;
+			var optionsQuery = {};
+
+			// Autocomplete.
+			if (this.settings.autoComplete === true) {
+				optionsQuery.libraries = 'places';
+			}
+
+			this.loadMapsAPI(this.settings.apiKey, optionsQuery)
 				.then((map) => {
-					this.map = map;
-					this.init();
+					_this.map = map;
+					_this.init();
 				});
 		} else {
 			this.init();
@@ -244,7 +252,14 @@
 			this._loadTemplates();
 		},
 
-		injectGoogleMapsScript: function (options = {}) {
+		/**
+		 * Inject Google Maps script
+		 *
+		 * @param {Object} options Options query object to pass as query string parameters to Google Maps.
+		 */
+		injectGoogleMapsScript: function (options) {
+			options = (typeof options !== 'undefined') ?  options : {};
+
 			if (googleMapsScriptIsInjected) {
 				throw new Error('Google Maps API is already loaded.');
 			}
@@ -263,7 +278,17 @@
 			googleMapsScriptIsInjected = true;
 		},
 
-		loadMapsAPI: function (apiKey, options = {}) {
+		/**
+		 * Load Google Maps API
+		 *
+		 * @param {string} apiKey Google Maps JavaScript API key.
+		 * @param {Object} options Options query object to pass as query string parameters to Google Maps.
+		 *
+		 * @returns {Promise<Object,null>}
+		 */
+		loadMapsAPI: function (apiKey, options) {
+			options = (typeof options !== 'undefined') ?  options : {};
+
 			if (!googleMapsAPIPromise) {
 				googleMapsAPIPromise = new Promise((resolve, reject) => {
 					try {
