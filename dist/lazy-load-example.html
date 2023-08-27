@@ -15,6 +15,8 @@
 			You can use just the city as the address - ex: Edina, MN.</p>
 	</div>
 
+	<button id="agree">Agree to cookies</button>
+
 	<div class="bh-sl-form-container">
 		<form id="bh-sl-user-location" method="post" action="#">
 			<div class="form-input">
@@ -44,6 +46,14 @@
       //apiKey: 'Add your API key here and uncomment line',
       fullMapStart: true,
       lazyLoadMap: true, // apiKey setting required for this to be enabled.
+      callbackBeforeMapInject: function(options, resolveMapLoad) {
+        const agreeBtn = document.getElementById('agree');
+
+        agreeBtn.addEventListener('click', () => {
+          resolveMapLoad();
+          agreeBtn.style.display = 'none';
+        });
+      }
     });
   });
 </script>
