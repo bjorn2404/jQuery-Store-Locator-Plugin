@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.1.14 - 2023-08-08
+/*! jQuery Google Maps Store Locator - v3.2.0 - 2023-09-26
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2023 Bjorn Holine; Licensed MIT */
 
@@ -6,9 +6,11 @@
 	'use strict';
 
 	var pluginName = 'storeLocator';
+	var googleMapsScriptIsInjected = false;
+	var googleMapsAPIPromise = null;
 
-	// Only allow for one instantiation of this script and make sure Google Maps API is included
-	if (typeof $.fn[pluginName] !== 'undefined' || typeof google === 'undefined') {
+	// Only allow for one instantiation of this script
+	if (typeof $.fn[pluginName] !== 'undefined') {
 		return;
 	}
 
@@ -17,130 +19,133 @@
 	var featuredset = [], locationset = [], normalset = [], markers = [];
 	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {}, disabledFilterVals = {};
 
-    // Create the defaults once. DO NOT change these settings in this file - settings should be overridden in the plugin call
-    var defaults = {
-        'ajaxData'                   : null,
-        'altDistanceNoResult'        : false,
-        'autoComplete'               : false,
-        'autoCompleteDisableListener': false,
-        'autoCompleteOptions'        : {},
-        'autoGeocode'                : false,
-        'bounceMarker'               : true, // Deprecated.
-        'catMarkers'                 : null,
-        'dataLocation'               : 'data/locations.json',
-        'dataRaw'                    : null,
-        'dataType'                   : 'json',
-        'debug'                      : false,
-        'defaultLat'                 : null,
-        'defaultLng'                 : null,
-        'defaultLoc'                 : false,
-        'disableAlphaMarkers'        : false,
-        'distanceAlert'              : 60,
-        'dragSearch'                 : false,
-        'exclusiveFiltering'         : false,
-        'exclusiveTax'               : null,
-        'featuredDistance'           : null,
-        'featuredLocations'          : false,
-        'fullMapStart'               : false,
-        'fullMapStartBlank'          : false,
-        'fullMapStartListLimit'      : false,
-        'infoBubble'                 : null,
-        'inlineDirections'           : false,
-        'lengthUnit'                 : 'm',
-        'listColor1'                 : '#ffffff',
-        'listColor2'                 : '#eeeeee',
-        'loading'                    : false,
-        'locationsPerPage'           : 10,
-        'mapSettings'                : {
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
-            zoom     : 12
-        },
-        'markerCluster'              : null,
-        'markerImg'                  : null,
-        'markerDim'                  : null,
-        'maxDistance'                : false,
-        'modal'                      : false,
-        'nameAttribute'              : 'name',
-        'nameSearch'                 : false,
-        'noForm'                     : false,
-        'openNearest'                : false,
-        'originMarker'               : false,
-        'originMarkerDim'            : null,
-        'originMarkerImg'            : null,
-        'pagination'                 : false,
-        'querystringParams'          : false,
-        'selectedMarkerImg'          : null,
-        'selectedMarkerImgDim'       : null,
-        'sessionStorage'             : false,
-        'slideMap'                   : true,
-        'sortBy'                     : null,
-        'storeLimit'                 : 26,
-        'taxonomyFilters'            : null,
-        'visibleMarkersList'         : false,
-        'xmlElement'                 : 'marker',
-        // HTML elements
-        'addressID'                  : 'bh-sl-address',
-        'closeIcon'                  : 'bh-sl-close-icon',
-        'formContainer'              : 'bh-sl-form-container',
-        'formID'                     : 'bh-sl-user-location',
-        'geocodeID'                  : null,
-        'lengthSwapID'               : 'bh-sl-length-swap',
-        'loadingContainer'           : 'bh-sl-loading',
-        'locationList'               : 'bh-sl-loc-list',
-        'mapID'                      : 'bh-sl-map',
-        'maxDistanceID'              : 'bh-sl-maxdistance',
-        'modalContent'               : 'bh-sl-modal-content',
-        'modalWindow'                : 'bh-sl-modal-window',
-        'orderID'                    : 'bh-sl-order',
-        'overlay'                    : 'bh-sl-overlay',
-        'regionID'                   : 'bh-sl-region',
-        'searchID'                   : 'bh-sl-search',
-        'sortID'                     : 'bh-sl-sort',
-        'taxonomyFiltersContainer'   : 'bh-sl-filters-container',
-        // Templates
-        'infowindowTemplatePath'     : 'assets/js/plugins/storeLocator/templates/infowindow-description.html',
-        'listTemplatePath'           : 'assets/js/plugins/storeLocator/templates/location-list-description.html',
-        'KMLinfowindowTemplatePath'  : 'assets/js/plugins/storeLocator/templates/kml-infowindow-description.html',
-        'KMLlistTemplatePath'        : 'assets/js/plugins/storeLocator/templates/kml-location-list-description.html',
-        'listTemplateID'             : null,
-        'infowindowTemplateID'       : null,
-        // Callbacks
-        'callbackAutoGeoSuccess'     : null,
-        'callbackBeforeSend'         : null,
-        'callbackCloseDirections'    : null,
-        'callbackCreateMarker'       : null,
-        'callbackDirectionsRequest'  : null,
-        'callbackFilters'            : null,
-        'callbackFormVals'           : null,
-        'callbackGeocodeRestrictions': null,
-        'callbackJsonp'              : null,
-        'callbackListClick'          : null,
-        'callbackMapSet'             : null,
-        'callbackMarkerClick'        : null,
-        'callbackModalClose'         : null,
-        'callbackModalOpen'          : null,
-        'callbackModalReady'         : null,
-        'callbackNearestLoc'         : null,
-        'callbackNoResults'          : null,
-        'callbackNotify'             : null,
-        'callbackOrder'              : null,
-        'callbackPageChange'         : null,
-        'callbackRegion'             : null,
-        'callbackSorting'            : null,
-        'callbackSuccess'            : null,
-        // Language options
-        'addressErrorAlert'          : 'Unable to find address',
-        'autoGeocodeErrorAlert'      : 'Automatic location detection failed. Please fill in your address or zip code.',
-        'distanceErrorAlert'         : 'Unfortunately, our closest location is more than ',
-        'kilometerLang'              : 'kilometer',
-        'kilometersLang'             : 'kilometers',
-        'mileLang'                   : 'mile',
-        'milesLang'                  : 'miles',
-        'noResultsTitle'             : 'No results',
-        'noResultsDesc'              : 'No locations were found with the given criteria. Please modify your selections or input.',
-        'nextPage'                   : 'Next &raquo;',
-        'prevPage'                   : '&laquo; Prev'
-    };
+	// Create the defaults once. DO NOT change these settings in this file - settings should be overridden in the plugin call
+	var defaults = {
+		'ajaxData'                   : null,
+		'altDistanceNoResult'        : false,
+		'apiKey'                     : null,
+		'autoComplete'               : false,
+		'autoCompleteDisableListener': false,
+		'autoCompleteOptions'        : {},
+		'autoGeocode'                : false,
+		'bounceMarker'               : true, // Deprecated.
+		'catMarkers'                 : null,
+		'dataLocation'               : 'data/locations.json',
+		'dataRaw'                    : null,
+		'dataType'                   : 'json',
+		'debug'                      : false,
+		'defaultLat'                 : null,
+		'defaultLng'                 : null,
+		'defaultLoc'                 : false,
+		'disableAlphaMarkers'        : false,
+		'distanceAlert'              : 60,
+		'dragSearch'                 : false,
+		'exclusiveFiltering'         : false,
+		'exclusiveTax'               : null,
+		'featuredDistance'           : null,
+		'featuredLocations'          : false,
+		'fullMapStart'               : false,
+		'fullMapStartBlank'          : false,
+		'fullMapStartListLimit'      : false,
+		'infoBubble'                 : null,
+		'inlineDirections'           : false,
+		'lazyLoadMap'                : false,
+		'lengthUnit'                 : 'm',
+		'listColor1'                 : '#ffffff',
+		'listColor2'                 : '#eeeeee',
+		'loading'                    : false,
+		'locationsPerPage'           : 10,
+		'mapSettings'                : {
+			mapTypeId: 'roadmap',
+			zoom     : 12
+		},
+		'markerCluster'              : null,
+		'markerImg'                  : null,
+		'markerDim'                  : null,
+		'maxDistance'                : false,
+		'modal'                      : false,
+		'nameAttribute'              : 'name',
+		'nameSearch'                 : false,
+		'noForm'                     : false,
+		'openNearest'                : false,
+		'originMarker'               : false,
+		'originMarkerDim'            : null,
+		'originMarkerImg'            : null,
+		'pagination'                 : false,
+		'querystringParams'          : false,
+		'selectedMarkerImg'          : null,
+		'selectedMarkerImgDim'       : null,
+		'sessionStorage'             : false,
+		'slideMap'                   : true,
+		'sortBy'                     : null,
+		'storeLimit'                 : 26,
+		'taxonomyFilters'            : null,
+		'visibleMarkersList'         : false,
+		'xmlElement'                 : 'marker',
+		// HTML elements
+		'addressID'               : 'bh-sl-address',
+		'closeIcon'               : 'bh-sl-close-icon',
+		'formContainer'           : 'bh-sl-form-container',
+		'formID'                  : 'bh-sl-user-location',
+		'geocodeID'               : null,
+		'lengthSwapID'            : 'bh-sl-length-swap',
+		'loadingContainer'        : 'bh-sl-loading',
+		'locationList'            : 'bh-sl-loc-list',
+		'mapID'                   : 'bh-sl-map',
+		'maxDistanceID'           : 'bh-sl-maxdistance',
+		'modalContent'            : 'bh-sl-modal-content',
+		'modalWindow'             : 'bh-sl-modal-window',
+		'orderID'                 : 'bh-sl-order',
+		'overlay'                 : 'bh-sl-overlay',
+		'regionID'                : 'bh-sl-region',
+		'searchID'                : 'bh-sl-search',
+		'sortID'                  : 'bh-sl-sort',
+		'taxonomyFiltersContainer': 'bh-sl-filters-container',
+		// Templates
+		'infowindowTemplatePath'   : 'assets/js/plugins/storeLocator/templates/infowindow-description.html',
+		'listTemplatePath'         : 'assets/js/plugins/storeLocator/templates/location-list-description.html',
+		'KMLinfowindowTemplatePath': 'assets/js/plugins/storeLocator/templates/kml-infowindow-description.html',
+		'KMLlistTemplatePath'      : 'assets/js/plugins/storeLocator/templates/kml-location-list-description.html',
+		'listTemplateID'           : null,
+		'infowindowTemplateID'     : null,
+		// Callbacks
+		'callbackAutoGeoSuccess'     : null,
+		'callbackBeforeMapInject'    : null,
+		'callbackBeforeSend'         : null,
+		'callbackCloseDirections'    : null,
+		'callbackCreateMarker'       : null,
+		'callbackDirectionsRequest'  : null,
+		'callbackFilters'            : null,
+		'callbackFormVals'           : null,
+		'callbackGeocodeRestrictions': null,
+		'callbackJsonp'              : null,
+		'callbackListClick'          : null,
+		'callbackMapSet'             : null,
+		'callbackMarkerClick'        : null,
+		'callbackModalClose'         : null,
+		'callbackModalOpen'          : null,
+		'callbackModalReady'         : null,
+		'callbackNearestLoc'         : null,
+		'callbackNoResults'          : null,
+		'callbackNotify'             : null,
+		'callbackOrder'              : null,
+		'callbackPageChange'         : null,
+		'callbackRegion'             : null,
+		'callbackSorting'            : null,
+		'callbackSuccess'            : null,
+		// Language options
+		'addressErrorAlert'    : 'Unable to find address',
+		'autoGeocodeErrorAlert': 'Automatic location detection failed. Please fill in your address or zip code.',
+		'distanceErrorAlert'   : 'Unfortunately, our closest location is more than ',
+		'kilometerLang'        : 'kilometer',
+		'kilometersLang'       : 'kilometers',
+		'mileLang'             : 'mile',
+		'milesLang'            : 'miles',
+		'noResultsTitle'       : 'No results',
+		'noResultsDesc'        : 'No locations were found with the given criteria. Please modify your selections or input.',
+		'nextPage'             : 'Next &raquo;',
+		'prevPage'             : '&laquo; Prev'
+	};
 
 	// Plugin constructor
 	function Plugin(element, options) {
@@ -149,7 +154,31 @@
 		this.settings = $.extend({}, defaults, options);
 		this._defaults = defaults;
 		this._name = pluginName;
-		this.init();
+
+		// Load Google Maps API when lazy load is enabled.
+		if (this.settings.lazyLoadMap && this.settings.apiKey !== null && typeof google === 'undefined') {
+			var _this = this;
+			var optionsQuery = {};
+			var loadMap = false;
+
+			// Autocomplete.
+			if (this.settings.autoComplete === true) {
+				optionsQuery.libraries = 'places';
+			}
+
+			// Allow callback to resolve map loading when set.
+			if (this.settings.callbackBeforeMapInject) {
+				new Promise(function (resolve, reject) {
+					_this.settings.callbackBeforeMapInject.call(this, options, resolve);
+				}).then(function () {
+					_this.triggerMapLoad(optionsQuery)
+				});
+			} else {
+				_this.triggerMapLoad(optionsQuery)
+			}
+		} else {
+			this.init();
+		}
 	}
 
 	// Avoid Plugin.prototype conflicts
@@ -161,6 +190,7 @@
 		init: function () {
 			var _this = this;
 			this.writeDebug('init');
+
 			// Calculate geocode distance functions
 			if (this.settings.lengthUnit === 'km') {
 				// Kilometers
@@ -231,6 +261,79 @@
 
 			// Load the templates and continue from there
 			this._loadTemplates();
+		},
+
+		/**
+		 * Trigger async map loading
+		 */
+		triggerMapLoad: function(optionsQuery) {
+			this.writeDebug('triggerMapLoad');
+			var _this = this;
+
+			this.loadMapsAPI(this.settings.apiKey, optionsQuery)
+				.then(function (map) {
+					_this.map = map;
+					_this.init();
+				});
+		},
+
+		/**
+		 * Inject Google Maps script
+		 *
+		 * @param {Object} options Options query object to pass as query string parameters to Google Maps.
+		 */
+		injectGoogleMapsScript: function (options) {
+			this.writeDebug('injectGoogleMapsScript');
+			options = (typeof options !== 'undefined') ?  options : {};
+
+			if (googleMapsScriptIsInjected) {
+				throw new Error('Google Maps API is already loaded.');
+			}
+
+			var optionsQuery = Object.keys(options)
+				.map(k => encodeURIComponent(k) + '=' + encodeURIComponent(options[k]))
+				.join('&');
+			var apiURL = 'https://maps.googleapis.com/maps/api/js?' + optionsQuery;
+			var mapScript = document.createElement('script');
+			mapScript.setAttribute('src', apiURL);
+			mapScript.setAttribute('async', '');
+			mapScript.setAttribute('defer', '');
+
+			// Append the script to the document head.
+			document.head.appendChild(mapScript);
+			googleMapsScriptIsInjected = true;
+		},
+
+		/**
+		 * Load Google Maps API
+		 *
+		 * @param {string} apiKey Google Maps JavaScript API key.
+		 * @param {Object} options Options query object to pass as query string parameters to Google Maps.
+		 *
+		 * @returns {Promise<Object,null>}
+		 */
+		loadMapsAPI: function (apiKey, options) {
+			this.writeDebug('loadMapsAPI');
+			options = (typeof options !== 'undefined') ?  options : {};
+			var _this = this;
+
+			if (!googleMapsAPIPromise) {
+				googleMapsAPIPromise = new Promise(function (resolve, reject) {
+					try {
+						window.onGoogleMapsAPILoaded = resolve;
+
+						_this.injectGoogleMapsScript({
+							key: apiKey,
+							callback: 'onGoogleMapsAPILoaded',
+							...options,
+						});
+					} catch (error) {
+						reject(error);
+					}
+				}).then(function () { window.google.maps });
+			}
+
+			return googleMapsAPIPromise;
 		},
 
 		/**
@@ -714,8 +817,7 @@
 				// Only do this once
 				_this.settings.fullMapStartBlank = false;
 				myOptions.zoom = originalZoom;
-			}
-			else {
+			} else {
 				// If a default location is set
 				if (this.settings.defaultLoc === true) {
 					this.defaultLocation();
