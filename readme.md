@@ -35,6 +35,10 @@ filtering.
 
 ## Changelog
 
+### Version 3.2.1
+
+* Swapped old maps.google.com API domain to maps.googleapis.com in all example files.
+
 ### Version 3.2.0
 
 * Added new Google Maps lazy load setting and example file - see new lazyLoadMap and apiKey settings.

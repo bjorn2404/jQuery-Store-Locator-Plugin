@@ -65,7 +65,7 @@ $data = '<?xml version="1.0" encoding="utf-8"?>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="assets/js/libs/handlebars.min.js"></script>
-<script src="https://maps.google.com/maps/api/js?callback=Function.prototype"></script>
+<script src="https://maps.googleapis.com/maps/api/js?callback=Function.prototype"></script>
 <script src="assets/js/plugins/storeLocator/jquery.storelocator.js"></script>
 <script>
 	$(function() {
