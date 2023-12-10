@@ -35,6 +35,10 @@ filtering.
 
 ## Changelog
 
+### Version 3.3.0
+
+* Updated max distance functionality to make distance changes apply dynamically vs. having to manually click button.
+
 ### Version 3.2.1
 
 * Swapped old maps.google.com API domain to maps.googleapis.com in all example files.
