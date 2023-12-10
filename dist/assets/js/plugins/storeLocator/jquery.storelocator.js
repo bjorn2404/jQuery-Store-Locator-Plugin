@@ -1,4 +1,4 @@
-/*! jQuery Google Maps Store Locator - v3.2.1 - 2023-11-12
+/*! jQuery Google Maps Store Locator - v3.2.1 - 2023-12-09
 * http://www.bjornblog.com/web/jquery-store-locator-plugin
 * Copyright (c) 2023 Bjorn Holine; Licensed MIT */
 
@@ -223,6 +223,11 @@
 					return url.replace('https://', '').replace('http://', '');
 				}
 			});
+
+			// Handle distance changes on select
+			if (this.settings.maxDistance === true) {
+				this.distanceFiltering();
+			}
 
 			// Do taxonomy filtering if set
 			if (this.settings.taxonomyFilters !== null) {
@@ -808,7 +813,7 @@
 				_this.map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
 
 				// Re-center the map when the browser is re-sized
-        window.addEventListener('resize', function() {
+        		window.addEventListener('resize', function() {
 					var center = _this.map.getCenter();
 					google.maps.event.trigger(_this.map, 'resize');
 					_this.map.setCenter(center);
@@ -2144,6 +2149,30 @@
 		},
 
 		/**
+		 * Distance filtering
+		 */
+		distanceFiltering: function () {
+			this.writeDebug('distanceFiltering');
+			var _this = this;
+			var $distanceInput = $('#' + this.settings.maxDistanceID);
+
+			// Add event listener
+			$distanceInput.on('change.'+pluginName, function (e) {
+				e.stopPropagation();
+
+				if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
+					if ((olat) && (olng)) {
+						_this.settings.mapSettings.zoom = 0;
+						_this.processForm();
+					}
+					else {
+						_this.mapping(mappingObj);
+					}
+				}
+			});
+		},
+
+		/**
 		 * Count the selected filters
 		 *
 		 * @returns {number}
@@ -2301,7 +2330,6 @@
 					}
 				}
 			}
-
 		},
 
 		/**
