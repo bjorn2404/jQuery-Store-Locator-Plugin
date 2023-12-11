@@ -1893,7 +1893,7 @@
 					distance = this.getQueryString(this.settings.maxDistanceID);
 
 					// Max distance field.
-					if ($('#' + this.settings.maxDistanceID + ' option[value=' + distance + ']').length) {
+					if (distance && $('#' + this.settings.maxDistanceID + ' option[value=' + distance + ']').length) {
 						$distanceInput.val(distance);
 					}
 
