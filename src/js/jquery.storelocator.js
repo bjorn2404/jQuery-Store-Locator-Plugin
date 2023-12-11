@@ -2165,16 +2165,21 @@
 			// Add event listener
 			$distanceInput.on('change.'+pluginName, function (e) {
 				e.stopPropagation();
-				var currentUrl = window.location.href;
-				var url = new URL(currentUrl);
 
-				url.searchParams.set(_this.settings.maxDistanceID, this.value);
+				// Query string parameter value updates on change.
+				if (_this.settings.querystringParams === true) {
+					var currentUrl = window.location.href;
+					var url = new URL(currentUrl);
 
-				// Update the query string param to match the new value.
-				if (history.pushState) {
-					window.history.pushState({path: url.href}, '', url.href);
-				} else {
-					window.location.replace(url.href);
+					// Update the distance in the URL.
+					url.searchParams.set(_this.settings.maxDistanceID, this.value);
+
+					// Update the query string param to match the new value.
+					if (history.pushState) {
+						window.history.pushState({path: url.href}, '', url.href);
+					} else {
+						window.location.replace(url.href);
+					}
 				}
 
 				if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
