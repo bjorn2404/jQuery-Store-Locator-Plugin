@@ -220,6 +220,11 @@
 				}
 			});
 
+			// Handle distance changes on select
+			if (this.settings.maxDistance === true) {
+				this.distanceFiltering();
+			}
+
 			// Do taxonomy filtering if set
 			if (this.settings.taxonomyFilters !== null) {
 				this.taxonomyFiltering();
@@ -804,7 +809,7 @@
 				_this.map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
 
 				// Re-center the map when the browser is re-sized
-        window.addEventListener('resize', function() {
+        		window.addEventListener('resize', function() {
 					var center = _this.map.getCenter();
 					google.maps.event.trigger(_this.map, 'resize');
 					_this.map.setCenter(center);
@@ -1887,6 +1892,16 @@
 					searchInput = this.getQueryString(this.settings.searchID);
 					distance = this.getQueryString(this.settings.maxDistanceID);
 
+					// Max distance field.
+					if (distance && $('#' + this.settings.maxDistanceID + ' option[value=' + distance + ']').length) {
+						$distanceInput.val(distance);
+					}
+
+					// Update zoom if origin coordinates are available and a distance query string value is set.
+					if (addressInput && distance) {
+						_this.settings.mapSettings.zoom = 0;
+					}
+
 					// The form should override the query string parameters.
 					if ($addressInput.val() !== '') {
 						addressInput = $addressInput.val();
@@ -2140,6 +2155,45 @@
 		},
 
 		/**
+		 * Distance filtering
+		 */
+		distanceFiltering: function () {
+			this.writeDebug('distanceFiltering');
+			var _this = this;
+			var $distanceInput = $('#' + this.settings.maxDistanceID);
+
+			// Add event listener
+			$distanceInput.on('change.'+pluginName, function (e) {
+				e.stopPropagation();
+
+				// Query string parameter value updates on change.
+				if (_this.settings.querystringParams === true) {
+					var currentUrl = window.location.href;
+					var url = new URL(currentUrl);
+
+					// Update the distance in the URL.
+					url.searchParams.set(_this.settings.maxDistanceID, this.value);
+
+					// Update the query string param to match the new value.
+					if (history.pushState) {
+						window.history.pushState({path: url.href}, '', url.href);
+					} else {
+						window.location.replace(url.href);
+					}
+				}
+
+				if ($('#' + _this.settings.mapID).hasClass('bh-sl-map-open') === true) {
+					if ((olat) && (olng)) {
+						_this.settings.mapSettings.zoom = 0;
+						_this.processForm();
+					} else {
+						_this.mapping(mappingObj);
+					}
+				}
+			});
+		},
+
+		/**
 		 * Count the selected filters
 		 *
 		 * @returns {number}
@@ -2297,7 +2351,6 @@
 					}
 				}
 			}
-
 		},
 
 		/**
@@ -2639,7 +2692,7 @@
 			if (
 				this.settings.openNearest !== true ||
 				typeof nearestLoc === 'undefined' ||
-        typeof originalOrigin === 'undefined' ||
+        		typeof originalOrigin === 'undefined' ||
 				(this.settings.fullMapStart === true && firstRun === true && this.settings.querystringParams === false) ||
 				(this.settings.defaultLoc === true && firstRun === true && this.settings.querystringParams === false)
 			) {
@@ -3406,7 +3459,7 @@
 			_this.map = new google.maps.Map(document.getElementById(_this.settings.mapID), myOptions);
 
 			// Re-center the map when the browser is re-sized
-      window.addEventListener('resize', function() {
+      		window.addEventListener('resize', function() {
 				var center = _this.map.getCenter();
 				google.maps.event.trigger(_this.map, 'resize');
 				_this.map.setCenter(center);
