@@ -15,7 +15,7 @@
 	}
 
 	// Variables used across multiple methods
-	var $this, map, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom, dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService, prevSelectedMarkerBefore, prevSelectedMarkerAfter, firstRun, reload, nameAttrs, originalFilterVals;
+	var $this, map, listTemplate, infowindowTemplate, dataTypeRead, originalOrigin, originalData, originalZoom, dataRequest, searchInput, addressInput, olat, olng, storeNum, directionsDisplay, directionsService, prevSelectedMarkerBefore, prevSelectedMarkerAfter, firstRun, reload, nameAttrs, originalFilterVals, paginationPage, locationsTotal;
 	var featuredset = [], locationset = [], normalset = [], markers = [];
 	var filters = {}, locationData = {}, GeoCodeCalc = {}, mappingObj = {}, disabledFilterVals = {};
 
@@ -241,7 +241,7 @@
 
 			// Add modal window divs if set
 			if (this.settings.modal === true) {
-				// Clone the filters if there are any so they can be used in the modal
+				// Clone the filters if there are any, so they can be used in the modal
 				if (this.settings.taxonomyFilters !== null) {
 					// Clone the filters
 					$('.' + this.settings.taxonomyFiltersContainer).clone(true, true).prependTo($this);
@@ -412,7 +412,7 @@
 			}
 
 			if (this.settings.pagination === true) {
-				$(document).off('click.'+pluginName, '.bh-sl-pagination li');
+				$(document).off('click.'+pluginName, '.bh-sl-pagination li a');
 			}
 		},
 
@@ -1237,35 +1237,135 @@
 		_paginationOutput: function(currentPage, totalPages) {
 			this.writeDebug('_paginationOutput',arguments);
 
-			currentPage = parseFloat(currentPage);
+            currentPage = parseInt(currentPage);
+            totalPages = Math.ceil(totalPages);
+            var pagesStart, pagesEnd;
 			var output = '';
 			var nextPage = currentPage + 1;
 			var prevPage = currentPage - 1;
+            var pagesCutoff = 5;
+            var pagesCeiling = Math.ceil(pagesCutoff / 2);
+            var pagesFloor = Math.floor(pagesCutoff / 2);
+
+            // Determine page numbers to display.
+            if (totalPages < pagesCutoff) {
+                pagesStart = 0;
+                pagesEnd = totalPages;
+            } else if (currentPage >= 0 && currentPage <= pagesCeiling) {
+                pagesStart = 0;
+                pagesEnd = pagesCutoff;
+            } else if ((currentPage + pagesFloor) >= totalPages) {
+                pagesStart = (totalPages - pagesCutoff);
+                pagesEnd = totalPages;
+            } else {
+                pagesStart = (currentPage - pagesCeiling);
+                pagesEnd = (currentPage + pagesFloor);
+            }
 
 			// Previous page
 			if ( currentPage > 0 ) {
-				output += '<li class="bh-sl-next-prev" data-page="' + prevPage + '">' + this.settings.prevPage + '</li>';
+                output += '<li class="bh-sl-next-prev" data-page="' + prevPage + '">';
+                output += '<a href="javascript:void(0);" aria-label="Previous page">' + this.settings.prevPage + '</a>';
+                output += '</li>';
+            }
+
+            // Additional pages indicator.
+            if ((currentPage + 1) >= pagesCutoff && totalPages > pagesCutoff) {
+                // First page link.
+                output += '<li data-page="' + 0 + '">';
+                output += '<a href="javascript:void(0);" aria-label="Page ' + 1 + '">' + 1 + '</a>';
+                output += '</li>';
+
+                output += '<li aria-label="ellipsis indicating non-visible pages">';
+                output += '<span>&hellip;</span>';
+                output += '</li>';
 			}
 
 			// Add the numbers
-			for (var p = 0; p < Math.ceil(totalPages); p++) {
+            for (var p = pagesStart; p < pagesEnd; p++) {
 				var n = p + 1;
 
 				if (p === currentPage) {
-					output += '<li class="bh-sl-current" data-page="' + p + '">' + n + '</li>';
+                    output += '<li class="bh-sl-current" data-page="' + p + '">';
+                    output += '<a class="bh-sl-current-page" href="javascript:void(0);" aria-label="Page ' + n + '" aria-current="page">' + n + '</a>';
+                    output += '</li>';
+                } else {
+                    output += '<li data-page="' + p + '">';
+                    output += '<a href="javascript:void(0);" aria-label="Page ' + n + '">' + n + '</a>';
+                    output += '</li>';
 				}
-				else {
-					output += '<li data-page="' + p + '">' + n + '</li>';
-				}
+			}
+
+            // Additional pages indicator.
+            if ((currentPage + pagesCeiling) <= totalPages && totalPages > pagesCutoff) {
+                output += '<li aria-label="ellipsis indicating non-visible pages">';
+                output += '<span>&hellip;</span>';
+                output += '</li>';
+
+                // Last page link.
+                output += '<li data-page="' + (totalPages - 1) + '">';
+                output += '<a href="javascript:void(0);" aria-label="Page ' + totalPages + '">' + totalPages + '</a>';
+                output += '</li>';
 			}
 
 			// Next page
 			if ( nextPage < totalPages ) {
-				output += '<li class="bh-sl-next-prev" data-page="' + nextPage + '">' + this.settings.nextPage + '</li>';
+                output += '<li class="bh-sl-next-prev" data-page="' + nextPage + '">';
+                output += '<a href="javascript:void(0);" aria-label="Next page">' + this.settings.nextPage + '</a>';
+                output += '</li>';
 			}
 
 			return output;
 		},
+
+        /**
+         * Reset pagination after the input has changed
+         */
+        paginationReset: function() {
+            this.writeDebug('paginationReset',arguments);
+
+            var currentUrl = window.location.href;
+            var url = new URL(currentUrl);
+
+            // Remove the old page in the URL.
+            url.searchParams.delete('bhsl-page');
+
+            // Update the query string param to match the new value.
+            if (history.pushState) {
+                window.history.pushState({path: url.href}, '', url.href);
+            }
+        },
+
+        /**
+         * Determine the total number of pages for pagination
+         */
+        totalPages: function() {
+            this.writeDebug('totalPages',arguments);
+
+            // Location limit.
+            if (
+                typeof originalOrigin !== 'undefined' &&
+                this.settings.storeLimit > 0 &&
+                locationset.length > this.settings.storeLimit
+            ) {
+                return this.settings.storeLimit / this.settings.locationsPerPage;
+            }
+
+            // WP API response after search.
+            if (locationsTotal > 0) {
+                return locationsTotal / this.settings.locationsPerPage;
+            }
+
+            // Unlimited or last page.
+            if (
+                this.settings.storeLimit === -1 ||
+                locationset.length < this.settings.storeLimit
+            ) {
+				return locationset.length / this.settings.locationsPerPage;
+            } else {
+                return this.settings.storeLimit / this.settings.locationsPerPage;
+            }
+        },
 
 		/**
 		 * Set up the pagination pages
@@ -1275,15 +1375,10 @@
 		paginationSetup: function (currentPage) {
 			this.writeDebug('paginationSetup',arguments);
 			var pagesOutput = '';
-			var totalPages;
 			var $paginationList = $('.bh-sl-pagination-container .bh-sl-pagination');
 
 			// Total pages
-			if ( this.settings.storeLimit === -1 || locationset.length < this.settings.storeLimit ) {
-				totalPages = locationset.length / this.settings.locationsPerPage;
-			} else {
-				totalPages = this.settings.storeLimit / this.settings.locationsPerPage;
-			}
+            var totalPages = this.totalPages();
 
 			// Current page check
 			if (typeof currentPage === 'undefined') {
@@ -1473,9 +1568,12 @@
 			var markerId = currentMarker.bhslID;
 			// Use dot markers instead of alpha if there are more than 26 locations
 			if (this.settings.disableAlphaMarkers === true || this.settings.storeLimit === -1 || this.settings.storeLimit > 26 || (this.settings.fullMapStart === true && firstRun === true && (isNaN(this.settings.fullMapStartListLimit) || this.settings.fullMapStartListLimit > 26 || this.settings.fullMapStartListLimit === -1))) {
+                if (page > 0) {
+                    indicator = storeStart + markerId + 1;
+                } else {
 				indicator = markerId + 1;
-			}
-			else {
+				}
+            } else {
 				if (page > 0) {
 					indicator = String.fromCharCode('A'.charCodeAt(0) + (storeStart + markerId));
 				}
@@ -1727,6 +1825,17 @@
 		 */
 		paginationChange: function (newPage) {
 			this.writeDebug('paginationChange',arguments);
+
+            var currentUrl = window.location.href;
+            var url = new URL(currentUrl);
+
+            // Update the page in the URL.
+            url.searchParams.set('bhsl-page', parseInt(newPage) + 1);
+
+            // Update the query string param to match the new value.
+            if (history.pushState) {
+                window.history.pushState({path: url.href}, '', url.href);
+            }
 
 			// Page change callback
 			if (this.settings.callbackPageChange) {
@@ -2037,6 +2146,11 @@
 				mappingObj.distance = distance;
 				_this.mapping(mappingObj);
 			}
+
+            // Reset pagination if the input has changed.
+            if (typeof originalOrigin !== 'undefined' && addressInput !== originalOrigin) {
+                this.paginationReset();
+            }
 		},
 
 		/**
@@ -2419,7 +2533,7 @@
 
 				// Reset pagination.
 				if (_this.settings.pagination === true) {
-					_this.paginationChange(0);
+                    _this.paginationReset();
 				}
 
 				// Handle checkbox filters
@@ -2926,6 +3040,14 @@
 				if (typeof page === 'undefined' || originalOrigin !== addressInput ) {
 					page = 0;
 				}
+
+                paginationPage = page;
+            }
+
+            // Override page if the query string was set.
+            var queryStringPage = _this.getQueryString('bhsl-page');
+            if (queryStringPage !== '') {
+                page = paginationPage = parseInt(queryStringPage) - 1;
 			}
 
 			// Data request
@@ -2936,8 +3058,8 @@
 				// Set up the origin point
 				originPoint = new google.maps.LatLng(orig_lat, orig_lng);
 
-				// If the origin hasn't changed use the existing data so we aren't making unneeded AJAX requests
-				if ((typeof originalOrigin !== 'undefined') && (origin === originalOrigin) && (typeof originalData !== 'undefined')) {
+                // If the origin hasn't changed use the existing data, so we aren't making unneeded AJAX requests
+                if ((typeof originalOrigin !== 'undefined') && (origin === originalOrigin) && (typeof originalData !== 'undefined') && this.settings.pagination !== true) {
 					origin = originalOrigin;
 					dataRequest = originalData;
 				}
@@ -3333,7 +3455,11 @@
 					}
 					else {
 						if (typeof locationset[0] !== 'undefined') {
-							if (_this.settings.distanceAlert !== -1 && locationset[0].distance > _this.settings.distanceAlert) {
+                            if (
+                                _this.settings.distanceAlert !== -1 &&
+                                locationset[0].distance > _this.settings.distanceAlert &&
+                                (typeof paginationPage === 'undefined' || parseInt(paginationPage) === 1)
+                            ) {
 								_this.notify(_this.settings.distanceErrorAlert + _this.settings.distanceAlert + ' ' + distUnit);
 								distError = true;
 							}
@@ -3517,10 +3643,10 @@
 			_this.originMarker(_this.map, origin, originPoint);
 
 			// Handle pagination
-			$(document).on('click.'+pluginName, '.bh-sl-pagination li', function (e) {
+            $(document).on('click.'+pluginName, '.bh-sl-pagination li a', function (e) {
 				e.preventDefault();
 				// Run paginationChange
-				_this.paginationChange($(this).attr('data-page'));
+                _this.paginationChange($(this).parent().attr('data-page'));
 			});
 
 			// Inline directions

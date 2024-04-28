@@ -355,17 +355,29 @@ $tabletLarge: '(min-width: 1024px)';
 			text-align: center;
 
 			li {
+				display: inline-block;
+				margin: 0 4px;
+			}
+
+			a {
+				box-shadow: none;
 				color: $blue;
-				cursor: pointer;
 				display: inline-block;
 				font: bold 14px $arialFont;
 				padding: 10px;
+				text-decoration: underline;
 			}
 
 			.bh-sl-current {
 				color: $textgray;
 				cursor: auto;
 				text-decoration: none;
+
+				a {
+					color: $textgray;
+					pointer-events: none;
+					text-decoration: none;
+				}
 			}
 		}
 	}
