@@ -35,6 +35,11 @@ $tabletLarge: '(min-width: 1024px)';
 	}
 }
 
+.GMAMP-maps-pin-view {
+	color: $black;
+	font: 400 15px/1 $arialFont;
+}
+
 /* InfoBubble font size */
 .bh-sl-window {
 	font-size: 13px;
