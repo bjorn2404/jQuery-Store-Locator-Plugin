@@ -54,7 +54,6 @@
 		'mapSettings'                : {
 			mapTypeId: 'roadmap',
 			zoom     : 12,
-			mapId    : 'test' // Map ID.
 		},
 		'markerCluster'              : null,
 		'markerImg'                  : null,
@@ -1399,6 +1398,54 @@
 		},
 
 		/**
+		 * Determine if the legacy or Advanced markers should be used
+		 *
+		 * @returns {boolean}
+		 */
+		useLegacyMarkers: function() {
+			this.writeDebug('useLegacyMarkers',arguments);
+
+			return !this.settings.mapSettings.hasOwnProperty('mapId') ||
+				this.settings.mapSettings.mapId === '';
+		},
+
+		/**
+		 * Legacy marker image setup
+		 *
+		 * Original functionality supporting the now deprecated google.maps.Marker
+		 * This will eventually be removed in favor of markerImage below.
+		 *
+		 * @param markerUrl {string} path to marker image
+		 * @param markerWidth {number} width of marker
+		 * @param markerHeight {number} height of marker
+		 *
+		 * @returns {Object} Google Maps icon object
+		 */
+		legacyMarkerImage: function (markerUrl, markerWidth, markerHeight) {
+			this.writeDebug('legacyMarkerImage',arguments);
+			var markerImg;
+
+			// User defined marker dimensions
+			if (typeof markerWidth !== 'undefined' && typeof markerHeight !== 'undefined') {
+				markerImg = {
+					url: markerUrl,
+					size: new google.maps.Size(markerWidth, markerHeight),
+					scaledSize: new google.maps.Size(markerWidth, markerHeight)
+				};
+			}
+			// Default marker dimensions: 32px x 32px
+			else {
+				markerImg = {
+					url: markerUrl,
+					size: new google.maps.Size(32, 32),
+					scaledSize: new google.maps.Size(32, 32)
+				};
+			}
+
+			return markerImg;
+		},
+
+		/**
 		 * Marker image setup
 		 *
 		 * @param markerUrl {string} path to marker image
@@ -1410,21 +1457,26 @@
 		markerImage: function (markerUrl, markerWidth, markerHeight) {
 			this.writeDebug('markerImage',arguments);
 
-			var originImg = document.createElement('img');
-			originImg.src = markerUrl;
+			// Check if legacy marker image should be used
+			if (this.useLegacyMarkers()) {
+				return this.legacyMarkerImage(markerUrl, markerWidth, markerHeight);
+			}
+
+			var markerImg = document.createElement('img');
+			markerImg.src = markerUrl;
 
 			// User defined marker dimensions
 			if (typeof markerWidth !== 'undefined' && typeof markerHeight !== 'undefined') {
-				originImg.height = markerHeight;
-				originImg.width = markerWidth;
+				markerImg.height = markerHeight;
+				markerImg.width = markerWidth;
 			}
 			// Default marker dimensions: 32px x 32px
 			else {
-				originImg.height = 32;
-				originImg.width = 32;
+				markerImg.height = 32;
+				markerImg.width = 32;
 			}
 
-			return originImg;
+			return markerImg;
 		},
 
 		/**
@@ -1453,7 +1505,7 @@
 						// Break the category variable into an array if there are multiple categories for the location
 						categories = category.split(',');
 						// With multiple categories the color will be determined by the last matched category in the data
-						for(var i = 0; i < categories.length; i++) {
+						for (var i = 0; i < categories.length; i++) {
 							if (categories[i] in this.settings.catMarkers) {
 								markerImg = this.markerImage(
 									this.settings.catMarkers[categories[i]][0],
@@ -1497,25 +1549,47 @@
 			else {
 				// Create the default markers
 				if (this.settings.disableAlphaMarkers === true || this.settings.storeLimit === -1 || this.settings.storeLimit > 26 || this.settings.catMarkers !== null || this.settings.markerImg !== null || (this.settings.fullMapStart === true && firstRun === true && (isNaN(this.settings.fullMapStartListLimit) || this.settings.fullMapStartListLimit > 26 || this.settings.fullMapStartListLimit === -1))) {
-					marker = new google.maps.marker.AdvancedMarkerElement({
-						content  : markerImg, // Reverts to default marker if markerImg not set.
-						draggable: false,
-						map      : map,
-						position : point,
-						title    : name,
-					});
+					if (this.useLegacyMarkers()) {
+						marker = new google.maps.Marker({
+							draggable: false,
+							icon     : markerImg, // Reverts to default marker if markerImg not set.
+							map      : map,
+							optimized: false,
+							position : point,
+							title    : name,
+						});
+					} else {
+						marker = new google.maps.marker.AdvancedMarkerElement({
+							content  : markerImg, // Reverts to default marker if markerImg not set.
+							draggable: false,
+							map      : map,
+							position : point,
+							title    : name,
+						});
+					}
 				}
 				else {
 					var letterPin = new google.maps.marker.PinElement({glyph: letter});
 
 					// Letter markers
-					marker = new google.maps.marker.AdvancedMarkerElement({
-						content  : letterPin.element,
-						draggable: false,
-						map      : map,
-						position : point,
-						title    : name,
-					});
+					if (this.useLegacyMarkers()) {
+						marker = new google.maps.Marker({
+							draggable: false,
+							label    : letter,
+							map      : map,
+							optimized: false,
+							position : point,
+							title    : name,
+						});
+					} else {
+						marker = new google.maps.marker.AdvancedMarkerElement({
+							content  : letterPin.element,
+							draggable: false,
+							map      : map,
+							position : point,
+							title    : name,
+						});
+					}
 				}
 			}
 
@@ -1534,7 +1608,12 @@
 		_defineLocationData: function (currentMarker, storeStart, page) {
 			this.writeDebug('_defineLocationData',arguments);
 			var indicator = '';
-			this._createLocationVariables(currentMarker.bhslID);
+
+			if (this.useLegacyMarkers()) {
+				this._createLocationVariables(currentMarker.get('id'));
+			} else {
+				this._createLocationVariables(currentMarker.bhslID);
+			}
 
 			var altDistLength,
 				distLength;
@@ -1560,8 +1639,15 @@
 				}
 			}
 
+			var markerId;
+
 			// Set up alpha character
-			var markerId = currentMarker.bhslID;
+			if (this.useLegacyMarkers()) {
+				markerId = currentMarker.get('id');
+			} else {
+				markerId = currentMarker.bhslID;
+			}
+
 			// Use dot markers instead of alpha if there are more than 26 locations
 			if (this.settings.disableAlphaMarkers === true || this.settings.storeLimit === -1 || this.settings.storeLimit > 26 || (this.settings.fullMapStart === true && firstRun === true && (isNaN(this.settings.fullMapStartListLimit) || this.settings.fullMapStartListLimit > 26 || this.settings.fullMapStartListLimit === -1))) {
                 if (page > 0) {
@@ -1657,39 +1743,75 @@
 			// Opens the infowindow when list item is clicked
 			if (location === 'left') {
 				infowindow.setContent(formattedAddress);
-				infowindow.open(marker.map, marker);
+
+				if (this.useLegacyMarkers()) {
+					infowindow.open(marker.get('map'), marker);
+				} else {
+					infowindow.open(marker.map, marker);
+				}
 			}
 			// Opens the infowindow when the marker is clicked
 			else {
-				marker.addListener('click', function (domEvent, latLng) {
-					infowindow.setContent(formattedAddress);
-					infowindow.open(marker.map, marker);
+				if (this.useLegacyMarkers()) {
+					google.maps.event.addListener(marker, 'click', function () {
+						infowindow.setContent(formattedAddress);
+						infowindow.open(marker.get('map'), marker);
+						// Focus on the list
+						var markerId = marker.get('id');
+						var $selectedLocation = $('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']');
 
-					// Focus on the list
-					var markerId = marker.bhslID;
-					var $selectedLocation = $('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']');
+						if ($selectedLocation.length > 0) {
+							// Marker click callback
+							if (_this.settings.callbackMarkerClick) {
+								_this.settings.callbackMarkerClick.call(this, marker, markerId, $selectedLocation, locationset[markerId], _this.map);
+							}
 
-					if ($selectedLocation.length > 0) {
-						// Marker click callback
-						if (_this.settings.callbackMarkerClick) {
-							_this.settings.callbackMarkerClick.call(this, marker, markerId, $selectedLocation, locationset[markerId], _this.map);
+							$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
+							$selectedLocation.addClass('list-focus');
+
+							// Scroll list to selected marker
+							var $container = $('.' + _this.settings.locationList);
+							$container.animate({
+								scrollTop: $selectedLocation.offset().top - $container.offset().top + $container.scrollTop()
+							});
 						}
 
-						$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
-						$selectedLocation.addClass('list-focus');
+						// Custom selected marker override
+						if (_this.settings.selectedMarkerImg !== null) {
+							_this.changeSelectedMarker(marker);
+						}
+					});
+				} else {
+					marker.addListener('click', function (domEvent, latLng) {
+						infowindow.setContent(formattedAddress);
+						infowindow.open(marker.map, marker);
 
-						// Scroll list to selected marker
-						var $container = $('.' + _this.settings.locationList);
-						$container.animate({
-							scrollTop: $selectedLocation.offset().top - $container.offset().top + $container.scrollTop()
-						});
-					}
+						// Focus on the list
+						var markerId = marker.bhslID;
+						var $selectedLocation = $('.' + _this.settings.locationList + ' li[data-markerid=' + markerId + ']');
 
-					// Custom selected marker override
-					if (_this.settings.selectedMarkerImg !== null) {
-						_this.changeSelectedMarker(marker);
-					}
-				});
+						if ($selectedLocation.length > 0) {
+							// Marker click callback
+							if (_this.settings.callbackMarkerClick) {
+								_this.settings.callbackMarkerClick.call(this, marker, markerId, $selectedLocation, locationset[markerId], _this.map);
+							}
+
+							$('.' + _this.settings.locationList + ' li').removeClass('list-focus');
+							$selectedLocation.addClass('list-focus');
+
+							// Scroll list to selected marker
+							var $container = $('.' + _this.settings.locationList);
+							$container.animate({
+								scrollTop: $selectedLocation.offset().top - $container.offset().top + $container.scrollTop()
+							});
+						}
+
+						// Custom selected marker override
+						if (_this.settings.selectedMarkerImg !== null) {
+							_this.changeSelectedMarker(marker);
+						}
+					});
+				}
 			}
 		},
 
@@ -2639,13 +2761,24 @@
 
 			// Set up the new list
 			$(markers).each(function(x, marker){
-				if (map.getBounds().contains(marker.position)) {
-					// Define the location data
-					_this.listSetup(marker, 0, 0);
+				if (_this.useLegacyMarkers()) {
+					if (map.getBounds().contains(marker.getPosition())) {
+						// Define the location data
+						_this.listSetup(marker, 0, 0);
 
-					// Set up the list template with the location data
-					listHtml = listTemplate(locations);
-					$('.' + _this.settings.locationList + ' > ul').append(listHtml);
+						// Set up the list template with the location data
+						listHtml = listTemplate(locations);
+						$('.' + _this.settings.locationList + ' > ul').append(listHtml);
+					}
+				} else {
+					if (map.getBounds().contains(marker.position)) {
+						// Define the location data
+						_this.listSetup(marker, 0, 0);
+
+						// Set up the list template with the location data
+						listHtml = listTemplate(locations);
+						$('.' + _this.settings.locationList + ' > ul').append(listHtml);
+					}
 				}
 			});
 
@@ -2739,39 +2872,63 @@
 				return;
 			}
 
-			var marker;
+			var marker,
+				originImg;
 
 			if (typeof origin !== 'undefined') {
-				// Default green origin pin.
-				var defaultOriginPin = new google.maps.marker.PinElement({
-					background : '#39b25e',
-					borderColor: '#177d3d',
-					glyphColor : '#177d3c'
-				});
-
-				marker = new google.maps.marker.AdvancedMarkerElement({
-					content  : defaultOriginPin.element,
-					draggable: false,
-					map      : map,
-					position : originPoint,
-					title    : name,
-				});
-
-				// Origin image.
-				if (this.settings.originMarkerImg !== null) {
-					var originImg = document.createElement('img');
-
-					if (this.settings.originMarkerDim === null) {
-						originImg.src = this.settings.originMarkerImg;
-					} else {
-						originImg = this.markerImage(
-							this.settings.originMarkerImg,
-							this.settings.originMarkerDim.width,
-							this.settings.originMarkerDim.height,
-						);
+				if (this.useLegacyMarkers()) {
+					if (this.settings.originMarkerImg !== null) {
+						if (this.settings.originMarkerDim === null) {
+							originImg = this.markerImage(this.settings.originMarkerImg);
+						}
+						else {
+							originImg = this.markerImage(this.settings.originMarkerImg, this.settings.originMarkerDim.width, this.settings.originMarkerDim.height);
+						}
+					}
+					else {
+						originImg = {
+							url: 'https://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-waypoint-a.png'
+						};
 					}
 
-					marker.content = originImg;
+					marker = new google.maps.Marker({
+						position : originPoint,
+						map      : map,
+						icon     : originImg,
+						draggable: false
+					});
+				} else {
+					// Default green origin pin.
+					var defaultOriginPin = new google.maps.marker.PinElement({
+						background : '#39b25e',
+						borderColor: '#177d3d',
+						glyphColor : '#177d3c'
+					});
+
+					marker = new google.maps.marker.AdvancedMarkerElement({
+						content  : defaultOriginPin.element,
+						draggable: false,
+						map      : map,
+						position : originPoint,
+						title    : name,
+					});
+
+					// Origin image.
+					if (this.settings.originMarkerImg !== null) {
+						originImg = document.createElement('img');
+
+						if (this.settings.originMarkerDim === null) {
+							originImg.src = this.settings.originMarkerImg;
+						} else {
+							originImg = this.markerImage(
+								this.settings.originMarkerImg,
+								this.settings.originMarkerDim.width,
+								this.settings.originMarkerDim.height,
+							);
+						}
+
+						marker.content = originImg;
+					}
 				}
 			}
 		},
@@ -2878,7 +3035,12 @@
 					_this.settings.callbackListClick.call(this, markerId, selectedMarker, locationset[markerId], map);
 				}
 
-				map.panTo(selectedMarker.position);
+				if (_this.useLegacyMarkers()) {
+					map.panTo(selectedMarker.getPosition());
+				} else {
+					map.panTo(selectedMarker.position);
+				}
+
 				var listLoc = 'left';
 				_this.createInfowindow(selectedMarker, listLoc, infowindow, storeStart, page);
 
@@ -3661,11 +3823,21 @@
 
 				var point = new google.maps.LatLng(locationset[y].lat, locationset[y].lng);
 				marker = _this.createMarker(point, locationset[y].name, locationset[y].address, letter, _this.map, locationset[y].category);
-				marker.bhslID = y;
+
+				if (_this.useLegacyMarkers()) {
+					marker.set('id', y);
+				} else {
+					marker.bhslID = y;
+				}
+
 				markers[y] = marker;
 
 				// Add marker ID to location data
-				locationset[y].markerid = marker.bhslID;
+				if (_this.useLegacyMarkers()) {
+					locationset[y].markerid = marker.get('id');
+				} else {
+					locationset[y].markerid = marker.bhslID;
+				}
 
 				if (this.settings.dataRaw !== null) {
 					for (var l = 0; l < this.settings.dataRaw.length; l++) {
@@ -3744,14 +3916,20 @@
 			_this.openNearestLocation(nearestLoc, infowindow, storeStart, page);
 
 			// MarkerClusterer setup.
-			if ( typeof markerClusterer !== 'undefined' ) {
-				var customClustererParams = _this.settings.markerCluster;
+			if (_this.useLegacyMarkers()) {
+				if ( typeof MarkerClusterer !== 'undefined' && _this.settings.markerCluster !== null ) {
+					var markerCluster = new MarkerClusterer(_this.map, markers, _this.settings.markerCluster);
+				}
+			} else {
+				if ( typeof markerClusterer !== 'undefined' ) {
+					var customClustererParams = _this.settings.markerCluster;
 
-				new markerClusterer.MarkerClusterer({
-					markers,
-					map: _this.map,
-					customClustererParams
-				});
+					new markerClusterer.MarkerClusterer({
+						markers,
+						map: _this.map,
+						customClustererParams
+					});
+				}
 			}
 
 			// Handle clicks from the list
