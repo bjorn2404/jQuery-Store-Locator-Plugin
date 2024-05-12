@@ -55,6 +55,7 @@
 			mapTypeId: 'roadmap',
 			zoom     : 12,
 		},
+		'mapSettingsID'              : '',
 		'markerCluster'              : null,
 		'markerImg'                  : null,
 		'markerDim'                  : null,
@@ -150,6 +151,11 @@
 		this.settings = $.extend({}, defaults, options);
 		this._defaults = defaults;
 		this._name = pluginName;
+
+		// Add Map ID to map settings if set.
+		if (this.settings.mapSettingsID !== '') {
+			this.settings.mapSettings.mapId = this.settings.mapSettingsID;
+		}
 
 		// Load Google Maps API when lazy load is enabled.
 		if (this.settings.lazyLoadMap && this.settings.apiKey !== null && typeof google === 'undefined') {
