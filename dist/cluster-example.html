@@ -12,7 +12,7 @@
     <div id="page-header">
         <h1 class="bh-sl-title">Using Chipotle as an Example</h1>
         <p>I used locations around Minneapolis and the southwest suburbs. So, for example, Edina, Plymouth, Eden Prarie, etc. would be good for testing the functionality.
-            You can use just the city as the address - ex: Edina, MN. Please see the <a target="_blank" href="https://github.com/googlemaps/js-marker-clusterer">MarkerClusterer library page</a> for documentation.</p>
+            You can use just the city as the address - ex: Edina, MN. Please see the <a target="_blank" href="https://github.com/googlemaps/js-markerclusterer">MarkerClusterer library page</a> for documentation.</p>
     </div>
 
     <div class="bh-sl-form-container">
@@ -34,16 +34,16 @@
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="assets/js/libs/handlebars.min.js"></script>
 <script src="assets/js/libs/markerclusterer.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?callback=Function.prototype"></script>
+<script src="https://maps.googleapis.com/maps/api/js?callback=Function.prototype&loading=async&libraries=marker"></script>
 <script src="assets/js/plugins/storeLocator/jquery.storelocator.js"></script>
 <script>
     $(function() {
         $('#bh-sl-map-container').storeLocator({
             markerCluster: {
-                imagePath: 'assets/img/m'
+                algorithm: 'gridBased', // This is just an example of an additional parameter. It's best to use the default supercluster.
             }
         });
     });

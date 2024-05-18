@@ -34,17 +34,19 @@
       </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="assets/js/libs/handlebars.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?callback=Function.prototype"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?callback=Function.prototype&loading=async&libraries=marker"></script>
     <script src="assets/js/plugins/storeLocator/jquery.storelocator.js"></script>
 		<script>
 			$(function() {
 				$('#bh-sl-map-container').storeLocator({
 					slideMap : false,
 					defaultLoc: true,
-					defaultLat: '44.9207462',
-					defaultLng : '-93.3935366'
+					defaultLat: 44.9207462,
+					defaultLng : -93.3935366,
+                   // Use mapSettingsID for new map management, markers, and styling options. See options.md for more info.
+                   mapSettingsID: '',
 				});
 			});
 		</script>

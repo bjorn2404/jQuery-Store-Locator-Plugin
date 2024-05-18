@@ -14,6 +14,10 @@
 .gm-style div, .gm-style span, .gm-style label, .gm-style a {
   font-family: Arial, Helvetica, sans-serif; }
 
+.GMAMP-maps-pin-view {
+  color: #000;
+  font: 400 15px/1 Arial, Helvetica, sans-serif; }
+
 /* InfoBubble font size */
 .bh-sl-window {
   font-size: 13px; }
@@ -236,15 +240,23 @@
       padding: 10px 0;
       text-align: center; }
       .bh-sl-container .bh-sl-pagination-container ol li {
+        display: inline-block;
+        margin: 0 4px; }
+      .bh-sl-container .bh-sl-pagination-container ol a {
+        box-shadow: none;
         color: #005293;
-        cursor: pointer;
         display: inline-block;
         font: bold 14px Arial, Helvetica, sans-serif;
-        padding: 10px; }
+        padding: 10px;
+        text-decoration: underline; }
       .bh-sl-container .bh-sl-pagination-container ol .bh-sl-current {
         color: #555;
         cursor: auto;
         text-decoration: none; }
+        .bh-sl-container .bh-sl-pagination-container ol .bh-sl-current a {
+          color: #555;
+          pointer-events: none;
+          text-decoration: none; }
 
 /* Modal window */
 .bh-sl-overlay {
