@@ -38,10 +38,11 @@ filtering.
 ### Version 3.4.0
 
 * Added support for new Map ID with mapSettingsID setting. Please refer to [Use Map IDs](https://developers.google.com/maps/documentation/get-map-id) and [Map ID with Styling](https://developers.google.com/maps/documentation/javascript/examples/map-id-style) in the Google API docs.
-* Added support for new [Advanced Markers](https://developers.google.com/maps/documentation/javascript/advanced-markers/overview) while maintaining support for the deprecated (not discontinued yet) marker functionality. mapSettingsID setting needs to be set - see previous item.
+* Added support for new [Advanced Markers](https://developers.google.com/maps/documentation/javascript/advanced-markers/overview) while maintaining support for the deprecated (not yet discontinued) marker functionality. mapSettingsID setting needs to be set and marker library needs to be included - see previous item.
 * Fixed bugs with pagination.
 * Fixed new "Google Maps JavaScript API has been loaded directly without loading=async" notice.
 * Improved pagination accessibility and functionality.
+* Updated jQuery in example files to v3.7.1
 
 ### Version 3.3.0
 

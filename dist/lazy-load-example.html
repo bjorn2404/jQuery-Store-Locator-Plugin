@@ -36,26 +36,28 @@
 	</div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="assets/js/libs/handlebars.min.js"></script>
 <!-- NO GOOGLE MAPS SCRIPT -->
 <script src="assets/js/plugins/storeLocator/jquery.storelocator.js"></script>
 <script>
-  $(function() {
-    $('#bh-sl-map-container').storeLocator({
-      //apiKey: 'Add your API key here and uncomment line',
-      fullMapStart: true,
-      lazyLoadMap: true, // apiKey setting required for this to be enabled.
-      callbackBeforeMapInject: function(options, resolveMapLoad) {
-        const agreeBtn = document.getElementById('agree');
+	$(function() {
+		$('#bh-sl-map-container').storeLocator({
+			//apiKey: 'Add your API key here and uncomment line',
+			fullMapStart: true,
+			lazyLoadMap: true, // apiKey setting required for this to be enabled.
+			// Use mapSettingsID for new map management, markers, and styling options. See options.md for more info.
+			mapSettingsID: '',
+			callbackBeforeMapInject: function (options, resolveMapLoad) {
+				const agreeBtn = document.getElementById('agree');
 
-        agreeBtn.addEventListener('click', () => {
-          resolveMapLoad();
-          agreeBtn.style.display = 'none';
-        });
-      }
-    });
-  });
+				agreeBtn.addEventListener('click', () => {
+					resolveMapLoad();
+					agreeBtn.style.display = 'none';
+				});
+			}
+		});
+	});
 </script>
 
 </body>

@@ -34,14 +34,16 @@
 	</div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="assets/js/libs/handlebars.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?libraries=places&callback=Function.prototype"></script> <!-- Note the extra libraries query string parameter -->
+<script src="https://maps.googleapis.com/maps/api/js?libraries=places,marker&callback=Function.prototype&loading=async"></script> <!-- Note the extra libraries query string parameter -->
 <script src="assets/js/plugins/storeLocator/jquery.storelocator.js"></script>
 <script>
 	$(function() {
 		$('#bh-sl-map-container').storeLocator({
-			autoComplete: true
+			autoComplete: true,
+			// Use mapSettingsID for new map management, markers, and styling options. See options.md for more info.
+			mapSettingsID: '',
 		});
 	});
 </script>
