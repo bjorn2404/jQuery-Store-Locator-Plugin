@@ -163,9 +163,12 @@
 			var optionsQuery = {};
 			var loadMap = false;
 
+			// Load new marker library.
+			optionsQuery.libraries = 'marker';
+
 			// Autocomplete.
 			if (this.settings.autoComplete === true) {
-				optionsQuery.libraries = 'places';
+				optionsQuery.libraries = 'places,marker';
 			}
 
 			// Allow callback to resolve map loading when set.
@@ -331,6 +334,7 @@
 
 						_this.injectGoogleMapsScript({
 							key: apiKey,
+							loading: 'async',
 							callback: 'onGoogleMapsAPILoaded',
 							...options,
 						});
@@ -1575,8 +1579,6 @@
 					}
 				}
 				else {
-					var letterPin = new google.maps.marker.PinElement({glyph: letter});
-
 					// Letter markers
 					if (this.useLegacyMarkers()) {
 						marker = new google.maps.Marker({
@@ -1588,6 +1590,8 @@
 							title    : name,
 						});
 					} else {
+						var letterPin = new google.maps.marker.PinElement({glyph: letter});
+
 						marker = new google.maps.marker.AdvancedMarkerElement({
 							content  : letterPin.element,
 							draggable: false,
