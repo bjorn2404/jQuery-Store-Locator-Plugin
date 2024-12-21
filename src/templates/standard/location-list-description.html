@@ -5,13 +5,20 @@
 		<div class="list-content">
 			<div class="loc-name">{{name}}</div>
 			<div class="loc-addr">{{address}}</div>
-			<div class="loc-addr2">{{address2}}</div>
+			{{#if address2}}
+				<div class="loc-addr2">{{address2}}</div>
+			{{/if}}
 			<div class="loc-addr3">{{city}}{{#if city}},{{/if}} {{state}} {{postal}}</div>
-			<div class="loc-phone">{{phone}}</div>
-			<div class="loc-web"><a href="{{web}}" target="_blank">{{niceURL web}}</a></div>
+			{{#if phone}}
+				<div class="loc-phone">{{phone}}</div>
+			{{/if}}
+			{{#if web}}
+				<div class="loc-web"><a href="{{web}}" target="_blank">{{niceURL web}}</a></div>
+			{{/if}}
 			{{#if distance}}
-				<div class="loc-dist">{{distance}} {{length}}</div>
-				<div class="loc-directions"><a href="https://maps.googleapis.com/maps?saddr={{origin}}&amp;daddr={{address}} {{address2}} {{city}}, {{state}} {{postal}}" target="_blank">Directions</a></div>
+				<div class="loc-dist loc-default-dist">{{distance}} {{length}}</div>
+				{{#if altdistance}}<div class="loc-dist loc-alt-dist">{{altdistance}} {{altlength}}</div>{{/if}}
+				<div class="loc-directions"><a href="https://www.google.com/maps?addr={{origin}}&amp;daddr={{address}} {{address2}} {{city}}, {{state}} {{postal}}" target="_blank">Directions</a></div>
 			{{/if}}
 		</div>
 	</div>

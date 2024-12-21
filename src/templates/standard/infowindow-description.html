@@ -1,11 +1,21 @@
 {{#location}}
 <div class="loc-name">{{name}}</div>
 <div>{{address}}</div>
-<div>{{address2}}</div>
+{{#if address2}}
+    <div>{{address2}}</div>
+{{/if}}
 <div>{{city}}{{#if city}},{{/if}} {{state}} {{postal}}</div>
-<div>{{hours1}}</div>
-<div>{{hours2}}</div>
-<div>{{hours3}}</div>
-<div>{{phone}}</div>
+{{#if hours1}}
+    <div>{{hours1}}</div>
+{{/if}}
+{{#if hours2}}
+    <div>{{hours2}}</div>
+{{/if}}
+{{#if hours3}}
+    <div>{{hours3}}</div>
+{{/if}}
+{{#if phone}}
+    <div>{{phone}}</div>
+{{/if}}
 <div><a href="{{web}}" target="_blank">{{niceURL web}}</a></div>
 {{/location}}

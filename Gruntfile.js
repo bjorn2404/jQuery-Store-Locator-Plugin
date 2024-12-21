@@ -13,6 +13,19 @@ module.exports = function (grunt) {
 		clean    : {
 			files: ['dist']
 		},
+		copy: {
+			templates: {
+				files: [
+					{
+						expand: true,
+						cwd: 'src/templates/',
+						src: '**/*.html',
+						dest: 'dist/assets/js/plugins/storeLocator/templates/',
+						flatten: true
+					}
+				]
+			}
+		},
 		sass     : {
 			dist: {
 				files: {
@@ -100,6 +113,10 @@ module.exports = function (grunt) {
 				files: '<%= jshint.gruntfile.src %>',
 				tasks: ['jshint:gruntfile']
 			},
+			templates: {
+				files: ['src/templates/**/*.html'],
+				tasks: ['copy']
+			},
 			src      : {
 				files  : ['src/**/*'],
 				tasks  : ['sass', 'concat', 'uglify', 'usebanner', 'cssmin'],
@@ -117,6 +134,7 @@ module.exports = function (grunt) {
 	// These plugins provide necessary tasks.
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-sass');
+	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
@@ -127,7 +145,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-handlebars');
 
 	// Build
-	grunt.registerTask('build', ['sass', 'concat', 'uglify', 'usebanner', 'cssmin']);
+	grunt.registerTask('build', ['sass', 'copy', 'concat', 'uglify', 'usebanner', 'cssmin']);
 
 	//Watch src build
 	grunt.registerTask('watchsrc', ['watch:src']);
