@@ -35,6 +35,10 @@ filtering.
 
 ## Changelog
 
+### Version 3.4.1
+
+* Fixed default directions link (inline directions disabled). Props [@HarldVerbiesenVIPMarketingBV](https://github.com/HarldVerbiesenVIPMarketingBV) via [issue #304](https://github.com/bjorn2404/jQuery-Store-Locator-Plugin/issues/304)
+
 ### Version 3.4.0
 
 * Added support for new Map ID with mapSettingsID setting. Please refer to [Use Map IDs](https://developers.google.com/maps/documentation/get-map-id) and [Map ID with Styling](https://developers.google.com/maps/documentation/javascript/examples/map-id-style) in the Google API docs.
